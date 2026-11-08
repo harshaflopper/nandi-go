@@ -1282,3 +1282,17 @@ footer{background:#0F1C18}
 .kit-poster:hover{color:var(--forest)}
 @media(max-width:1000px){.kit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.kit-sec{margin:0 10px;border-radius:20px}.kit-grid{gap:10px}.kit-item figcaption{padding:10px 8px 12px}.kit-item figcaption b{font-size:13.5px}.kit-tag{font-size:13px}}
+
+/* Prices and money figures: clean sans with lining numbers (the serif's old-style digits and ₹ looked out of place) */
+.hx-price b,.trip-price b,.tk-price b,.dp-trip-price b,.bk-total strong,.dm-foot b,.kit-seal b,.ab-stats b,.pp-stats b,.hm-stats b{
+  font-family:var(--sans);font-variant-numeric:lining-nums tabular-nums;letter-spacing:-.01em}
+.hx-price b{font-weight:600;font-size:21px}
+.trip-price b{font-weight:600;font-size:22px}
+.tk-price b{font-weight:700;font-size:40px;letter-spacing:-.02em}
+.dp-trip-price b{font-weight:600;font-size:17px}
+.bk-total strong{font-weight:600;font-size:24px}
+.dm-foot b{font-weight:600;font-size:26px}
+.kit-seal b{font-weight:700;font-size:26px}
+.ab-stats b{font-weight:700}
+.pp-stats b,.hm-stats b{font-weight:600;font-size:24px}
+.tk-price del,.trip-price del,.dm-foot del{font-family:var(--sans);font-variant-numeric:lining-nums}
