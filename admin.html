@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/><meta name="theme-color" content="#1A3D2E"/>
+<title>Nandi Go — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png"/>
+<link rel="stylesheet" href="site.css?v=32"/>
+<link rel="stylesheet" href="assets/admin.css?v=32"/>
+</head>
+<body class="ad">
+
+<!-- Sign in -->
+<section class="ad-gate" id="adGate">
+ <div class="ad-gate-card">
+  <img src="logo.png" alt="Nandi Go" class="ad-logo"/>
+  <span class="ad-label">Admin</span>
+  <h1>Nandi Go control room</h1>
+  <p id="adGateText">Sign in with the Nandi Go Google account to manage batches, bookings and partners.</p>
+  <button type="button" class="btn btn-gold" id="adSignIn"><svg viewBox="0 0 24 24" class="ad-g" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2.1-1.9 3.3-4.8 3.3-8Z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.8 14.2a6.6 6.6 0 0 1 0-4.3V7.1H2.1a11 11 0 0 0 0 9.9l3.7-2.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7.1l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4Z"/></svg>Sign in with Google</button>
+  <button type="button" class="btn btn-ghost" id="adSignOutGate" hidden>Use another account</button>
+  <p class="ad-fine">Only nandigo2026@gmail.com can open this page.</p>
+ </div>
+</section>
+
+<!-- App -->
+<div class="ad-app" id="adApp" hidden>
+ <header class="ad-top">
+  <a href="index.html" class="ad-brand"><img src="logo.png" alt=""/><span>Nandi Go <em>Admin</em></span></a>
+  <nav class="ad-tabs" role="tablist">
+   <button role="tab" data-tab="overview">Overview</button>
+   <button role="tab" data-tab="batches">Batches</button>
+   <button role="tab" data-tab="bookings">Bookings <i id="adNewCount" hidden></i></button>
+   <button role="tab" data-tab="partners">Partners</button>
+   <button role="tab" data-tab="settings">Emails &amp; settings</button>
+  </nav>
+  <div class="ad-user"><span id="adEmail"></span><button type="button" class="btn btn-ghost btn-sm" id="adSignOut">Sign out</button></div>
+ </header>
+
+ <main class="ad-main">
+  <!-- Overview -->
+  <section class="ad-panel" data-panel="overview">
+   <div class="ad-head"><div><span class="ad-label">Today</span><h2>Overview</h2></div><button class="btn btn-ghost btn-sm" data-reload>Refresh</button></div>
+   <div class="ad-stats" id="adStats"></div>
+   <div class="ad-grid2">
+    <div class="ad-card"><h3>Batches running now</h3><div id="adOvBatches"></div></div>
+    <div class="ad-card"><h3>Newest booking requests</h3><div id="adOvBookings"></div></div>
+   </div>
+  </section>
+
+  <!-- Batches -->
+  <section class="ad-panel" data-panel="batches" hidden>
+   <div class="ad-head"><div><span class="ad-label">Fixed departures</span><h2>Batches</h2></div>
+    <button class="btn btn-gold btn-sm" id="adNewBatch">New batch</button></div>
+   <p class="ad-hint">A batch fills when confirmed seats reach its size. Then it closes for booking and an email goes to the Nandi Go inbox. After the end date it is marked completed and another email goes out.</p>
+   <div class="ad-filter"><label><input type="checkbox" id="adShowPast"/> Show completed and past batches</label></div>
+   <div id="adBatchList" class="ad-list"></div>
+  </section>
+
+  <!-- Bookings -->
+  <section class="ad-panel" data-panel="bookings" hidden>
+   <div class="ad-head"><div><span class="ad-label">Customers</span><h2>Bookings</h2></div>
+    <div class="ad-actions"><button class="btn btn-ghost btn-sm" id="adExport">Download CSV</button><button class="btn btn-gold btn-sm" id="adNewBooking">Add booking</button></div></div>
+   <div class="ad-filter">
+    <input type="search" id="adBkSearch" placeholder="Search name, phone, reference"/>
+    <select id="adBkStatus"><option value="">All statuses</option><option value="new">New requests</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+    <select id="adBkTrip"><option value="">All trips</option></select>
+    <select id="adBkBatch"><option value="">All batches</option></select>
+   </div>
+   <div class="ad-table-wrap"><table class="ad-table" id="adBkTable"><thead><tr>
+    <th>Reference</th><th>Customer</th><th>Trip</th><th>Date</th><th>Seats</th><th>Estimate</th><th>Paid</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+   <p class="ad-empty" id="adBkEmpty" hidden>No bookings match.</p>
+  </section>
+
+  <!-- Partners -->
+  <section class="ad-panel" data-panel="partners" hidden>
+   <div class="ad-head"><div><span class="ad-label">District &amp; Taluk</span><h2>Partners</h2></div>
+    <div class="ad-actions"><a class="btn btn-ghost btn-sm" id="adSheetLink" target="_blank" rel="noopener" hidden>Open applications sheet</a><button class="btn btn-gold btn-sm" id="adNewPartner">Add partner</button></div></div>
+   <p class="ad-hint">Applications arrive on the Google Forms (District and Taluk). Add the people you shortlist here, then approve them. Approving a District Partner marks that district as taken on the website. The kit refund becomes due after 10 confirmed persons booked with their partner code.</p>
+   <div class="ad-filter">
+    <input type="search" id="adPtSearch" placeholder="Search name, phone, code, district"/>
+    <select id="adPtRole"><option value="">District and Taluk</option><option value="district">District Partners</option><option value="taluk">Taluk Partners</option></select>
+    <select id="adPtStatus"><option value="">All statuses</option><option value="applied">Applied</option><option value="approved">Approved</option><option value="active">Active</option><option value="paused">Paused</option><option value="rejected">Rejected</option><option value="terminated">Terminated</option></select>
+   </div>
+   <div class="ad-cover" id="adCover"></div>
+   <div class="ad-table-wrap"><table class="ad-table" id="adPtTable"><thead><tr>
+    <th>Partner</th><th>Role</th><th>Area</th><th>Code</th><th>Persons booked</th><th>Kit</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+   <p class="ad-empty" id="adPtEmpty" hidden>No partners yet. Use “Add partner” for each shortlisted application.</p>
+  </section>
+
+  <!-- Settings -->
+  <section class="ad-panel" data-panel="settings" hidden>
+   <div class="ad-head"><div><span class="ad-label">Alerts</span><h2>Emails &amp; settings</h2></div></div>
+   <div class="ad-grid2">
+    <form class="ad-card ad-form" id="adSettingsForm">
+     <h3>Settings</h3>
+     <label>Alert emails go to<input type="email" name="notify_email" required/></label>
+     <label>Mail link (Google Apps Script web app URL)<input type="url" name="mail_webhook_url" placeholder="https://script.google.com/macros/s/…/exec"/></label>
+     <label>Mail secret (paste the same value in the Apps Script)<span class="ad-copy"><input type="text" name="mail_webhook_secret" readonly/><button type="button" class="btn btn-ghost btn-sm" data-copy="mail_webhook_secret">Copy</button></span></label>
+     <label class="ad-check"><input type="checkbox" name="notify_new_bookings"/> Also email me for every new booking request</label>
+     <label>Website address (used for links in emails)<input type="url" name="site_url" placeholder="https://nandigo.vercel.app"/></label>
+     <label>District Partner Google Form link<input type="url" name="district_form_url" placeholder="https://forms.gle/…"/></label>
+     <label>Taluk Partner Google Form link<input type="url" name="taluk_form_url" placeholder="https://forms.gle/…"/></label>
+     <label>Applications Google Sheet link<input type="url" name="applications_sheet_url" placeholder="https://docs.google.com/spreadsheets/…"/></label>
+     <div class="ad-actions"><button class="btn btn-gold btn-sm" type="submit">Save settings</button><button class="btn btn-ghost btn-sm" type="button" id="adTestMail">Send test email</button></div>
+    </form>
+    <div class="ad-card"><h3>Email log</h3><p class="ad-hint">Every alert the system sent. Status 200 or 302 means Google accepted it.</p><div id="adMailLog"></div></div>
+   </div>
+  </section>
+ </main>
+</div>
+
+<!-- Edit dialog -->
+<div class="ad-modal" id="adModal" hidden role="dialog" aria-modal="true" aria-labelledby="adModalTitle">
+ <form class="ad-modal-card ad-form" id="adModalForm" novalidate>
+  <div class="ad-modal-head"><h3 id="adModalTitle"></h3><button type="button" class="ad-x" data-close aria-label="Close">×</button></div>
+  <div id="adModalBody"></div>
+  <p class="ad-error" id="adModalError" hidden></p>
+  <div class="ad-modal-foot"><button type="button" class="btn btn-ghost btn-sm ad-danger" id="adModalDelete" hidden>Delete</button><span></span>
+   <button type="button" class="btn btn-ghost btn-sm" data-close>Cancel</button><button type="submit" class="btn btn-gold btn-sm" id="adModalSave">Save</button></div>
+ </form>
+</div>
+<div class="ad-toast" id="adToast" role="status" hidden></div>
+
+<script src="assets/icons.js?v=32"></script>
+<script src="assets/data.js?v=32"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/admin.js?v=32"></script>
+</body></html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#1A3D2E"/>
+<title>Nandi Go — Premium Travel, Trusted Journeys</title>
+<meta name="description" content="Trips from Bengaluru with Nandi Go: Nandi Hills, the Chikkamagalur Coffee Estate Retreat, Coorg, Ooty, Goa, Kerala, Lakshadweep, Manali + Shimla and Nepal. Pick a pin on the map and book on WhatsApp."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
+<link rel="stylesheet" href="site.css?v=32"/>
+</head>
+<body>
+
+<header class="site-header" id="siteHeader">
+ <div class="container nav">
+  <a href="#home" class="brand" aria-label="Nandi Go home"><img src="logo.png" alt="Nandi Go — Premium Travel · Trusted Journeys" class="brand-logo" width="160" height="48"/></a>
+  <nav id="navlinks" class="navlinks" aria-label="Main">
+   <a href="#home">Destinations</a>
+   <a href="#retreat" class="nav-new"><span class="dot" aria-hidden="true"></span>Coffee Retreat</a>
+   <a href="#trips">All trips</a>
+   <a href="#how">How it works</a>
+   <a href="#about">About</a>
+   <div class="nav-drop"><a href="partners.html" aria-haspopup="true">Business Partners <svg class="ic"><use href="#i-chevron"/></svg></a>
+    <div class="nav-drop-menu"><a href="partners.html#district">District Partners</a><a href="partners.html#taluk">Taluk Partners</a></div></div>
+  </nav>
+  <div class="navright">
+   <button type="button" class="btn btn-gold btn-sm" data-book><svg class="ic"><use href="#i-ticket"/></svg><span>Book a trip</span></button>
+   <button type="button" class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
+  </div>
+ </div>
+</header>
+
+<main id="top">
+<!-- ============ HERO: hanging postcards ============ -->
+<section class="hx" id="home" aria-label="Destinations">
+ <div class="hx-bg" aria-hidden="true"><div class="hx-img"></div><div class="hx-img"></div></div>
+ <div class="hx-shade" aria-hidden="true"></div>
+ <div class="container hx-main">
+  <div class="hx-text" id="hxText" aria-live="polite">
+   <span class="kicker light hx-k" id="hxKicker"></span>
+   <h1 class="hx-title" id="hxTitle"></h1>
+   <p class="hx-sub" id="hxSub"></p>
+   <div class="hx-meta" id="hxMeta"></div>
+   <div class="hx-actions">
+    <button type="button" class="btn btn-gold" id="hxBook" data-book><svg class="ic"><use href="#i-ticket"/></svg>Book this trip</button>
+    <button type="button" class="btn btn-ghost light" id="hxDetails"><svg class="ic"><use href="#i-info"/></svg>Trip details</button>
+   </div>
+  </div>
+  <aside class="hx-map" aria-label="Where it is">
+   <div class="hx-map-head"><span><svg class="ic"><use href="#i-route"/></svg>From Bengaluru</span><b id="hxMapTo"></b>
+    <button type="button" class="hx-replay" id="hxReplay" aria-label="Replay the journey"><svg class="ic"><use href="#i-replay"/></svg></button></div>
+   <div class="hx-map-stage" id="hxMapStage"><svg id="hxMap" role="img" aria-label="Map of India showing the route from Bengaluru"></svg></div><div class="hx-pin-tip" id="hxPinTip" hidden></div>
+   <div class="hx-map-foot" id="hxMapFoot"></div>
+  </aside>
+ </div>
+ <div class="hx-scape" id="hxScape" aria-hidden="true"></div>
+ <div class="container hx-railwrap">
+  <div class="hx-rail" id="hxRail" role="tablist" aria-label="Choose a destination"></div>
+ </div>
+</section>
+
+
+
+<!-- ============ COFFEE RETREAT: boarding pass ============ -->
+<section class="section retreat" id="retreat">
+ <div class="container">
+  <div class="section-head reveal">
+   <span class="kicker"><svg class="ic"><use href="#i-sparkle"/></svg>First batch launch</span>
+   <h2>Your boarding pass to the <em>coffee hills</em></h2>
+   <p>One night and two days inside a Chikkamagalur coffee estate — waterfalls, bonfire, sunrise yoga and Malnad food. Choose your batch and package.</p>
+  </div>
+  <div class="ticket reveal" id="ticket">
+   <div class="tk-main">
+    <div class="tk-top"><span>Nandi Go · Boarding pass</span><span class="tk-new"><svg class="ic"><use href="#i-sparkle"/></svg>Early bird: ₹500 off the first 10 bookings</span></div>
+    <div class="tk-route">
+     <div class="tk-city"><b>BLR</b><span>Bengaluru</span></div>
+     <div class="tk-line" aria-hidden="true"><svg class="ic"><use href="#i-bus"/></svg></div>
+     <div class="tk-city to"><b>CKM</b><span>Chikkamagaluru</span></div>
+    </div>
+    <h3 class="tk-title">Chikkamagalur <em>Coffee Estate Retreat</em></h3>
+    <div class="tk-meta">
+     <div><span>Duration</span><b>1 Night · 2 Days</b></div>
+     <div><span>Group</span><b>20 seats per batch</b></div>
+     <div><span>To reserve</span><b>₹1,000 advance</b></div>
+     <div><span>Balance</span><b>On arrival</b></div>
+    </div>
+    <div class="tk-tabs" role="tablist" id="tkTabs"></div>
+    <div class="tk-pkg" id="tkPkg"></div>
+   </div>
+   <aside class="tk-stub" id="tkStub" aria-label="Choose a batch"></aside>
+  </div>
+  <ol class="trail reveal" id="trail" aria-label="Retreat itinerary"></ol>
+  <div class="retreat-links">
+   <a href="assets/retreat-dec-gold.jpg" target="_blank" rel="noopener"><svg class="ic"><use href="#i-scroll"/></svg>View the official poster</a>
+   <a href="https://wa.me/919513646646?text=Hi%20Nandi%20Go%2C%20I%20have%20a%20question%20about%20the%20Chikkamagalur%20Coffee%20Estate%20Retreat." target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg>Ask a question on WhatsApp</a>
+  </div>
+ </div>
+</section>
+
+<!-- ============ ALL TRIPS ============ -->
+<section class="section" id="trips">
+ <div class="container">
+  <div class="section-head reveal">
+   <span class="kicker"><svg class="ic"><use href="#i-route"/></svg>Every journey we run</span>
+   <h2>All trips</h2>
+   <p>Clear prices, what's included, and one button to book.</p>
+  </div>
+  <div class="trip-tools">
+   <div class="chips" id="chips" role="tablist" aria-label="Filter trips"></div>
+   <span class="trip-count" id="tripCount"></span>
+  </div>
+  <div class="trips" id="tripGrid"></div>
+ </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section how" id="how">
+ <div class="container">
+  <div class="section-head center reveal">
+   <span class="kicker"><svg class="ic"><use href="#i-compass"/></svg>Simple and safe</span>
+   <h2>How booking works</h2>
+  </div>
+  <div class="steps">
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-pin"/></svg></div><h3>Choose a trip</h3><p>Pick a place on the map or from the trip list and check what's included.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-ticket"/></svg></div><h3>Send a request</h3><p>Fill the booking card. It goes straight to our team on WhatsApp.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-shield"/></svg></div><h3>Pay the advance</h3><p>After we confirm, pay the advance to Nandi Go's official account only.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-bus"/></svg></div><h3>Travel</h3><p>We handle transport, stay, food and sightseeing. You enjoy the trip.</p></article>
+  </div>
+  <p class="pay-note reveal"><svg class="ic"><use href="#i-shield"/></svg>Nandi Go never asks you to pay a partner or a personal account. Payments go only to the company's official UPI / bank account.</p>
+ </div>
+</section>
+
+<!-- ============ ABOUT: field notes from the road ============ -->
+<section class="section ab" id="about">
+ <div class="container ab-grid">
+  <div class="ab-collage" id="abCollage" aria-hidden="true">
+   <div class="ab-main" data-depth="-0.03" style="background-image:url('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1100&q=80')"></div>
+   <figure class="ab-pol ab-pol1" data-depth="0.06">
+    <span class="ab-tape"></span>
+    <img src="https://images.unsplash.com/photo-1695448124696-3f73e3b779c2?auto=format&fit=crop&w=520&q=75" alt="" loading="lazy">
+    <figcaption>Coffee estate · Chikkamagaluru</figcaption>
+   </figure>
+   <figure class="ab-pol ab-pol2" data-depth="0.11">
+    <span class="ab-tape"></span>
+    <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=520&q=75" alt="" loading="lazy">
+    <figcaption>Beach day · Goa</figcaption>
+   </figure>
+   <div class="ab-stamp">
+    <svg viewBox="0 0 120 120"><defs><path id="abRing" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
+     <circle cx="60" cy="60" r="57" class="ab-st-o"/><circle cx="60" cy="60" r="33" class="ab-st-i"/>
+     <text class="ab-st-t"><textPath href="#abRing">NANDI GO · BENGALURU · TRUSTED JOURNEYS ·</textPath></text>
+     <text x="60" y="68" text-anchor="middle" class="ab-st-n">N</text></svg>
+   </div>
+   <span class="ab-note">Pause. Breathe. Explore.</span>
+  </div>
+  <div class="ab-copy">
+   <span class="kicker"><svg class="ic"><use href="#i-leaf"/></svg>Field notes from the road</span>
+   <h2>Premium travel, <em>trusted journeys</em></h2>
+   <p class="ab-lead">We believe the most refreshing journeys don't have to be complicated. From sunrise at Nandi Hills to snow in Manali, we plan the transport, stays, food and sightseeing — so you simply show up and enjoy.</p>
+   <ol class="ab-route" id="abRoute">
+    <li><span class="ab-stop"><svg class="ic"><use href="#i-bus"/></svg></span><div><b>Bengaluru departures</b><span>Every trip starts from Bengaluru.</span></div></li>
+    <li><span class="ab-stop"><svg class="ic"><use href="#i-home"/></svg></span><div><b>Stay, food and transport</b><span>Clear inclusions on every package.</span></div></li>
+    <li><span class="ab-stop"><svg class="ic"><use href="#i-users"/></svg></span><div><b>Women-only batches</b><span>Curated, safe group retreats for women.</span></div></li>
+    <li><span class="ab-stop"><svg class="ic"><use href="#i-chat"/></svg></span><div><b>Real people on WhatsApp</b><span>Talk to our coordinators before you pay.</span></div></li>
+   </ol>
+  </div>
+ </div>
+ <div class="container ab-stats" id="abStats">
+  <div><b data-count="9">9</b><span>destinations</span></div>
+  <div><b data-count="31">31</b><span>districts · one partner each</span></div>
+  <div><b data-count="999" data-prefix="₹">₹999</b><span>trips from</span></div>
+  <div><b data-count="24" data-suffix="/7">24/7</b><span>trip support</span></div>
+ </div>
+</section>
+
+<!-- ============ MOMENTS ============ -->
+<section class="section moments" id="moments">
+ <div class="container">
+  <div class="section-head center reveal">
+   <span class="kicker"><svg class="ic"><use href="#i-camera"/></svg>Follow the journey</span>
+   <h2>Moments from the road</h2>
+   <p>Trip photos, reels and updates from every batch.</p>
+  </div>
+  <div class="social-cards">
+   <a class="social-card reveal" href="https://www.instagram.com/nandigo2026?xtok=Z2MxeTNweHZmYzRi" target="_blank" rel="noopener">
+    <svg class="brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><path d="M17.5 6.5h.01"/></svg>
+    <b>Instagram</b><span>@nandigo2026 — reels and stories from each trip.</span><em>Follow <svg class="ic"><use href="#i-arrow-up"/></svg></em></a>
+   <a class="social-card reveal" href="https://www.youtube.com/@NandiGo-h9u" target="_blank" rel="noopener">
+    <svg class="brand" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8ZM9.5 15.6V8.4l6.3 3.6Z"/></svg>
+    <b>YouTube</b><span>@NandiGo-h9u — full trip videos and guides.</span><em>Watch <svg class="ic"><use href="#i-arrow-up"/></svg></em></a>
+   <a class="social-card reveal" href="https://www.facebook.com/profile.php?id=61595965811478" target="_blank" rel="noopener">
+    <svg class="brand" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>
+    <b>Facebook</b><span>Nandi Go — batch announcements and offers.</span><em>Like the page <svg class="ic"><use href="#i-arrow-up"/></svg></em></a>
+  </div>
+ </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-band reveal">
+ <div class="container">
+  <span class="kicker light"><svg class="ic"><use href="#i-sparkle"/></svg>Your next chapter</span>
+  <h2>Ready when you are.</h2>
+  <p>Tell us where and when. Our coordinator confirms availability on WhatsApp — usually within a few hours.</p>
+  <div class="hm-actions">
+   <button type="button" class="btn btn-gold" data-book><svg class="ic"><use href="#i-ticket"/></svg>Book a trip</button>
+   <a class="btn btn-ghost light" href="https://wa.me/919513646646" target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg>Chat on WhatsApp</a>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="container">
+  <div class="foot-grid">
+   <div>
+    <img src="logo.png" alt="Nandi Go" class="footer-logo" width="200" height="62"/>
+    <p>Premium travel and trusted journeys from Bengaluru, Karnataka.</p>
+    <div class="foot-social">
+     <a href="https://www.instagram.com/nandigo2026?xtok=Z2MxeTNweHZmYzRi" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><path d="M17.5 6.5h.01"/></svg></a>
+     <a href="https://www.facebook.com/profile.php?id=61595965811478" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg></a>
+     <a href="https://www.youtube.com/@NandiGo-h9u" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8ZM9.5 15.6V8.4l6.3 3.6Z"/></svg></a>
+    </div>
+   </div>
+   <div>
+    <h4>Explore</h4>
+    <a href="#home">Destinations</a><a href="#retreat">Coffee Estate Retreat</a><a href="#trips">All trips</a><a href="#how">How booking works</a>
+   </div>
+   <div>
+    <h4>Company</h4>
+    <a href="#about">About Nandi Go</a><a href="partners.html">Business Partners</a><a href="partners.html#district">District Partners</a><a href="partners.html#taluk">Taluk Partners</a>
+   </div>
+   <div>
+    <h4>Contact</h4>
+    <a href="tel:+919513646646"><svg class="ic"><use href="#i-phone"/></svg>+91 95136 46646</a>
+    <a href="tel:+919071228822"><svg class="ic"><use href="#i-phone"/></svg>+91 90712 28822</a>
+    <a href="mailto:nandigo@gmail.com"><svg class="ic"><use href="#i-mail"/></svg>nandigo@gmail.com</a>
+    <p><svg class="ic"><use href="#i-building"/></svg>#72 Nagarabhavi, Vijayanagar, Bengaluru 560040</p>
+   </div>
+  </div>
+  <div class="foot-end">
+   <span>© <span id="year"></span> Nandi Go. All rights reserved.</span>
+   <span>Map data: <a href="https://github.com/datameet/maps" target="_blank" rel="noopener">DataMeet</a> (CC BY 4.0) · districts © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</span>
+  </div>
+ </div>
+</footer>
+
+
+
+<!-- Trip details -->
+<div class="dm" id="dm" hidden>
+ <div class="dm-card" role="dialog" aria-modal="true" aria-labelledby="dmTitle">
+  <button type="button" class="dp-close" data-dm-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+  <div class="dm-photo" id="dmPhoto"></div>
+  <div class="dm-body">
+   <span class="dp-kicker" id="dmKicker"></span>
+   <h3 id="dmTitle"></h3>
+   <p id="dmDesc"></p>
+   <div class="dm-cols"><div><h4>Places</h4><ul id="dmStops"></ul></div><div><h4>Included</h4><ul id="dmPerks"></ul></div></div>
+   <div class="dm-foot"><div><small class="trip-count" id="dmFrom"></small><br><b id="dmPrice"></b></div><button type="button" class="btn btn-forest" id="dmBook"><svg class="ic"><use href="#i-ticket"/></svg>Book this trip</button></div>
+  </div>
+ </div>
+</div>
+
+<script src="assets/icons.js?v=32"></script>
+<script src="assets/data.js?v=32"></script>
+<script src="assets/map-data.js?v=32"></script>
+<script src="assets/db.js?v=32"></script>
+<script>
+(function () {
+  var NG = window.NG, I = window.NGIcon, $ = function (id) { return document.getElementById(id); };
+
+  /* Header + menu */
+  var header = $('siteHeader');
+  addEventListener('scroll', function () { header.classList.toggle('scrolled', scrollY > 40); }, { passive: true });
+  $('menuBtn').addEventListener('click', function () { var o = $('navlinks').classList.toggle('open'); this.setAttribute('aria-expanded', o); });
+  document.querySelectorAll('#navlinks a').forEach(function (a) { a.addEventListener('click', function () { $('navlinks').classList.remove('open'); }); });
+  $('year').textContent = new Date().getFullYear();
+
+  /* Trip details modal (used by the map panel and trip cards) */
+  var dm = $('dm'), dmTrip = null;
+  window.NGDetails = function (id) {
+    var t = NG.trip(id); if (!t) return; dmTrip = t;
+    $('dmPhoto').style.backgroundImage = 'url("' + t.image + '")';
+    $('dmKicker').innerHTML = I('clock') + t.duration;
+    $('dmTitle').textContent = t.title;
+    $('dmDesc').textContent = t.description;
+    var stops = t.stops || (t.group === 'retreat' ? ['Coffee estate homestay', 'Jhari Falls', 'Plantation trail'] : ['Nandi Hills area']);
+    $('dmStops').innerHTML = stops.map(function (s) { return '<li>' + I('pin') + '<span>' + s + '</span></li>'; }).join('');
+    $('dmPerks').innerHTML = (t.perks || []).map(function (s) { return '<li>' + I('check') + '<span>' + s + '</span></li>'; }).join('');
+    $('dmFrom').textContent = (t.variants ? 'From' : 'Price') + ' per ' + t.unit;
+    $('dmPrice').textContent = NG.fmt(t.from);
+    dm.hidden = false; requestAnimationFrame(function () { dm.classList.add('open'); });
+    document.documentElement.classList.add('bk-lock');
+    dm.querySelector('[data-dm-close]').focus({ preventScroll: true });
+  };
+  function closeDm() { dm.classList.remove('open'); document.documentElement.classList.remove('bk-lock'); setTimeout(function () { dm.hidden = true; }, 200); }
+  dm.addEventListener('click', function (e) { if (e.target === dm || e.target.closest('[data-dm-close]')) closeDm(); });
+  $('dmBook').addEventListener('click', function () { closeDm(); setTimeout(function () { window.NGBooking.open(dmTrip.id); }, 120); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dm.hidden) closeDm(); });
+  document.addEventListener('click', function (e) { var d = e.target.closest('[data-details]'); if (d) window.NGDetails(d.dataset.details); });
+
+  /* Coffee retreat boarding pass */
+  var retreat = NG.TRIPS.filter(function (t) { return t.group === 'retreat'; }), sel = retreat[0];
+  function dateRange(b) { var o = { day: 'numeric', month: 'short' }; var s = new Date(b.start + 'T00:00:00'), e = new Date(b.end + 'T00:00:00'); return s.toLocaleDateString('en-IN', o) + ' – ' + e.toLocaleDateString('en-IN', o) + ' ' + e.getFullYear(); }
+  function renderTicket() {
+    $('tkTabs').innerHTML = retreat.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t === sel) + '" data-pkg="' + t.id + '">' + t.short + '</button>'; }).join('');
+    $('tkPkg').innerHTML =
+      '<div class="tk-price"><b>' + NG.fmt(sel.price) + '<del>' + NG.fmt(sel.was) + '</del></b><small>per ' + sel.unit + '</small>' +
+      '<span class="tk-note">' + I('sparkle') + sel.note + '</span><p class="tk-audience">' + sel.audience + '</p></div>' +
+      '<ul class="tk-perks">' + sel.perks.map(function (p) { return '<li>' + I('check') + '<span>' + p + '</span></li>'; }).join('') + '</ul>';
+    var today = NG.todayISO();
+    $('tkStub').innerHTML = '<h4>Choose your batch</h4>' + NG.RETREAT_BATCHES.map(function (b) {
+      var past = b.end < today, full = b.status === 'full';
+      return '<div class="tk-batch' + (past || full ? ' is-past' : '') + '"><b>' + b.label + '</b><span>' + I('calendar') + dateRange(b) + (b.live && !past && !full ? ' · ' + b.left + ' seats left' : '') + '</span>' +
+        (past || full ? '<button type="button" class="btn btn-ghost light btn-sm" disabled>' + (past ? 'Departed' : 'Batch full') + '</button>'
+              : '<button type="button" class="btn btn-gold btn-sm" data-book="' + sel.id + '" data-batch="' + b.id + '">' + I('ticket') + 'Book ' + sel.short + '</button>') + '</div>';
+    }).join('') + (NG.RETREAT_BATCHES.length ? '' : '<p class="tk-stub-foot">New batch dates will be announced soon.</p>') + '<p class="tk-stub-foot">₹1,000 advance reserves your seat. Balance on arrival.' + (NG.RETREAT_BATCHES.length ? ' ' + NG.RETREAT_BATCHES[0].seats + ' seats per batch.' : '') + '</p><div class="tk-barcode" aria-hidden="true"></div>';
+  }
+  $('tkTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-pkg]'); if (b) { sel = NG.trip(b.dataset.pkg); renderTicket(); } });
+  renderTicket();
+  document.addEventListener('ng:batches', renderTicket);
+  var trail = [['bus', 'Day 1 · Morning', 'Scenic bus ride into the misty hills and estate check-in.'], ['jeep', 'Day 1 · Afternoon', 'Malnad lunch, then a 4x4 jeep safari to Jhari Falls.'],
+    ['flame', 'Day 1 · Evening', 'Wellness massage, bonfire and acoustic music under the stars.'], ['sunrise', 'Day 2 · Morning', 'Sunrise yoga among the coffee, estate trail and breakfast.'],
+    ['coffee', 'Day 2 · Afternoon', 'Fresh coffee tasting, local sights and the ride back.']];
+  $('trail').innerHTML = trail.map(function (t) { return '<li><div class="tr-ic">' + I(t[0]) + '</div><div><b>' + t[1] + '</b><span>' + t[2] + '</span></div></li>'; }).join('');
+
+  /* All trips grid */
+  var FILTERS = [
+    ['all', 'All trips', function () { return true; }],
+    ['retreat', 'Coffee Retreat', function (t) { return t.group === 'retreat'; }],
+    ['tour', 'Tour packages', function (t) { return t.group === 'tour'; }],
+    ['nandi', 'Nandi Hills', function (t) { return t.dest === 'nandi'; }],
+    ['Romantic', 'Couples', function (t) { return t.type === 'Romantic'; }],
+    ['Family', 'Family', function (t) { return t.type === 'Family'; }],
+    ['Wellness', 'Wellness', function (t) { return t.type === 'Wellness'; }]
+  ];
+  var active = 'all';
+  function tag(t) {
+    if (t.group === 'retreat') return I('coffee') + 'Coffee Estate Retreat';
+    if (t.group === 'experience') return I('leaf') + 'Nandi Hills';
+    var d = NG.dest(t.dest); return I(d && d.mode === 'air' ? 'plane' : 'pin') + (d ? d.name : '');
+  }
+  function renderTrips() {
+    $('chips').innerHTML = FILTERS.map(function (f) { return '<button type="button" role="tab" class="chip' + (f[0] === active ? ' active' : '') + '" aria-selected="' + (f[0] === active) + '" data-filter="' + f[0] + '">' + f[1] + '</button>'; }).join('');
+    var fn = FILTERS.filter(function (f) { return f[0] === active; })[0][2];
+    var list = NG.TRIPS.filter(fn);
+    $('tripCount').textContent = list.length + ' trip' + (list.length === 1 ? '' : 's');
+    $('tripGrid').innerHTML = list.map(function (t) {
+      return '<article class="trip"><div class="trip-img" style="background-image:url(\'' + t.image + '\')"><span class="trip-tag">' + tag(t) + '</span></div>' +
+        '<div class="trip-body"><div class="trip-meta"><span>' + I('clock') + t.duration + '</span>' + (t.batches ? '<span>' + I('calendar') + 'Fixed batches</span>' : '') + '</div>' +
+        '<h3>' + t.title + '</h3><p>' + t.description + '</p>' +
+        '<div class="trip-perks">' + t.perks.slice(0, 3).map(function (p) { return '<span>' + p + '</span>'; }).join('') + '</div>' +
+        '<div class="trip-foot"><div class="trip-price"><small>' + (t.variants ? 'From' : 'Price') + '</small><b>' + NG.fmt(t.from) + '</b> <em>/ ' + t.unit + '</em></div>' +
+        '<div class="trip-actions"><button type="button" class="btn btn-ghost btn-sm" data-details="' + t.id + '">Details</button>' +
+        '<button type="button" class="btn btn-gold btn-sm" data-book="' + t.id + '">' + I('ticket') + 'Book</button></div></div></div></article>';
+    }).join('');
+  }
+  $('chips').addEventListener('click', function (e) { var b = e.target.closest('[data-filter]'); if (b) { active = b.dataset.filter; renderTrips(); } });
+  renderTrips();
+
+  /* Reveal on scroll */
+  var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } }); }, { threshold: .12 }) : null;
+  document.querySelectorAll('.reveal').forEach(function (el) { io ? io.observe(el) : el.classList.add('visible'); });
+})();
+</script>
+<script src="assets/booking.js?v=32"></script>
+<script src="assets/scenes.js?v=32"></script>
+<script src="assets/hero.js?v=32"></script>
+<script src="assets/about.js?v=32"></script>
+</body>
+</html>
