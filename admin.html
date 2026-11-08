@@ -6,8 +6,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=35"/>
-<link rel="stylesheet" href="assets/admin.css?v=32"/>
+<link rel="stylesheet" href="site.css?v=38"/>
+<link rel="stylesheet" href="assets/admin.css?v=39"/>
 </head>
 <body class="ad">
 
@@ -30,6 +30,7 @@
   <a href="index.html" class="ad-brand"><img src="logo.png" alt=""/><span>Nandi Go <em>Admin</em></span></a>
   <nav class="ad-tabs" role="tablist">
    <button role="tab" data-tab="overview">Overview</button>
+   <button role="tab" data-tab="trips">Trips &amp; styles</button>
    <button role="tab" data-tab="batches">Batches</button>
    <button role="tab" data-tab="bookings">Bookings <i id="adNewCount" hidden></i></button>
    <button role="tab" data-tab="partners">Partners</button>
@@ -53,9 +54,22 @@
   <section class="ad-panel" data-panel="batches" hidden>
    <div class="ad-head"><div><span class="ad-label">Fixed departures</span><h2>Batches</h2></div>
     <button class="btn btn-gold btn-sm" id="adNewBatch">New batch</button></div>
-   <p class="ad-hint">A batch fills when confirmed seats reach its size. Then it closes for booking and an email goes to the Nandi Go inbox. After the end date it is marked completed and another email goes out.</p>
-   <div class="ad-filter"><label><input type="checkbox" id="adShowPast"/> Show completed and past batches</label></div>
+   <p class="ad-hint">Each batch belongs to one trip and one travel style. A batch fills when confirmed seats reach its size. Then it closes for booking and an email goes to the Nandi Go inbox. After the end date it is marked completed and another email goes out.</p>
+   <div class="ad-filter"><select id="adBaTrip"><option value="">All trips</option></select><select id="adBaStyle"><option value="">All styles</option></select><label><input type="checkbox" id="adShowPast"/> Show completed and past batches</label></div>
    <div id="adBatchList" class="ad-list"></div>
+  </section>
+
+  <!-- Trips & styles -->
+  <section class="ad-panel" data-panel="trips" hidden>
+   <div class="ad-head"><div><span class="ad-label">Catalogue</span><h2>Trips &amp; styles</h2></div>
+    <button class="btn btn-gold btn-sm" id="adNewTrip">Add trip</button></div>
+   <h3 class="ad-sub">Travel styles</h3>
+   <p class="ad-hint">The four ways to travel shown on the home page. Hide one to take it off the website; its batches stay saved.</p>
+   <div class="ad-styles" id="adStyles"></div>
+   <h3 class="ad-sub">Trips</h3>
+   <p class="ad-hint">Every trip can run batches in any style. Hide a trip to take it off the website without deleting it.</p>
+   <div class="ad-filter"><input type="search" id="adTrSearch" placeholder="Search trips"/></div>
+   <div class="ad-table-wrap"><table class="ad-table" id="adTrTable"><thead><tr><th>Trip</th><th>Price</th><th>Batches</th><th>On website</th><th></th></tr></thead><tbody></tbody></table></div>
   </section>
 
   <!-- Bookings -->
@@ -66,6 +80,7 @@
     <input type="search" id="adBkSearch" placeholder="Search name, phone, reference"/>
     <select id="adBkStatus"><option value="">All statuses</option><option value="new">New requests</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
     <select id="adBkTrip"><option value="">All trips</option></select>
+    <select id="adBkStyle"><option value="">All styles</option></select>
     <select id="adBkBatch"><option value="">All batches</option></select>
    </div>
    <div class="ad-table-wrap"><table class="ad-table" id="adBkTable"><thead><tr>
@@ -76,8 +91,18 @@
   <!-- Partners -->
   <section class="ad-panel" data-panel="partners" hidden>
    <div class="ad-head"><div><span class="ad-label">District &amp; Taluk</span><h2>Partners</h2></div>
-    <div class="ad-actions"><a class="btn btn-ghost btn-sm" id="adSheetLink" target="_blank" rel="noopener" hidden>Open applications sheet</a><button class="btn btn-gold btn-sm" id="adNewPartner">Add partner</button></div></div>
-   <p class="ad-hint">Applications arrive on the Google Forms (District and Taluk). Add the people you shortlist here, then approve them. Approving a District Partner marks that district as taken on the website. The kit refund becomes due after 10 confirmed persons booked with their partner code.</p>
+    <div class="ad-actions"><button class="btn btn-gold btn-sm" id="adNewPartner">Add partner</button></div></div>
+   <p class="ad-hint">District and Taluk applications from the website arrive here as "Applied", and an email goes to the Nandi Go inbox. Open one to read it, then approve or reject. Approving makes a partner code and marks a District Partner's district as taken on the website. Send approved partners the KYC link: your website /partners#kyc. The kit refund becomes due after 10 confirmed persons booked with their partner code.</p>
+   <div class="ad-view" role="tablist" aria-label="Partner view"><button type="button" role="tab" data-ptview="map" aria-selected="true">Map</button><button type="button" role="tab" data-ptview="list" aria-selected="false">List</button></div>
+   <div class="ad-ptmap" id="adPtMapView">
+    <div class="ad-card ad-mapcard">
+     <svg id="adKaMap" role="img" aria-label="Karnataka districts"></svg>
+     <div class="ad-maptip" id="adMapTip" hidden></div>
+     <p class="ad-mapkey"><i class="k-on"></i>Has District Partner <i class="k-wait"></i>Applications waiting <i class="k-open"></i>Open</p>
+    </div>
+    <div class="ad-card ad-dpanel" id="adDistrictPanel"></div>
+   </div>
+   <div id="adPtListView" hidden>
    <div class="ad-filter">
     <input type="search" id="adPtSearch" placeholder="Search name, phone, code, district"/>
     <select id="adPtRole"><option value="">District and Taluk</option><option value="district">District Partners</option><option value="taluk">Taluk Partners</option></select>
@@ -87,6 +112,7 @@
    <div class="ad-table-wrap"><table class="ad-table" id="adPtTable"><thead><tr>
     <th>Partner</th><th>Role</th><th>Area</th><th>Code</th><th>Persons booked</th><th>Kit</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
    <p class="ad-empty" id="adPtEmpty" hidden>No partners yet. Use “Add partner” for each shortlisted application.</p>
+   </div>
   </section>
 
   <!-- Settings -->
@@ -100,9 +126,6 @@
      <label>Mail secret (paste the same value in the Apps Script)<span class="ad-copy"><input type="text" name="mail_webhook_secret" readonly/><button type="button" class="btn btn-ghost btn-sm" data-copy="mail_webhook_secret">Copy</button></span></label>
      <label class="ad-check"><input type="checkbox" name="notify_new_bookings"/> Also email me for every new booking request</label>
      <label>Website address (used for links in emails)<input type="url" name="site_url" placeholder="https://nandigo.vercel.app"/></label>
-     <label>District Partner Google Form link<input type="url" name="district_form_url" placeholder="https://forms.gle/…"/></label>
-     <label>Taluk Partner Google Form link<input type="url" name="taluk_form_url" placeholder="https://forms.gle/…"/></label>
-     <label>Applications Google Sheet link<input type="url" name="applications_sheet_url" placeholder="https://docs.google.com/spreadsheets/…"/></label>
      <div class="ad-actions"><button class="btn btn-gold btn-sm" type="submit">Save settings</button><button class="btn btn-ghost btn-sm" type="button" id="adTestMail">Send test email</button></div>
     </form>
     <div class="ad-card"><h3>Email log</h3><p class="ad-hint">Every alert the system sent. Status 200 or 302 means Google accepted it.</p><div id="adMailLog"></div></div>
@@ -124,7 +147,8 @@
 <div class="ad-toast" id="adToast" role="status" hidden></div>
 
 <script src="assets/icons.js?v=32"></script>
-<script src="assets/data.js?v=32"></script>
+<script src="assets/data.js?v=36"></script>
+<script src="assets/map-data.js?v=32"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="assets/admin.js?v=32"></script>
+<script src="assets/admin.js?v=39"></script>
 </body></html>

@@ -1,34 +1,28 @@
 /* Nandi Go — trips and map destinations.
- * Edit prices, text and dates here; every page reads from this file. */
+ * Trips and batches are managed in the admin page (Supabase); this file is the offline fallback plus map data. */
 (function () {
   var U = function (id) { return 'https://images.unsplash.com/' + id + '?auto=format&fit=crop&w=1000&q=80'; };
 
-  /* Coffee Estate Retreat batches (fixed dates). A batch disappears from booking after its end date. */
-  var RETREAT_BATCHES = [
-    { id: 'batch1', label: 'Batch 1', start: '2026-11-08', end: '2026-11-09', seats: 20 },
-    { id: 'batch2', label: 'Batch 2', start: '2026-12-13', end: '2026-12-14', seats: 20 }
+  /* Travel styles. Every trip can run batches in any style; the admin page can only hide a style.
+   * Couple Escape is priced per couple (twice the per-person price unless the trip sets its own). */
+  var STYLES = [
+    { id: 'girls', name: 'Girls Only Getaway', line: 'No boys, no worries, just us.', unit: 'person',
+      blurb: 'Women-only batches with verified stays and a woman coordinator on every trip.', photo: U('photo-1667029839636-af119b059c49') },
+    { id: 'friends', name: 'Strangers to Friends', line: 'Meet strangers, leave as friends.', unit: 'person',
+      blurb: 'Open group batches for solo travellers and friends. Come alone, leave with a gang.', photo: U('photo-1606262482703-496941e54337') },
+    { id: 'couples', name: 'Couple Escape', line: 'Just you two.', unit: 'couple',
+      blurb: 'Couples-only batches with private rooms and an easy, slow pace.', photo: U('photo-1776436884406-956c98ce89f3') },
+    { id: 'family', name: 'One Tribe, All Ages', line: 'Travel together, grow together.', unit: 'person',
+      blurb: 'Family batches for grandparents to kids, with comfortable travel and easy days.', photo: U('photo-1639979511572-ff346bc5b3b7') }
   ];
 
   var TRIPS = [
-    /* ---- Chikkamagalur Coffee Estate Retreat ---- */
-    { id: 'chikka-mix', group: 'retreat', title: 'Coffee Estate Retreat — Mix Batch', short: 'Mix Batch',
-      region: 'karnataka', type: 'Adventure', dest: 'chikkamagaluru', price: 5999, was: 6499, unit: 'person',
-      duration: '1 Night · 2 Days', image: U('photo-1695448124696-3f73e3b779c2'), batches: true,
-      audience: 'Solo explorers, friends and mixed groups', note: 'Save ₹500 with early bird',
-      description: '1 night / 2 days in a Chikkamagalur coffee estate with a 4x4 jeep safari to Jhari Falls, bonfire music night, sunrise yoga and authentic Malnad meals.',
+    /* ---- Chikkamagalur Coffee Estate Retreat (one trip, batches per style) ---- */
+    { id: 'chikka-retreat', group: 'retreat', title: 'Coffee Estate Retreat, Chikkamagaluru', short: 'Coffee Estate Retreat',
+      region: 'karnataka', dest: 'chikkamagaluru', price: 5999, was: 6499, unit: 'person', style_prices: { girls: 6499, couples: 7499 },
+      duration: '1 Night · 2 Days', image: U('photo-1695448124696-3f73e3b779c2'), note: 'Save Rs 500 with early bird',
+      description: 'One night and two days inside a Chikkamagalur coffee estate: 4x4 jeep safari to Jhari Falls, bonfire music night, sunrise yoga and authentic Malnad meals.',
       perks: ['Homestay inside the coffee estate', 'All meals — fresh Malnad cuisine', '4x4 jeep safari to Jhari Falls', 'Starlit bonfire and music night', 'Sunrise yoga and plantation trail', 'Wellness massage and local guide', 'Bus transport from Chikkamagalur'] },
-    { id: 'chikka-girls', group: 'retreat', title: 'Coffee Estate Retreat — Girls Batch', short: 'Girls Batch',
-      region: 'karnataka', type: 'Wellness', dest: 'chikkamagaluru', price: 6499, was: 6999, unit: 'person',
-      duration: '1 Night · 2 Days', image: U('photo-1695448124696-3f73e3b779c2'), batches: true,
-      audience: 'A dedicated all-women group of 20', note: 'Safe, curated for women travellers',
-      description: 'Curated exclusively for women travellers: verified safe estate homestay, sunrise yoga, relaxing massage, jeep safari and a guided nature walk.',
-      perks: ['Verified safe homestay in a private estate', 'Curated for solo women and girl gangs', 'Full wellness massage session', 'Sunrise yoga and mindful nature walk', 'Jhari Falls 4x4 jeep safari', 'Bonfire, acoustic music and stargazing', 'All Malnad meals and bus transport'] },
-    { id: 'chikka-couples', group: 'retreat', title: 'Coffee Estate Retreat — Couples', short: 'Couples',
-      region: 'karnataka', type: 'Romantic', dest: 'chikkamagaluru', price: 7499, was: 7999, unit: 'couple',
-      duration: '1 Night · 2 Days', image: U('photo-1695448124696-3f73e3b779c2'), batches: true,
-      audience: 'A private room for two', note: 'Only ₹3,750 per person',
-      description: 'An intimate coffee estate getaway for couples: private homestay room, romantic bonfire, massage for both, waterfalls and misty hill views.',
-      perks: ['Private homestay room in the coffee hills', 'Candlelit, romantic evening bonfire', 'Relaxing massage for both partners', 'Sunrise plantation walk and couple photos', 'Jhari Falls jeep safari', 'Malnad breakfast, lunch and dinner', 'Bus transport from Chikkamagalur'] },
 
     /* ---- Tour packages ---- */
     { id: 'nandi-daytrip', group: 'tour', title: 'Nandi Hills Day Trip', region: 'karnataka', type: 'Adventure', dest: 'nandi',
@@ -135,11 +129,26 @@
 
   var fmt = function (n) { return '₹' + Number(n).toLocaleString('en-IN'); };
   var todayISO = function () { var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
-  var openBatches = function () { var t = todayISO(); return RETREAT_BATCHES.filter(function (b) { return b.end >= t; }); };
+  var style = function (id) { return STYLES.filter(function (x) { return x.id === id; })[0]; };
+  /* Price for a trip in a style: batch price > trip's own style price > (couples: 2 x per-person) > trip price */
+  var priceFor = function (t, styleId, batch, variantId) {
+    var v = t.variants ? (t.variants.filter(function (x) { return x.id === variantId; })[0] || t.variants[0]) : null;
+    var base = v ? v.price : t.price, sp = (t.style_prices || {})[styleId];
+    var st = style(styleId), unit = st && st.unit === 'couple' ? 'couple' : (t.unit || 'person');
+    var price = batch && batch.price ? batch.price : (!v && sp ? sp : (unit === 'couple' && t.unit !== 'couple' ? base * 2 : base));
+    return { price: price, unit: unit };
+  };
+  var BATCHES = []; /* filled from the database by db.js */
+  var batchesFor = function (tripId, styleId) {
+    var t = todayISO();
+    return BATCHES.filter(function (b) { return b.trip_id === tripId && (!styleId || b.style_id === styleId) && b.end >= t; })
+      .sort(function (a, b) { return a.start < b.start ? -1 : 1; });
+  };
 
-  window.NG = { TRIPS: TRIPS, DESTINATIONS: DESTINATIONS, ORIGIN: ORIGIN, RETREAT_BATCHES: RETREAT_BATCHES, POSTCARDS: POSTCARDS,
+  window.NG = { TRIPS: TRIPS, STYLES: STYLES, BATCHES: BATCHES, DESTINATIONS: DESTINATIONS, ORIGIN: ORIGIN, POSTCARDS: POSTCARDS,
+    style: style, priceFor: priceFor, batchesFor: batchesFor,
     trip: function (id) { return TRIPS.filter(function (t) { return t.id === id; })[0]; },
     dest: function (id) { return DESTINATIONS.filter(function (d) { return d.id === id; })[0]; },
-    fmt: fmt, todayISO: todayISO, openBatches: openBatches,
+    fmt: fmt, todayISO: todayISO,
     WHATSAPP: '919513646646', PHONES: ['+91 95136 46646', '+91 90712 28822'], EMAIL: 'nandigo@gmail.com' };
 })();

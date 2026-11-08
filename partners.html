@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#1A3D2E"/><meta name="description" content="Become a Nandi Go Business Partner. One partner per district across Karnataka's 31 districts. Commission-based, with training, marketing support and a refundable business kit."/><title>Nandi Go — Business Partners</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/><link rel="stylesheet" href="site.css?v=35"/></head>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#1A3D2E"/><meta name="description" content="Become a Nandi Go Business Partner. One partner per district across Karnataka's 31 districts. Commission-based, with training, marketing support and a refundable business kit."/><title>Nandi Go — Business Partners</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/><link rel="stylesheet" href="site.css?v=38"/></head>
 <body class="pp-page"><header class="site-header" id="siteHeader">
  <div class="container nav">
   <a href="index.html" class="brand" aria-label="Nandi Go home"><img src="logo.png" alt="Nandi Go — Premium Travel · Trusted Journeys" class="brand-logo" width="160" height="48"/></a>
@@ -13,7 +13,7 @@
     <div class="nav-drop-menu"><a href="partners.html#district">District Partners</a><a href="partners.html#taluk">Taluk Partners</a></div></div>
   </nav>
   <div class="navright">
-   <a href="#apply" class="btn btn-gold btn-sm" id="navApply"><svg class="ic"><use href="#i-arrow-up"/></svg><span>Apply Now</span></a>
+   <a href="#apply" class="btn btn-gold btn-sm" id="navApply" data-apply="District Partner"><svg class="ic"><use href="#i-arrow-up"/></svg><span>Apply Now</span></a>
    <button type="button" class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
   </div>
  </div>
@@ -26,7 +26,7 @@
    <span class="kicker pp-kicker">Business Opportunity</span>
    <h1>Become a <em>Nandi Go</em> Partner</h1>
    <p class="pp-lead">One Nandi Go partner per district — 31 districts across Karnataka. Be the face of premium travel in your district and earn commission on every confirmed booking.</p>
-   <div class="pp-hero-actions"><a href="#apply" class="gold-btn">Apply Now — One Per District<svg class="ic"><use href="#i-arrow-up"/></svg></a><a href="#roles" class="pp-ghost">See partner roles</a></div>
+   <div class="pp-hero-actions"><a href="#apply" class="gold-btn" data-apply="District Partner">Apply Now — One Per District<svg class="ic"><use href="#i-arrow-up"/></svg></a><a href="#roles" class="pp-ghost">See partner roles</a></div>
   </div>
   <div class="pp-stats" aria-label="Programme highlights">
    <div><b>31</b><span>districts, one partner each</span></div>
@@ -61,7 +61,7 @@
    <div class="pp-role-main">
     <span class="ng-partner-tag">Authorized District Commission Agent</span>
     <h3>District Partner</h3>
-    <p>Represent Nandi Go across your whole district. Promote approved trips through WhatsApp, Instagram, friends and local shops, and send bookings through the official Google Form or WhatsApp number.</p>
+    <p>Represent Nandi Go across your whole district. Promote approved trips through WhatsApp, Instagram, friends and local shops, and share your own partner link so every booking is counted for you.</p>
     <h4>Commission</h4>
     <ul class="pp-list">
      <li><b>₹300–500</b> per confirmed person booking (final amount fixed in your agreement)</li>
@@ -128,12 +128,12 @@
   <ol class="pp-steps">
    <li><b>Apply</b><span>Fill in the partner application form. It takes about 3 minutes.</span></li>
    <li><b>Screening call</b><span>Our team contacts you on WhatsApp within 24 hours.</span></li>
-   <li><b>Verification</b><span>Share your passport-size photo, full-length photo, a selfie for identity confirmation, KYC and bank account details. Bank details are locked once confirmed, so commission always goes to the verified account.</span></li>
-   <li><b>Agreement &amp; kit</b><span>Sign the District Partner Agreement and receive your Premium Business Kit and PVC ID card.</span></li>
+   <li><b>Verification</b><span>Once approved, you get a partner code. Submit your photos, KYC and bank details in the KYC form on this page. Bank details are locked once submitted, so commission always goes to the verified account.</span></li>
+   <li><b>Agreement &amp; kit</b><span>Sign the Partner Agreement and receive your Premium Business Kit and PVC ID card.</span></li>
    <li><b>One-day training</b><span>Learn our packages, rates, booking process and official marketing material.</span></li>
    <li><b>Start earning</b><span>Promote Nandi Go trips in your district. Commission is paid every Monday.</span></li>
   </ol>
-  <p class="pp-privacy">Verification documents are collected only during onboarding through the official channel — never through the public application form.</p>
+  <p class="pp-privacy">Identity and bank documents are asked for only after approval, in the KYC form that needs your partner code — never in the public application. They are stored privately and seen only by the Nandi Go team.</p>
  </div>
 </section>
 
@@ -152,39 +152,16 @@
 
 <section class="pp-section" id="apply">
  <div class="container">
-  <div class="ng-partner-form-panel">
-   <div class="ng-role-switch" role="tablist" aria-label="Choose the partner role">
-    <button type="button" role="tab" data-form-role="district" aria-selected="true">District Partner</button>
-    <button type="button" role="tab" data-form-role="taluk" aria-selected="false">Taluk Partner</button>
+  <div class="ng-partner-form-panel pf-cta">
+   <span class="kicker">Apply in about 3 minutes</span>
+   <h3>Become a Nandi Go Partner</h3>
+   <p class="ng-muted">Fill in the application on this page. It goes straight to the Nandi Go team, and we contact you on WhatsApp within 24 hours.</p>
+   <div class="pf-cta-actions">
+    <button type="button" class="gold-btn" data-apply="District Partner">Apply as District Partner<svg class="ic"><use href="#i-arrow-up"/></svg></button>
+    <button type="button" class="green-btn" data-apply="Taluk Partner">Apply as Taluk Partner<svg class="ic"><use href="#i-arrow-up"/></svg></button>
    </div>
-   <h3 id="ngFormTitle">District Partner Application</h3>
-   <div id="googleFormBox" hidden>
-    <p class="ng-muted" id="ngGoogleText">Applications are taken on our official Google Form. It takes about 3 minutes.</p>
-    <div class="ng-actions"><a id="googleFormLink" class="green-btn" target="_blank" rel="noopener"><span id="ngGoogleBtn">Open the District Partner Form</span><svg class="ic"><use href="#i-arrow-up"/></svg></a><a class="ng-inline-link" data-agreement href="district-partner-agreement.html" target="_blank" rel="noopener">View the District Partner Agreement</a></div>
-   </div>
-   <div id="whatsappFormBox">
-   <p class="ng-muted">Your answers open in WhatsApp addressed to the Nandi Go team. Review the message and press send. No details are stored on this website.</p>
-   <form id="ngPartnerForm">
-    <div class="ng-form-grid">
-     <input type="hidden" name="role" id="ngRole" value="District Partner">
-     <label>Full Name *<input required name="fullName" maxlength="100" autocomplete="name" placeholder="Example: Ramesh Kumar S"></label>
-     <label>WhatsApp Number *<input required name="phone" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" placeholder="Your main 10-digit number"></label>
-     <label>Your District *<select required name="district" id="ngDistrict"><option value="">Select your district</option></select></label>
-     <label>Your Taluk *<input required name="taluk" maxlength="100" placeholder="Your taluk"></label>
-     <label>Age *<input required name="age" type="number" min="18" max="100" placeholder="18 or above"></label>
-     <label>What do you do currently? *<select required name="occupation"><option value="">Choose one</option><option>Student</option><option>Work From Home / Housewife</option><option>Own Shop / Xerox / Travel Agency</option><option>Private Job</option><option>Govt Job / Retired</option><option>Others</option></select></label>
-     <label>Travel / marketing experience *<select required name="experience"><option value="">Choose one</option><option>Yes, I have experience</option><option>No, but ready to learn</option></select></label>
-     <label>Instagram / Facebook ID (optional)<input name="social" maxlength="140" placeholder="Helps us see your reach"></label>
-     <label>Bookings you can bring per month *<select name="expected" required><option value="">Select estimate</option><option>5–10 bookings</option><option>10–30 bookings</option><option>30+ bookings</option></select></label>
-     <label class="ng-full">Why should we select you? *<textarea required name="motivation" maxlength="750" placeholder="Write in 2–3 lines"></textarea></label>
-     <label class="ng-check ng-full"><input required type="checkbox" name="commission"><span id="ngCommissionText">I agree to work on a commission basis — no salary, only commission (₹300–500 per booking).</span></label>
-     <label class="ng-check ng-full"><input required type="checkbox" name="payments">I agree that customers pay the advance directly to Nandi Go's company account. I will not collect any money.</label>
-     <label class="ng-check ng-full"><input required type="checkbox" name="consent">I consent to Nandi Go contacting me about this application on WhatsApp or by phone.</label>
-    </div>
-    <div class="ng-note"><span id="ngNoteRole">Applications are screened and one partner is appointed per district.</span> Earnings are not guaranteed. Please do not send Aadhaar or other identity documents through this form.</div>
-    <div class="ng-actions"><button type="submit" class="green-btn">Review &amp; Send on WhatsApp<svg class="ic"><use href="#i-arrow-up"/></svg></button><a class="ng-inline-link" data-agreement href="district-partner-agreement.html" target="_blank" rel="noopener">View the District Partner Agreement</a></div>
-   </form>
-   </div>
+   <p class="pf-kyc-line">Already approved by our team? <button type="button" class="ng-inline-link" data-kyc>Submit your KYC &amp; bank details</button></p>
+   <p class="pf-kyc-line"><a class="ng-inline-link" href="district-partner-agreement.html" target="_blank" rel="noopener">District Partner Agreement</a> · <a class="ng-inline-link" href="taluk-partner-agreement.html" target="_blank" rel="noopener">Taluk Partner Agreement</a></p>
   </div>
  </div>
 </section>
@@ -232,71 +209,217 @@
   </div>
  </div>
 </footer>
+
+<!-- Partner application pop-up -->
+<div class="pm" id="pf" hidden>
+ <div class="pm-card" role="dialog" aria-modal="true" aria-labelledby="ngFormTitle">
+  <button type="button" class="pm-close" data-pm-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+  <div class="pm-body" id="pfForm">
+   <span class="kicker">Partner application</span>
+   <h3 id="ngFormTitle">District Partner Application</h3>
+   <div class="ng-role-switch" role="tablist" aria-label="Choose the partner role">
+    <button type="button" role="tab" data-form-role="district" aria-selected="true">District Partner</button>
+    <button type="button" role="tab" data-form-role="taluk" aria-selected="false">Taluk Partner</button>
+   </div>
+   <form id="ngPartnerForm" novalidate>
+    <h4 class="pm-sec">About you</h4>
+    <div class="ng-form-grid">
+     <label>Full name *<input required name="fullName" maxlength="100" autocomplete="name" placeholder="Example: Ramesh Kumar S"></label>
+     <label>WhatsApp number *<input required name="phone" type="tel" inputmode="numeric" maxlength="14" placeholder="Your main 10-digit number"></label>
+     <label>Your district *<select required name="district" id="ngDistrict"><option value="">Select your district</option></select></label>
+     <label><span id="ngTalukLabel">Your taluk *</span><input required name="taluk" maxlength="100" placeholder="Your taluk"></label>
+     <label>Age *<input required name="age" type="number" min="18" max="100" placeholder="18 or above"></label>
+     <label>Email (optional)<input name="email" type="email" maxlength="160" autocomplete="email" placeholder="you@example.com"></label>
+     <label class="ng-full">What do you do currently? *<select required name="occupation"><option value="">Choose one</option><option>Student</option><option>Work From Home / Housewife</option><option>Own Shop / Xerox / Travel Agency</option><option>Private Job</option><option>Govt Job / Retired</option><option>Others</option></select></label>
+    </div>
+    <h4 class="pm-sec">Your experience</h4>
+    <div class="ng-form-grid">
+     <label>Travel / marketing experience *<select required name="experience"><option value="">Choose one</option><option>Yes, I have experience</option><option>No, but ready to learn</option></select></label>
+     <label>Bookings you can bring per month *<select name="expected" required><option value="">Select estimate</option><option>5–10 bookings</option><option>10–30 bookings</option><option>30+ bookings</option></select></label>
+     <label class="ng-full">Instagram / Facebook ID (optional)<input name="social" maxlength="140" placeholder="Helps us see your reach"></label>
+     <label class="ng-full">Why should we select you? *<textarea required name="motivation" maxlength="750" placeholder="Write in 2–3 lines"></textarea></label>
+    </div>
+    <h4 class="pm-sec">Agreement</h4>
+    <div class="ng-form-grid">
+     <label class="ng-check ng-full"><input required type="checkbox" name="commission"><span id="ngCommissionText">I agree to work on a commission basis — no salary, only commission (₹300–500 per booking).</span></label>
+     <label class="ng-check ng-full"><input required type="checkbox" name="payments">Customers pay the advance directly to Nandi Go's company account. I will not collect any money.</label>
+     <label class="ng-check ng-full"><input required type="checkbox" name="kit">I understand the ₹4,999 Premium Business Kit and one-day training are paid on appointment and refunded in full after 10 confirmed bookings.</label>
+     <label class="ng-check ng-full"><input required type="checkbox" name="consent">I agree to be contacted about this application on WhatsApp or by phone.</label>
+    </div>
+    <div class="ng-note"><span id="ngNoteRole">Applications are screened and one partner is appointed per district.</span> Earnings are not guaranteed. Please do not send Aadhaar or other identity documents with this application; we ask for them after selection.</div>
+    <p class="pm-error" id="pfError" role="alert" hidden></p>
+    <div class="ng-actions"><button type="submit" class="green-btn" id="pfSubmit">Submit application<svg class="ic"><use href="#i-arrow-up"/></svg></button><a class="ng-inline-link" data-agreement href="district-partner-agreement.html" target="_blank" rel="noopener">View the District Partner Agreement</a></div>
+   </form>
+  </div>
+  <div class="pm-body pm-done" id="pfDone" hidden>
+   <div class="pm-mark"><svg class="ic"><use href="#i-check"/></svg></div>
+   <h3>Application received</h3>
+   <p>Thank you! The Nandi Go team will contact you on WhatsApp within 24 hours. Only one partner is appointed per district, so keep your phone handy.</p>
+   <button type="button" class="green-btn" data-pm-close>Done</button>
+  </div>
+ </div>
+</div>
+
+<!-- Partner KYC & bank pop-up -->
+<div class="pm" id="pk" hidden>
+ <div class="pm-card" role="dialog" aria-modal="true" aria-labelledby="pkTitle">
+  <button type="button" class="pm-close" data-pm-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+  <div class="pm-body" id="pkFormBox">
+   <span class="kicker">Only for approved partners</span>
+   <h3 id="pkTitle">KYC &amp; bank details</h3>
+   <p class="ng-muted">Your documents are used only to verify your identity and pay your commission. Bank details cannot be changed after you submit, so please check them carefully.</p>
+   <form id="pkForm" novalidate>
+    <h4 class="pm-sec">Your partner details</h4>
+    <div class="ng-form-grid">
+     <label>Partner code *<input required name="code" maxlength="20" placeholder="Given on WhatsApp, e.g. NG-DP-MYS-01" autocapitalize="characters"></label>
+     <label>WhatsApp number *<input required name="phone" type="tel" inputmode="numeric" maxlength="14" placeholder="The number you applied with"></label>
+     <label>Full name (as on bank account) *<input required name="name" maxlength="100" autocomplete="name"></label>
+     <label>Email (optional)<input name="email" type="email" maxlength="160" autocomplete="email"></label>
+     <label>District *<select required name="district" id="pkDistrict"><option value="">Select your district</option></select></label>
+     <label>Taluk *<input required name="taluk" maxlength="100"></label>
+     <label>Aadhaar — last 4 digits only *<input required name="aadhaar" inputmode="numeric" maxlength="4" placeholder="1234"></label>
+     <label>PAN number (optional)<input name="pan" maxlength="10" placeholder="ABCDE1234F" autocapitalize="characters"></label>
+    </div>
+    <h4 class="pm-sec">Bank details for commission</h4>
+    <p class="pm-hint">Commission and your ₹4,999 kit refund are paid only to this account.</p>
+    <div class="ng-form-grid">
+     <label class="ng-full">Bank account holder name *<input required name="holder" maxlength="100"></label>
+     <label>Bank account number *<input required name="account" inputmode="numeric" maxlength="18" autocomplete="off"></label>
+     <label>Re-enter account number *<input required name="account2" inputmode="numeric" maxlength="18" autocomplete="off"></label>
+     <label>IFSC code *<input required name="ifsc" maxlength="11" placeholder="SBIN0001234" autocapitalize="characters"></label>
+     <label>UPI ID (optional)<input name="upi" maxlength="80" placeholder="name@bank"></label>
+    </div>
+    <h4 class="pm-sec">Photos &amp; documents</h4>
+    <p class="pm-hint">JPG, PNG, WebP or PDF, up to 5 MB each.</p>
+    <div class="ng-form-grid pk-files">
+     <label>Passport-size photo *<input required type="file" name="f_passport" accept="image/jpeg,image/png,image/webp"></label>
+     <label>Full-length photo *<input required type="file" name="f_full" accept="image/jpeg,image/png,image/webp"></label>
+     <label>Selfie holding your ID *<input required type="file" name="f_selfie" accept="image/jpeg,image/png,image/webp"></label>
+     <label>KYC document (masked Aadhaar or PAN) *<input required type="file" name="f_kyc" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+     <label class="ng-full">Cancelled cheque or passbook front page *<input required type="file" name="f_bank" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+    </div>
+    <div class="ng-form-grid">
+     <label class="ng-check ng-full"><input required type="checkbox" name="confirm">I confirm these details are correct and understand bank details cannot be edited after submission.</label>
+    </div>
+    <p class="pm-error" id="pkError" role="alert" hidden></p>
+    <div class="ng-actions"><button type="submit" class="green-btn" id="pkSubmit">Submit KYC<svg class="ic"><use href="#i-arrow-up"/></svg></button></div>
+   </form>
+  </div>
+  <div class="pm-body pm-done" id="pkDone" hidden>
+   <div class="pm-mark"><svg class="ic"><use href="#i-check"/></svg></div>
+   <h3>Documents received</h3>
+   <p>Thank you! The Nandi Go team will verify your details and confirm on WhatsApp.</p>
+   <button type="button" class="green-btn" data-pm-close>Done</button>
+  </div>
+ </div>
+</div>
 <script src="assets/icons.js?v=32"></script>
-<script src="assets/data.js?v=32"></script>
+<script src="assets/data.js?v=36"></script>
 <script src="assets/map-data.js?v=32"></script>
-<script src="assets/db.js?v=32"></script>
-<script src="assets/booking.js?v=32"></script>
+<script src="assets/db.js?v=36"></script>
+<script src="assets/booking.js?v=36"></script>
 <script>
 /* ===== Settings the Nandi Go team can edit ===== */
-// Google Form share links (account nandigo2026@gmail.com). Easiest: paste them in admin.html > Settings.
-// Links typed here win over the admin page. With no link, that role uses the WhatsApp form.
-const GOOGLE_FORM_URLS = { district: '', taluk: '' };
 // Districts with a partner come from the admin page (Supabase). Names added here are also shown as taken.
 const APPOINTED_DISTRICTS = [];
 /* =============================================== */
 
 const DISTRICTS=['Bagalkote','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Chamarajanagar','Chikkaballapura','Chikkamagaluru','Chitradurga','Dakshina Kannada','Davanagere','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Kodagu','Kolar','Koppal','Mandya','Mysuru','Raichur','Ramanagara','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayanagara','Vijayapura','Yadgir'];
 const taken=new Set(APPOINTED_DISTRICTS.map(d=>d.toLowerCase()));
-document.getElementById('districtGrid').innerHTML=DISTRICTS.map(d=>`<button type="button" class="pp-district ${taken.has(d.toLowerCase())?'taken':'open'}" data-district="${d}"${taken.has(d.toLowerCase())?' disabled':''}>${d}</button>`).join('');
-document.getElementById('ngDistrict').insertAdjacentHTML('beforeend',DISTRICTS.map(d=>`<option${taken.has(d.toLowerCase())?' disabled':''}>${d}${taken.has(d.toLowerCase())?' (partner appointed)':''}</option>`).join(''));
+const $id=id=>document.getElementById(id);
+$id('districtGrid').innerHTML=DISTRICTS.map(d=>`<button type="button" class="pp-district ${taken.has(d.toLowerCase())?'taken':'open'}" data-district="${d}"${taken.has(d.toLowerCase())?' disabled':''}>${d}</button>`).join('');
+function fillDistricts(){
+ // District Partners: one per district, so appointed districts are closed. Taluk Partners can apply anywhere.
+ $id('ngDistrict').innerHTML='<option value="">Select your district</option>'+DISTRICTS.map(d=>{const t=formRole==='district'&&taken.has(d.toLowerCase());return `<option value="${d}"${t?' disabled':''}>${d}${t?' (partner appointed)':''}</option>`}).join('');
+}
+$id('pkDistrict').insertAdjacentHTML('beforeend',DISTRICTS.map(d=>`<option>${d}</option>`).join(''));
 
-/* The application form switches between District and Taluk */
+/* ----- Pop-up helpers ----- */
+let pmLast=null;
+function openPm(id){pmLast=document.activeElement;const m=$id(id);m.hidden=false;m.querySelector('.pm-card').scrollTop=0;requestAnimationFrame(()=>m.classList.add('open'));document.documentElement.classList.add('sp-lock');setTimeout(()=>{const f=m.querySelector('input:not([type=checkbox]):not([type=hidden]),select');f&&f.focus({preventScroll:true})},80)}
+function closePm(m){m.classList.remove('open');setTimeout(()=>{m.hidden=true},200);if(!document.querySelector('.pm.open'))document.documentElement.classList.remove('sp-lock');pmLast&&pmLast.focus&&pmLast.focus({preventScroll:true})}
+document.querySelectorAll('.pm').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-pm-close]'))closePm(m)}));
+addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.querySelector('.pm.open');if(m)closePm(m)}});
+const cleanPhone=v=>{let d=String(v).replace(/\D/g,'');if(d.length===12&&d.startsWith('91'))d=d.slice(2);if(d.length===11&&d[0]==='0')d=d.slice(1);return d};
+function showErr(el,msg){el.textContent=msg;el.hidden=false;el.scrollIntoView({block:'nearest',behavior:'smooth'})}
+
+/* ----- Application: District or Taluk ----- */
 const ROLE_TEXT={
- district:{label:'District Partner',title:'District Partner Application',btn:'Open the District Partner Form',commission:'I agree to work on a commission basis — no salary, only commission (₹300–500 per booking).',note:'Applications are screened and one partner is appointed per district.'},
- taluk:{label:'Taluk Partner',title:'Taluk Partner Application',btn:'Open the Taluk Partner Form',commission:'I agree to work on a commission basis — no salary. Taluk commission is confirmed by the Nandi Go team before appointment.',note:'Applications are screened. Taluk partners work within their taluk.'}
+ district:{label:'District Partner',title:'District Partner Application',commission:'I agree to work on a commission basis — no salary, only commission (₹300–500 per booking).',note:'Applications are screened and one partner is appointed per district.',taluk:'Your taluk *'},
+ taluk:{label:'Taluk Partner',title:'Taluk Partner Application',commission:'I agree to work on a commission basis — no salary. Taluk commission is confirmed by the Nandi Go team before appointment.',note:'Applications are screened. Taluk partners work within their taluk.',taluk:'Taluk you will cover *'}
 };
 let formRole='district';
 function setFormRole(role){
- formRole=role;const t=ROLE_TEXT[role];
+ formRole=role;const t=ROLE_TEXT[role],keep=$id('ngDistrict').value;
  document.querySelectorAll('[data-form-role]').forEach(b=>{const on=b.dataset.formRole===role;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
- document.getElementById('ngRole').value=t.label;
- document.getElementById('ngFormTitle').textContent=t.title;
- document.getElementById('ngCommissionText').textContent=t.commission;
- document.getElementById('ngNoteRole').textContent=t.note;
+ $id('ngFormTitle').textContent=t.title;$id('ngCommissionText').textContent=t.commission;$id('ngNoteRole').textContent=t.note;$id('ngTalukLabel').textContent=t.taluk;
  document.querySelectorAll('[data-agreement]').forEach(a=>{a.href=role+'-partner-agreement.html';a.textContent='View the '+t.label+' Agreement'});
- const url=GOOGLE_FORM_URLS[role];
- document.getElementById('googleFormBox').hidden=!url;document.getElementById('whatsappFormBox').hidden=!!url;
- if(url){document.getElementById('googleFormLink').href=url;document.getElementById('ngGoogleBtn').textContent=t.btn}
+ fillDistricts();const o=[...$id('ngDistrict').options].find(x=>x.value===keep&&!x.disabled);$id('ngDistrict').value=o?keep:'';
 }
 document.querySelectorAll('[data-form-role]').forEach(b=>b.addEventListener('click',()=>setFormRole(b.dataset.formRole)));
 setFormRole('district');
-// Form links can also be set from the admin page (Settings), without editing this file
-if(window.NG&&NG.DB)NG.DB.rpc('public_settings').then(st=>{
- if(st.district_form_url&&!GOOGLE_FORM_URLS.district)GOOGLE_FORM_URLS.district=st.district_form_url;
- if(st.taluk_form_url&&!GOOGLE_FORM_URLS.taluk)GOOGLE_FORM_URLS.taluk=st.taluk_form_url;
- setFormRole(formRole);
-}).catch(()=>{});
+function openApply(role,district){
+ setFormRole(role);$id('pfForm').hidden=false;$id('pfDone').hidden=true;$id('pfError').hidden=true;
+ if(district){const o=[...$id('ngDistrict').options].find(x=>x.value===district&&!x.disabled);if(o)$id('ngDistrict').value=district}
+ openPm('pf');
+}
 
 function showRole(role){document.querySelectorAll('.pp-tab').forEach(t=>{const on=t.dataset.role===role;t.classList.toggle('active',on);t.setAttribute('aria-selected',on)});document.querySelectorAll('.pp-role').forEach(p=>p.hidden=p.dataset.panel!==role)}
 document.querySelectorAll('.pp-tab').forEach(t=>t.addEventListener('click',()=>showRole(t.dataset.role)));
-function fromHash(){const h=location.hash.slice(1);if(h==='district'||h==='taluk'){showRole(h);document.getElementById('roles').scrollIntoView({behavior:'smooth'})}}
+function fromHash(){const h=location.hash.slice(1);if(h==='district'||h==='taluk'){showRole(h);$id('roles').scrollIntoView({behavior:'smooth'})}if(h==='kyc')openKyc();if(h==='apply-taluk')openApply('taluk');if(h==='apply-district')openApply('district')}
 addEventListener('hashchange',fromHash);fromHash();
+document.addEventListener('click',e=>{
+ const a=e.target.closest('[data-apply]');if(a){e.preventDefault();openApply(/taluk/i.test(a.dataset.apply)?'taluk':'district');return}
+ const k=e.target.closest('[data-kyc]');if(k){e.preventDefault();openKyc()}
+});
 
-document.querySelectorAll('[data-apply]').forEach(b=>b.addEventListener('click',()=>{
- const role=/taluk/i.test(b.dataset.apply)?'taluk':'district';
- setFormRole(role);
- if(GOOGLE_FORM_URLS[role]){window.open(GOOGLE_FORM_URLS[role],'_blank','noopener');return}
- document.getElementById('apply').scrollIntoView({behavior:'smooth'});
- setTimeout(()=>document.querySelector('#ngPartnerForm input[name="fullName"]').focus({preventScroll:true}),450);
-}));
+$id('ngPartnerForm').addEventListener('submit',function(e){
+ e.preventDefault();const err=$id('pfError');err.hidden=true;
+ if(!this.reportValidity())return;
+ const f=new FormData(this),phone=cleanPhone(f.get('phone')),email=(f.get('email')||'').trim();
+ if(!/^[6-9]\d{9}$/.test(phone))return showErr(err,'Please enter a valid 10-digit WhatsApp number.');
+ if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return showErr(err,'Please check the email address.');
+ const row={role:formRole,status:'applied',source:'website',agreed:true,name:f.get('fullName').trim(),phone,email:email||null,
+  district:f.get('district'),taluk:f.get('taluk').trim(),age:+f.get('age'),occupation:f.get('occupation'),experience:f.get('experience'),
+  social:(f.get('social')||'').trim()||null,expected_bookings:f.get('expected'),motivation:f.get('motivation').trim()};
+ const btn=$id('pfSubmit');btn.disabled=true;
+ NG.DB.insert('partners',row).then(()=>{btn.disabled=false;this.reset();$id('pfForm').hidden=true;$id('pfDone').hidden=false;$id('pf').querySelector('.pm-card').scrollTop=0},x=>{
+  btn.disabled=false;
+  if(/partners_one_pending|duplicate/i.test(x.message))return showErr(err,'You have already applied for this role with this number. Our team will contact you soon.');
+  showErr(err,'Sorry, the application could not be sent. Please check your details and try again, or WhatsApp us on +91 95136 46646.');
+ });
+});
 
-document.getElementById('ngPartnerForm').addEventListener('submit',function(e){
- e.preventDefault();if(!this.reportValidity())return;
- const f=new FormData(this),names={role:'Role',fullName:'Full name',phone:'WhatsApp',district:'District',taluk:'Taluk',age:'Age',occupation:'Current work',experience:'Experience',social:'Instagram / Facebook',expected:'Bookings per month',motivation:'Why select me'};
- const message='NANDI GO — PARTNER APPLICATION\n\n'+Object.entries(names).map(([k,v])=>v+': '+(f.get(k)||'Not provided')).join('\n')+'\n\nI agree to commission-only work, company-direct customer payments, and being contacted about this application.';
- const link='https://wa.me/919513646646?text='+encodeURIComponent(message);
- const tab=window.open(link,'_blank','noopener,noreferrer');if(!tab)location.href=link;
+/* ----- KYC & bank details (approved partners) ----- */
+function openKyc(){$id('pkFormBox').hidden=false;$id('pkDone').hidden=true;$id('pkError').hidden=true;openPm('pk')}
+function uploadKyc(path,file){
+ return fetch(NG.DB.url+'/storage/v1/object/partner-kyc/'+path,{method:'POST',headers:{apikey:NG.DB.key,'Content-Type':file.type||'application/octet-stream'},body:file})
+  .then(r=>{if(!r.ok)throw new Error('upload '+r.status);return path});
+}
+$id('pkForm').addEventListener('submit',function(e){
+ e.preventDefault();const err=$id('pkError');err.hidden=true;
+ if(!this.reportValidity())return;
+ const f=new FormData(this),phone=cleanPhone(f.get('phone')),code=f.get('code').trim().toUpperCase(),pan=(f.get('pan')||'').trim().toUpperCase(),ifsc=f.get('ifsc').trim().toUpperCase();
+ if(!/^[6-9]\d{9}$/.test(phone))return showErr(err,'Please enter a valid 10-digit WhatsApp number.');
+ if(!/^\d{4}$/.test(f.get('aadhaar')))return showErr(err,'Enter only the last 4 digits of your Aadhaar.');
+ if(pan&&!/^[A-Z]{5}\d{4}[A-Z]$/.test(pan))return showErr(err,'PAN format is ABCDE1234F.');
+ if(!/^\d{9,18}$/.test(f.get('account')))return showErr(err,'Bank account number should be 9 to 18 digits.');
+ if(f.get('account')!==f.get('account2'))return showErr(err,'The two bank account numbers do not match.');
+ if(!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc))return showErr(err,'IFSC format is SBIN0001234.');
+ const files=['passport','full','selfie','kyc','bank'].map(k=>[k,f.get('f_'+k)]);
+ const big=files.find(([,x])=>x&&x.size>5*1024*1024);if(big)return showErr(err,'Each file must be 5 MB or smaller.');
+ const btn=$id('pkSubmit');btn.disabled=true;btn.firstChild.textContent='Checking… ';
+ NG.DB.rpc('kyc_check',{p_code:code,p_phone:phone}).then(ok=>{
+  if(!ok)throw Object.assign(new Error('nomatch'),{user:'This partner code and WhatsApp number do not match an approved partner. Please check the code our team sent you.'});
+  btn.firstChild.textContent='Uploading documents… ';
+  const stamp=Date.now().toString(36),safe=code.replace(/[^A-Z0-9-]/g,'');
+  return Promise.all(files.map(([k,x])=>uploadKyc('kyc/'+safe+'/'+stamp+'-'+k+'.'+((x.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')),x).then(path=>[k,path])));
+ }).then(paths=>NG.DB.insert('partner_kyc',{partner_code:code,phone,name:f.get('name').trim(),email:(f.get('email')||'').trim()||null,district:f.get('district'),taluk:f.get('taluk').trim(),
+   aadhaar_last4:f.get('aadhaar'),pan:pan||null,bank_holder:f.get('holder').trim(),account_no:f.get('account'),ifsc,upi:(f.get('upi')||'').trim()||null,files:Object.fromEntries(paths),confirmed:true}))
+ .then(()=>{btn.disabled=false;btn.firstChild.textContent='Submit KYC';this.reset();$id('pkFormBox').hidden=true;$id('pkDone').hidden=false;$id('pk').querySelector('.pm-card').scrollTop=0},x=>{
+  btn.disabled=false;btn.firstChild.textContent='Submit KYC';
+  showErr(err,x.user||'Sorry, your details could not be sent. Please try again, or WhatsApp us on +91 95136 46646.');
+ });
 });
 
 document.getElementById('menuBtn').addEventListener('click',function(){const o=document.getElementById('navlinks').classList.toggle('open');this.setAttribute('aria-expanded',o)});
@@ -324,11 +447,7 @@ document.getElementById('year').textContent=new Date().getFullYear();
  sizeLabels();addEventListener('resize',sizeLabels);
  function pick(name){
   if(taken.has(name.toLowerCase()))return;
-  setFormRole('district');
-  if(GOOGLE_FORM_URLS.district){window.open(GOOGLE_FORM_URLS.district,'_blank','noopener');return}
-  document.getElementById('ngDistrict').value=name;
-  document.getElementById('apply').scrollIntoView({behavior:'smooth'});
-  setTimeout(()=>document.querySelector('#ngPartnerForm input[name="fullName"]').focus({preventScroll:true}),500);
+  openApply('district',name);
  }
  function hl(name){document.querySelectorAll('[data-district]').forEach(e=>e.classList.toggle('is-hover',e.dataset.district===name))}
  svg.addEventListener('click',e=>{const p=e.target.closest('.kd');if(p)pick(p.dataset.district)});
@@ -344,7 +463,7 @@ document.getElementById('year').textContent=new Date().getFullYear();
   document.querySelectorAll('[data-district]').forEach(el=>{const t=taken.has(el.dataset.district.toLowerCase());if(!t)return;
    el.classList.remove('open');el.classList.add('taken');
    if(el.tagName==='BUTTON')el.disabled=true;else{el.setAttribute('tabindex','-1');el.setAttribute('aria-label',el.dataset.district+' — partner appointed')}});
-  [...document.getElementById('ngDistrict').options].forEach(o=>{if(taken.has(o.value.toLowerCase())&&!o.disabled){o.disabled=true;o.textContent=o.value+' (partner appointed)'}});
+  fillDistricts();
  }).catch(e=>console.warn('Nandi Go: appointed districts not loaded',e));
  document.getElementById('districtGrid').addEventListener('click',e=>{const c=e.target.closest('[data-district]');if(c)pick(c.dataset.district)});
  document.getElementById('districtGrid').addEventListener('mouseover',e=>{const c=e.target.closest('[data-district]');hl(c?c.dataset.district:null)});

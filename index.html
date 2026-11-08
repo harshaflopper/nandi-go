@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=35"/>
+<link rel="stylesheet" href="site.css?v=37"/>
 </head>
 <body>
 
@@ -18,8 +18,8 @@
   <a href="#home" class="brand" aria-label="Nandi Go home"><img src="logo.png" alt="Nandi Go — Premium Travel · Trusted Journeys" class="brand-logo" width="160" height="48"/></a>
   <nav id="navlinks" class="navlinks" aria-label="Main">
    <a href="#home">Destinations</a>
+   <a href="#trips">Trips</a>
    <a href="#retreat" class="nav-new"><span class="dot" aria-hidden="true"></span>Coffee Retreat</a>
-   <a href="#trips">All trips</a>
    <a href="#how">How it works</a>
    <a href="#about">About</a>
    <div class="nav-drop"><a href="partners.html" aria-haspopup="true">Business Partners <svg class="ic"><use href="#i-chevron"/></svg></a>
@@ -63,13 +63,25 @@
 
 
 
+<!-- ============ TRAVEL STYLES ============ -->
+<section class="section" id="trips">
+ <div class="container">
+  <div class="section-head reveal">
+   <span class="kicker"><svg class="ic"><use href="#i-route"/></svg>Travel your way</span>
+   <h2>Who are you travelling with?</h2>
+   <p>Every trip runs in four styles. Pick yours to see the trips and their dates.</p>
+  </div>
+  <div class="styles reveal" id="styleGrid" role="tablist" aria-label="Travel styles"></div>
+ </div>
+</section>
+
 <!-- ============ COFFEE RETREAT: boarding pass ============ -->
 <section class="section retreat" id="retreat">
  <div class="container">
   <div class="section-head reveal">
    <span class="kicker"><svg class="ic"><use href="#i-sparkle"/></svg>First batch launch</span>
    <h2>Your boarding pass to the <em>coffee hills</em></h2>
-   <p>One night and two days inside a Chikkamagalur coffee estate — waterfalls, bonfire, sunrise yoga and Malnad food. Choose your batch and package.</p>
+   <p>One night and two days inside a Chikkamagalur coffee estate — waterfalls, bonfire, sunrise yoga and Malnad food. Choose your travel style and batch.</p>
   </div>
   <div class="ticket reveal" id="ticket">
    <div class="tk-main">
@@ -99,34 +111,20 @@
  </div>
 </section>
 
-<!-- ============ ALL TRIPS ============ -->
-<section class="section" id="trips">
- <div class="container">
-  <div class="section-head reveal">
-   <span class="kicker"><svg class="ic"><use href="#i-route"/></svg>Every journey we run</span>
-   <h2>All trips</h2>
-   <p>Clear prices, what's included, and one button to book.</p>
-  </div>
-  <div class="trip-tools">
-   <div class="chips" id="chips" role="tablist" aria-label="Filter trips"></div>
-   <span class="trip-count" id="tripCount"></span>
-  </div>
-  <div class="trips" id="tripGrid"></div>
- </div>
-</section>
 
 <!-- ============ HOW IT WORKS ============ -->
 <section class="section how" id="how">
  <div class="container">
   <div class="section-head center reveal">
    <span class="kicker"><svg class="ic"><use href="#i-compass"/></svg>Simple and safe</span>
-   <h2>How booking works</h2>
+   <h2>Select, pay and travel</h2>
+   <p>Four quick steps from picking your crowd to boarding the bus.</p>
   </div>
   <div class="steps">
-   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-pin"/></svg></div><h3>Choose a trip</h3><p>Pick a place on the map or from the trip list and check what's included.</p></article>
-   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-ticket"/></svg></div><h3>Send a request</h3><p>Fill the booking card. It goes straight to our team on WhatsApp.</p></article>
-   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-shield"/></svg></div><h3>Pay the advance</h3><p>After we confirm, pay the advance to Nandi Go's official account only.</p></article>
-   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-bus"/></svg></div><h3>Travel</h3><p>We handle transport, stay, food and sightseeing. You enjoy the trip.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-users"/></svg></div><h3>Pick your style</h3><p>Girls only, strangers to friends, couples or the whole family. Choose who you travel with.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-calendar"/></svg></div><h3>Choose trip and date</h3><p>Open a trip and pick one of our batch dates. Seats left are shown live.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-rupee"/></svg></div><h3>Book and pay</h3><p>Add your details and pay the advance to Nandi Go's official account. Your booking reaches our team instantly.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-bus"/></svg></div><h3>Travel</h3><p>We handle transport, stay, food and sightseeing. You just enjoy the trip.</p></article>
   </div>
   <p class="pay-note reveal"><svg class="ic"><use href="#i-shield"/></svg>Nandi Go never asks you to pay a partner or a personal account. Payments go only to the company's official UPI / bank account.</p>
  </div>
@@ -225,7 +223,7 @@
    </div>
    <div>
     <h4>Explore</h4>
-    <a href="#home">Destinations</a><a href="#retreat">Coffee Estate Retreat</a><a href="#trips">All trips</a><a href="#how">How booking works</a>
+    <a href="#home">Destinations</a><a href="#trips">Trips</a><a href="#retreat">Coffee Estate Retreat</a><a href="#how">How booking works</a>
    </div>
    <div>
     <h4>Company</h4>
@@ -249,6 +247,15 @@
 
 
 <!-- Trip details -->
+<div class="sp" id="sp" hidden>
+ <div class="sp-card" role="dialog" aria-modal="true" aria-labelledby="stTitle">
+  <div class="sp-head" id="spHead">
+   <div class="sp-head-txt"><span class="kicker light" id="stKicker"></span><h3 id="stTitle"></h3><span class="sp-count" id="tripCount"></span></div>
+   <button type="button" class="sp-close" data-sp-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="sp-body"><div class="trips" id="tripGrid"></div></div>
+ </div>
+</div>
 <div class="dm" id="dm" hidden>
  <div class="dm-card" role="dialog" aria-modal="true" aria-labelledby="dmTitle">
   <button type="button" class="dp-close" data-dm-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
@@ -264,9 +271,9 @@
 </div>
 
 <script src="assets/icons.js?v=32"></script>
-<script src="assets/data.js?v=32"></script>
+<script src="assets/data.js?v=36"></script>
 <script src="assets/map-data.js?v=32"></script>
-<script src="assets/db.js?v=32"></script>
+<script src="assets/db.js?v=36"></script>
 <script>
 (function () {
   var NG = window.NG, I = window.NGIcon, $ = function (id) { return document.getElementById(id); };
@@ -301,71 +308,112 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dm.hidden) closeDm(); });
   document.addEventListener('click', function (e) { var d = e.target.closest('[data-details]'); if (d) window.NGDetails(d.dataset.details); });
 
-  /* Coffee retreat boarding pass */
-  var retreat = NG.TRIPS.filter(function (t) { return t.group === 'retreat'; }), sel = retreat[0];
-  function dateRange(b) { var o = { day: 'numeric', month: 'short' }; var s = new Date(b.start + 'T00:00:00'), e = new Date(b.end + 'T00:00:00'); return s.toLocaleDateString('en-IN', o) + ' – ' + e.toLocaleDateString('en-IN', o) + ' ' + e.getFullYear(); }
+  /* Coffee retreat boarding pass: one trip, batches per travel style */
+  var tkStyle = null;
+  function shortRange(b) { var o = { day: 'numeric', month: 'short' }; var s = new Date(b.start + 'T00:00:00'), e = new Date(b.end + 'T00:00:00'); return s.toLocaleDateString('en-IN', o) + ' – ' + e.toLocaleDateString('en-IN', o) + ' ' + e.getFullYear(); }
   function renderTicket() {
-    $('tkTabs').innerHTML = retreat.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t === sel) + '" data-pkg="' + t.id + '">' + t.short + '</button>'; }).join('');
+    var t = NG.trip('chikka-retreat'); if (!t) return;
+    var styles = NG.STYLES.filter(function (x) { return !x.hidden; });
+    if (!styles.some(function (x) { return x.id === tkStyle; })) tkStyle = (styles.filter(function (x) { return NG.batchesFor(t.id, x.id).length; })[0] || styles[0] || {}).id;
+    var st = NG.style(tkStyle) || {}, pr = NG.priceFor(t, tkStyle);
+    $('tkTabs').innerHTML = styles.map(function (x) { return '<button type="button" role="tab" aria-selected="' + (x.id === tkStyle) + '" data-tkstyle="' + x.id + '">' + x.name + '</button>'; }).join('');
     $('tkPkg').innerHTML =
-      '<div class="tk-price"><b>' + NG.fmt(sel.price) + '<del>' + NG.fmt(sel.was) + '</del></b><small>per ' + sel.unit + '</small>' +
-      '<span class="tk-note">' + I('sparkle') + sel.note + '</span><p class="tk-audience">' + sel.audience + '</p></div>' +
-      '<ul class="tk-perks">' + sel.perks.map(function (p) { return '<li>' + I('check') + '<span>' + p + '</span></li>'; }).join('') + '</ul>';
-    var today = NG.todayISO();
-    $('tkStub').innerHTML = '<h4>Choose your batch</h4>' + NG.RETREAT_BATCHES.map(function (b) {
-      var past = b.end < today, full = b.status === 'full';
-      return '<div class="tk-batch' + (past || full ? ' is-past' : '') + '"><b>' + b.label + '</b><span>' + I('calendar') + dateRange(b) + (b.live && !past && !full ? ' · ' + b.left + ' seats left' : '') + '</span>' +
-        (past || full ? '<button type="button" class="btn btn-ghost light btn-sm" disabled>' + (past ? 'Departed' : 'Batch full') + '</button>'
-              : '<button type="button" class="btn btn-gold btn-sm" data-book="' + sel.id + '" data-batch="' + b.id + '">' + I('ticket') + 'Book ' + sel.short + '</button>') + '</div>';
-    }).join('') + (NG.RETREAT_BATCHES.length ? '' : '<p class="tk-stub-foot">New batch dates will be announced soon.</p>') + '<p class="tk-stub-foot">₹1,000 advance reserves your seat. Balance on arrival.' + (NG.RETREAT_BATCHES.length ? ' ' + NG.RETREAT_BATCHES[0].seats + ' seats per batch.' : '') + '</p><div class="tk-barcode" aria-hidden="true"></div>';
+      '<div class="tk-price"><b>' + NG.fmt(pr.price) + (t.was && pr.price === t.price ? '<del>' + NG.fmt(t.was) + '</del>' : '') + '</b><small>per ' + pr.unit + '</small>' +
+      (t.note ? '<span class="tk-note">' + I('sparkle') + t.note + '</span>' : '') + '<p class="tk-audience">' + (st.blurb || '') + '</p></div>' +
+      '<ul class="tk-perks">' + t.perks.map(function (x) { return '<li>' + I('check') + '<span>' + x + '</span></li>'; }).join('') + '</ul>';
+    var list = NG.batchesFor(t.id, tkStyle);
+    $('tkStub').innerHTML = '<h4>Choose your batch</h4>' + list.map(function (b) {
+      var full = b.status === 'full';
+      return '<div class="tk-batch' + (full ? ' is-past' : '') + '"><b>' + b.label + '</b><span>' + I('calendar') + shortRange(b) + (b.live && !full ? ' · ' + b.left + ' seats left' : '') + '</span>' +
+        (full ? '<button type="button" class="btn btn-ghost light btn-sm" disabled>Batch full</button>'
+              : '<button type="button" class="btn btn-gold btn-sm" data-book="' + t.id + '" data-style="' + tkStyle + '" data-batch="' + b.id + '">' + I('ticket') + 'Book this batch</button>') + '</div>';
+    }).join('') + (list.length ? '' : '<p class="tk-stub-foot">No ' + (st.name || '') + ' dates yet. <button type="button" class="tk-ask" data-book="' + t.id + '" data-style="' + tkStyle + '">Request a date</button></p>') +
+      '<p class="tk-stub-foot">₹1,000 advance reserves your seat. Balance on arrival.</p><div class="tk-barcode" aria-hidden="true"></div>';
   }
-  $('tkTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-pkg]'); if (b) { sel = NG.trip(b.dataset.pkg); renderTicket(); } });
+  $('tkTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tkstyle]'); if (b) { tkStyle = b.dataset.tkstyle; renderTicket(); } });
   renderTicket();
   document.addEventListener('ng:batches', renderTicket);
+  document.addEventListener('ng:catalog', renderTicket);
   var trail = [['bus', 'Day 1 · Morning', 'Scenic bus ride into the misty hills and estate check-in.'], ['jeep', 'Day 1 · Afternoon', 'Malnad lunch, then a 4x4 jeep safari to Jhari Falls.'],
     ['flame', 'Day 1 · Evening', 'Wellness massage, bonfire and acoustic music under the stars.'], ['sunrise', 'Day 2 · Morning', 'Sunrise yoga among the coffee, estate trail and breakfast.'],
     ['coffee', 'Day 2 · Afternoon', 'Fresh coffee tasting, local sights and the ride back.']];
   $('trail').innerHTML = trail.map(function (t) { return '<li><div class="tr-ic">' + I(t[0]) + '</div><div><b>' + t[1] + '</b><span>' + t[2] + '</span></div></li>'; }).join('');
 
-  /* All trips grid */
-  var FILTERS = [
-    ['all', 'All trips', function () { return true; }],
-    ['retreat', 'Coffee Retreat', function (t) { return t.group === 'retreat'; }],
-    ['tour', 'Tour packages', function (t) { return t.group === 'tour'; }],
-    ['nandi', 'Nandi Hills', function (t) { return t.dest === 'nandi'; }],
-    ['Romantic', 'Couples', function (t) { return t.type === 'Romantic'; }],
-    ['Family', 'Family', function (t) { return t.type === 'Family'; }],
-    ['Wellness', 'Wellness', function (t) { return t.type === 'Wellness'; }]
-  ];
-  var active = 'all';
+  /* Travel styles -> trips of that style */
+  var activeStyle = null;
   function tag(t) {
-    if (t.group === 'retreat') return I('coffee') + 'Coffee Estate Retreat';
-    if (t.group === 'experience') return I('leaf') + 'Nandi Hills';
+    if (t.group === 'retreat') return I('coffee') + 'Coffee Estate';
     var d = NG.dest(t.dest); return I(d && d.mode === 'air' ? 'plane' : 'pin') + (d ? d.name : '');
   }
-  function renderTrips() {
-    $('chips').innerHTML = FILTERS.map(function (f) { return '<button type="button" role="tab" class="chip' + (f[0] === active ? ' active' : '') + '" aria-selected="' + (f[0] === active) + '" data-filter="' + f[0] + '">' + f[1] + '</button>'; }).join('');
-    var fn = FILTERS.filter(function (f) { return f[0] === active; })[0][2];
-    var list = NG.TRIPS.filter(fn);
+  function nextBatch(tripId, styleId) { return NG.batchesFor(tripId, styleId).filter(function (b) { return b.status !== 'full'; })[0]; }
+  function dShort(iso) { return new Date(iso + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); }
+  function renderStyles() {
+    var styles = NG.STYLES.filter(function (x) { return !x.hidden; });
+    if (activeStyle && !styles.some(function (x) { return x.id === activeStyle; })) activeStyle = null;
+    $('styleGrid').innerHTML = styles.map(function (x) {
+      var dates = NG.BATCHES.filter(function (b) { return b.style_id === x.id && b.status !== 'full' && b.end >= NG.todayISO(); })
+        .sort(function (a, b) { return a.start < b.start ? -1 : 1; });
+      return '<button type="button" role="tab" class="style-card' + (x.id === activeStyle ? ' on' : '') + '" aria-selected="' + (x.id === activeStyle) + '" data-pick-style="' + x.id + '">' +
+        '<span class="sc-photo" style="background-image:url(\'' + x.photo.replace('w=1000', 'w=700') + '\')"></span>' +
+        '<span class="sc-body"><b>' + x.name + '</b><em>' + x.line + '</em>' +
+        '<small>' + (dates.length ? I('calendar') + 'Next batch ' + dShort(dates[0].start) : I('calendar') + 'Dates on request') + '</small>' +
+        '<span class="sc-go">See trips' + I('arrow') + '</span></span></button>';
+    }).join('');
+    renderStyleTrips();
+  }
+  function renderStyleTrips() {
+    if (!activeStyle) return;
+    var st = NG.style(activeStyle);
+    $('spHead').style.backgroundImage = 'linear-gradient(90deg,#0F1C18e6 0%,#0F1C1899 55%,#0F1C1833 100%),url(\'' + st.photo + '\')';
+    $('stKicker').innerHTML = I('route') + st.line;
+    $('stTitle').textContent = st.name;
+    var list = NG.TRIPS.slice().sort(function (a, b) { var na = nextBatch(a.id, st.id), nb = nextBatch(b.id, st.id); return (na ? 0 : 1) - (nb ? 0 : 1) || (na && nb ? (na.start < nb.start ? -1 : 1) : 0); });
     $('tripCount').textContent = list.length + ' trip' + (list.length === 1 ? '' : 's');
     $('tripGrid').innerHTML = list.map(function (t) {
+      var nb = nextBatch(t.id, st.id), pr = NG.priceFor(t, st.id);
       return '<article class="trip"><div class="trip-img" style="background-image:url(\'' + t.image + '\')"><span class="trip-tag">' + tag(t) + '</span></div>' +
-        '<div class="trip-body"><div class="trip-meta"><span>' + I('clock') + t.duration + '</span>' + (t.batches ? '<span>' + I('calendar') + 'Fixed batches</span>' : '') + '</div>' +
+        '<div class="trip-body"><div class="trip-meta"><span>' + I('clock') + t.duration + '</span><span class="' + (nb ? 'has-date' : '') + '">' + I('calendar') + (nb ? 'Next ' + dShort(nb.start) : 'Dates on request') + '</span></div>' +
         '<h3>' + t.title + '</h3><p>' + t.description + '</p>' +
         '<div class="trip-perks">' + t.perks.slice(0, 3).map(function (p) { return '<span>' + p + '</span>'; }).join('') + '</div>' +
-        '<div class="trip-foot"><div class="trip-price"><small>' + (t.variants ? 'From' : 'Price') + '</small><b>' + NG.fmt(t.from) + '</b> <em>/ ' + t.unit + '</em></div>' +
+        '<div class="trip-foot"><div class="trip-price"><small>' + (t.variants ? 'From' : 'Price') + '</small><b>' + NG.fmt(pr.price) + '</b> <em>/ ' + pr.unit + '</em></div>' +
         '<div class="trip-actions"><button type="button" class="btn btn-ghost btn-sm" data-details="' + t.id + '">Details</button>' +
-        '<button type="button" class="btn btn-gold btn-sm" data-book="' + t.id + '">' + I('ticket') + 'Book</button></div></div></div></article>';
+        '<button type="button" class="btn btn-gold btn-sm" data-book="' + t.id + '" data-style="' + st.id + '">' + I('calendar') + 'Choose dates</button></div></div></div></article>';
     }).join('');
   }
-  $('chips').addEventListener('click', function (e) { var b = e.target.closest('[data-filter]'); if (b) { active = b.dataset.filter; renderTrips(); } });
-  renderTrips();
+  /* Pop-up with the trips of the chosen style */
+  var sp = $('sp'), spLast = null;
+  function openStyle(id) {
+    activeStyle = id; spLast = document.activeElement;
+    renderStyles();
+    sp.hidden = false; sp.querySelector('.sp-body').scrollTop = 0;
+    requestAnimationFrame(function () { sp.classList.add('open'); });
+    document.documentElement.classList.add('sp-lock');
+    sp.querySelector('[data-sp-close]').focus({ preventScroll: true });
+  }
+  function closeStyle() {
+    sp.classList.remove('open'); document.documentElement.classList.remove('sp-lock');
+    setTimeout(function () { sp.hidden = true; }, 200);
+    activeStyle = null; renderStyles();
+    if (spLast && spLast.focus) spLast.focus({ preventScroll: true });
+  }
+  $('styleGrid').addEventListener('click', function (e) { var b = e.target.closest('[data-pick-style]'); if (b) openStyle(b.dataset.pickStyle); });
+  sp.addEventListener('click', function (e) { if (e.target === sp || e.target.closest('[data-sp-close]')) closeStyle(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || sp.hidden) return;
+    var bkEl = document.getElementById('bk');
+    if ((bkEl && !bkEl.hidden) || !$('dm').hidden) return; // the card on top closes first
+    closeStyle();
+  });
+  renderStyles();
+  document.addEventListener('ng:catalog', renderStyles);
+  document.addEventListener('ng:batches', renderStyles);
 
   /* Reveal on scroll */
   var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } }); }, { threshold: .12 }) : null;
   document.querySelectorAll('.reveal').forEach(function (el) { io ? io.observe(el) : el.classList.add('visible'); });
 })();
 </script>
-<script src="assets/booking.js?v=32"></script>
+<script src="assets/booking.js?v=36"></script>
 <script src="assets/scenes.js?v=32"></script>
 <script src="assets/hero.js?v=33"></script>
 <script src="assets/about.js?v=32"></script>
