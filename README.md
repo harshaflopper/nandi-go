@@ -3,7 +3,7 @@ Nandi Go — static website (Vercel) with a Supabase database.
 Pages
 - index.html — home: full-screen destination hero with the live route map, Coffee Estate Retreat boarding pass, all trips, how booking works, about, social, contact.
 - partners.html — Business Partners (District / Taluk), Premium Business Kit, onboarding steps, clickable Karnataka district map, application (opens the District or Taluk Google Form).
-- admin.html — admin page (Google sign-in, only nandigo2026@gmail.com): batches, bookings, partners, email alerts, settings. Not linked from the site; robots are told not to index it.
+- admin.html (open as /admin) — admin page (Google sign-in, only nandigo2026@gmail.com): batches, bookings, partners, email alerts, settings. Not linked from the site; robots are told not to index it.
 - district-partner-agreement.html — printable District Partner Agreement (draft for review).
 
 Files
