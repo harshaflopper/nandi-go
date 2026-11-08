@@ -208,6 +208,22 @@
     $('hxMapTo').textContent = d.name;
     preview(null);
     journey(i, false);
+    restartAuto();
+  }
+
+  /* ---------- Auto-advance: next place every 8 s, silently (no controls, no progress bar) ---------- */
+  var AUTO_MS = 8000, autoTimer = 0;
+  function restartAuto() {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(function () {
+      if (document.hidden) { restartAuto(); return; }   // wait while the tab is in the background
+      select(cur + 1, false);
+      // keep the active card in view inside the scrolling rail (phones) without moving the page
+      if (rail.scrollWidth > rail.clientWidth + 4) {
+        var b = thumbs[cur], br = b.getBoundingClientRect(), rr = rail.getBoundingClientRect();
+        rail.scrollTo({ left: rail.scrollLeft + (br.left - rr.left) - (rail.clientWidth - br.width) / 2, behavior: reduce ? 'auto' : 'smooth' });
+      }
+    }, AUTO_MS);
   }
 
   /* ---------- Events ---------- */
