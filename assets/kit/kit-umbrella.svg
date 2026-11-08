@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Navy blue umbrella"><defs>
-<linearGradient id="nv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E4580"/><stop offset=".55" stop-color="#1F3163"/><stop offset="1" stop-color="#15224A"/></linearGradient>
-<linearGradient id="nv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2A57"/><stop offset="1" stop-color="#111C3D"/></linearGradient>
+<linearGradient id="nv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F5F46"/><stop offset=".55" stop-color="#1F4A37"/><stop offset="1" stop-color="#163A2B"/></linearGradient>
+<linearGradient id="nv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A3D2E"/><stop offset="1" stop-color="#0F1C18"/></linearGradient>
 <linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E3A1"/><stop offset=".5" stop-color="#D4AF37"/><stop offset="1" stop-color="#A8841F"/></linearGradient>
 <linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF1"/><stop offset="1" stop-color="#F3E8CC"/></linearGradient>
 <radialGradient id="sh"><stop offset="0" stop-color="#0F1C18" stop-opacity=".22"/><stop offset="1" stop-color="#0F1C18" stop-opacity="0"/></radialGradient>
 </defs><ellipse cx="120" cy="214" rx="76" ry="9" fill="url(#sh)"/>
 <path d="M120 22 V42" stroke="url(#gd)" stroke-width="4" stroke-linecap="round"/>
-<path d="M120 40 Q60 56 28 124 Q51 108 74 124 Q92 76 120 40 Z" fill="#2F4785"/>
-<path d="M120 40 Q92 76 74 124 Q97 108 120 124 Z" fill="#1A2A57"/>
-<path d="M120 40 V124 Q143 108 166 124 Q148 76 120 40 Z" fill="#2F4785"/>
-<path d="M120 40 Q148 76 166 124 Q189 108 212 124 Q180 56 120 40 Z" fill="#1A2A57"/>
+<path d="M120 40 Q60 56 28 124 Q51 108 74 124 Q92 76 120 40 Z" fill="#2F5F46"/>
+<path d="M120 40 Q92 76 74 124 Q97 108 120 124 Z" fill="#1A3D2E"/>
+<path d="M120 40 V124 Q143 108 166 124 Q148 76 120 40 Z" fill="#2F5F46"/>
+<path d="M120 40 Q148 76 166 124 Q189 108 212 124 Q180 56 120 40 Z" fill="#1A3D2E"/>
 <path d="M28 124 Q51 108 74 124 Q97 108 120 124 Q143 108 166 124 Q189 108 212 124" fill="none" stroke="#D4AF37" stroke-width="2.4" stroke-linejoin="round"/>
 <g fill="url(#gd)"><circle cx="28" cy="124" r="3"/><circle cx="74" cy="124" r="3"/><circle cx="120" cy="124" r="3"/><circle cx="166" cy="124" r="3"/><circle cx="212" cy="124" r="3"/></g>
 <path d="M120 124 V194" stroke="#9AA3B2" stroke-width="4"/>

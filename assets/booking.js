@@ -1,6 +1,6 @@
 /* Nandi Go booking card — shared by every page.
  * Step 1: travel style + date (a calendar of that trip's batches for the style).
- * Step 2: traveller details. The request is saved in Supabase and sent on WhatsApp.
+ * Step 2: lead traveller's contact, every traveller's name and age, total, Pay (Razorpay will be connected here).
  * Open it from any element:  data-book="goa"  data-style="girls"  data-batch="<batch id>"  data-variant="standard" (all optional) */
 (function () {
   var NG = window.NG, I = window.NGIcon;
@@ -19,7 +19,7 @@
     '    <h3 id="bkSumTitle"></h3>' +
     '    <div class="bk-sum-meta"><span>' + I('clock') + '<em id="bkSumDuration"></em></span><span>' + I('rupee') + '<em id="bkSumPrice"></em></span></div>' +
     '    <ul class="bk-sum-perks" id="bkSumPerks"></ul>' +
-    '    <p class="bk-sum-pay">' + I('shield') + '<span>Pay only to Nandi Go\'s official UPI / bank account, after our coordinator confirms your booking.</span></p>' +
+    '    <p class="bk-sum-pay">' + I('shield') + '<span>Full payment online through Razorpay — UPI, cards and net banking. Nandi Go never asks you to pay a partner or a personal account.</span></p>' +
     '   </div>' +
     '  </aside>' +
     '  <div class="bk-main">' +
@@ -37,21 +37,21 @@
     '    <form id="bkForm" novalidate hidden>' +
     '     <div class="bk-picked bk-wide" id="bkPicked"></div>' +
     '     <div class="bk-field"><span id="bkPaxLabel">Travellers</span><div class="bk-stepper"><button type="button" data-step="-1" aria-label="Fewer">' + I('minus') + '</button><output id="bkPax">2</output><button type="button" data-step="1" aria-label="More">' + I('plus') + '</button></div><small class="bk-pax-note" id="bkPaxNote"></small></div>' +
-    '     <label class="bk-field"><span>Full name</span><input id="bkName" autocomplete="name" required maxlength="80" placeholder="Your name"></label>' +
     '     <label class="bk-field"><span>WhatsApp number</span><input id="bkPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="10-digit mobile"></label>' +
-    '     <label class="bk-field"><span>Email <small>(optional)</small></span><input id="bkEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>' +
-    '     <div class="bk-total bk-wide"><div><span>Estimated total</span><strong id="bkTotal"></strong><small id="bkTotalNote"></small></div><div class="bk-adv" id="bkAdvance"></div></div>' +
+    '     <label class="bk-field bk-wide"><span>Email <small>(for your booking confirmation)</small></span><input id="bkEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>' +
+    '     <div class="bk-field bk-wide"><span>Who is travelling</span><div class="bk-guests" id="bkGuests"></div></div>' +
+    '     <div class="bk-total bk-wide"><div><span>Total amount</span><strong id="bkTotal"></strong><small id="bkTotalNote"></small></div><div class="bk-adv" id="bkAdvance"></div></div>' +
     '     <p class="bk-error bk-wide" id="bkError" role="alert" hidden></p>' +
-    '     <button type="submit" class="btn btn-forest bk-submit bk-wide">' + I('send') + 'Send booking request</button>' +
-    '     <p class="bk-fine bk-wide">This saves your request and opens WhatsApp with your details for the Nandi Go team. No payment is taken on this website.</p>' +
+    '     <button type="submit" class="btn btn-forest bk-submit bk-wide" id="bkPay">' + I('card') + '<span id="bkPayText">Pay</span></button>' +
+    '     <p class="bk-fine bk-wide">' + I('shield') + 'Secure payment by Razorpay. Your seats are confirmed as soon as the payment goes through.</p>' +
     '    </form>' +
     '   </div>' +
     '   <div id="bkDoneView" class="bk-done" hidden>' +
     '    <div class="bk-done-mark">' + I('check') + '</div>' +
-    '    <h2>Request ready</h2>' +
-    '    <p>Send the WhatsApp message to confirm. Our coordinator will reply with availability and payment details.</p>' +
+    '    <h2>Booking saved</h2>' +
+    '    <p id="bkDoneText">Online payment is being switched on. Our team will contact you on WhatsApp shortly to complete the payment and confirm your seats.</p>' +
     '    <dl class="bk-receipt" id="bkReceipt"></dl>' +
-    '    <div class="bk-done-actions"><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Open WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
+    '    <div class="bk-done-actions"><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Chat on WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
     '    <button type="button" class="bk-link" data-bk-close>Done</button>' +
     '   </div>' +
     '  </div>' +
@@ -168,6 +168,22 @@
     var b = batchObj(), p = priceNow();
     return b && b.live ? Math.max(1, Math.min(30, Math.floor(b.left / (p.unit === 'couple' ? 2 : 1)))) : 30;
   }
+  function guestCount() { var p = priceNow(); return state.pax * (p.unit === 'couple' ? 2 : 1); }
+  function renderGuests() {
+    var box = $('bkGuests'), n = guestCount(), p = priceNow(), keep = state.guests || [];
+    // keep what was typed when the number of travellers changes
+    box.querySelectorAll('.bk-guest').forEach(function (row, i) { keep[i] = { name: row.querySelector('[data-g=name]').value, age: row.querySelector('[data-g=age]').value }; });
+    state.guests = keep;
+    var html = '';
+    for (var i = 0; i < n; i++) {
+      var g = keep[i] || { name: '', age: '' };
+      var label = p.unit === 'couple' ? 'Couple ' + (Math.floor(i / 2) + 1) + ' · person ' + (i % 2 + 1) : 'Traveller ' + (i + 1);
+      if (i === 0) label += ' (you)';
+      html += '<div class="bk-guest"><span>' + label + '</span><input data-g="name" maxlength="80" placeholder="Full name" value="' + esc(g.name) + '"' + (i === 0 ? ' autocomplete="name" id="bkName"' : '') + '>' +
+        '<input data-g="age" type="number" min="0" max="110" inputmode="numeric" placeholder="Age" value="' + esc(g.age) + '"></div>';
+    }
+    box.innerHTML = html;
+  }
   function renderStep2() {
     var t = state.trip, st = NG.style(state.style), b = batchObj(), p = priceNow();
     state.pax = Math.min(state.pax, maxPax());
@@ -176,6 +192,7 @@
       '<button type="button" class="bk-link" data-back>Change</button>';
     $('bkPaxLabel').textContent = p.unit === 'couple' ? 'Couples' : 'Travellers';
     $('bkPaxNote').textContent = b && b.live ? b.left + ' seat' + (b.left === 1 ? '' : 's') + ' left in this batch' : '';
+    renderGuests();
     renderTotal();
   }
   function renderTotal() {
@@ -183,9 +200,8 @@
     $('bkPax').textContent = state.pax;
     $('bkTotal').textContent = NG.fmt(p.price * state.pax);
     $('bkTotalNote').textContent = NG.fmt(p.price) + ' × ' + state.pax + ' ' + unitWord(p.unit, state.pax);
-    $('bkAdvance').innerHTML = state.trip.group === 'retreat'
-      ? '<b>₹1,000 advance</b><span>reserves your seat · balance on arrival</span>'
-      : '<b>Advance on confirmation</b><span>amount shared by our coordinator</span>';
+    $('bkAdvance').innerHTML = '<b>Full payment</b><span>UPI · cards · net banking</span>';
+    $('bkPayText').textContent = 'Pay ' + NG.fmt(p.price * state.pax);
   }
 
   function go(step) {
@@ -203,7 +219,7 @@
     var styleOk = function (s) { return s && visibleStyles().some(function (x) { return x.id === s; }); };
     state.trip = t;
     state.style = styleOk(opts.style) ? opts.style : (styleOk(state.style) ? state.style : (visibleStyles()[0] || NG.STYLES[0]).id);
-    state.batch = opts.batch || null; state.variant = opts.variant || null; state.month = null; state.date = '';
+    state.batch = opts.batch || null; state.variant = opts.variant || null; state.month = null; state.date = ''; state.guests = []; $('bkGuests').innerHTML = '';
     fillTrips();
     $('bkFormView').hidden = false; $('bkDoneView').hidden = true; $('bkError').hidden = true; $('bkError1').hidden = true;
     go(1);
@@ -243,9 +259,15 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var t = state.trip, name = $('bkName').value.trim(), phone = cleanPhone($('bkPhone').value), email = $('bkEmail').value.trim();
+    var t = state.trip, phone = cleanPhone($('bkPhone').value), email = $('bkEmail').value.trim();
+    var guests = [].map.call($('bkGuests').querySelectorAll('.bk-guest'), function (row) {
+      return { name: row.querySelector('[data-g=name]').value.trim().slice(0, 80), age: row.querySelector('[data-g=age]').value === '' ? null : +row.querySelector('[data-g=age]').value };
+    });
+    var name = guests[0] ? guests[0].name : '';
     var err = '';
-    if (!name) err = 'Please enter your name.';
+    var missing = guests.findIndex(function (g) { return !g.name; }), badAge = guests.findIndex(function (g) { return g.age === null || !(g.age >= 0 && g.age <= 110); });
+    if (missing >= 0) err = missing === 0 ? 'Please enter your full name.' : 'Please enter the name of traveller ' + (missing + 1) + '.';
+    else if (badAge >= 0) err = 'Please enter the age of ' + (badAge === 0 ? 'yourself' : 'traveller ' + (badAge + 1)) + '.';
     else if (!/^[6-9]\d{9}$/.test(phone)) err = 'Please enter a valid 10-digit mobile number.';
     else if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) err = 'Please check the email address.';
     if (err) { $('bkError').textContent = err; $('bkError').hidden = false; return; }
@@ -257,16 +279,15 @@
     state.ref = 'NG-' + Date.now().toString(36).toUpperCase().slice(-6) + Math.random().toString(36).toUpperCase().slice(2, 4).replace(/[^A-Z0-9]/g, '0');
     var rows = [
       ['Reference', state.ref], ['Trip', t.title + (variant ? ' — ' + variant.label : '')], ['Travel style', st ? st.name : ''], ['Date', when],
-      ['Travellers', state.pax + ' ' + unitWord(p.unit, state.pax)], ['Estimated total', NG.fmt(p.price * state.pax)],
-      ['Name', name], ['WhatsApp', phone]
+      ['Travellers', state.pax + ' ' + unitWord(p.unit, state.pax) + ': ' + guests.map(function (g) { return g.name + ' (' + g.age + ')'; }).join(', ')],
+      ['Total', NG.fmt(p.price * state.pax)], ['Booked by', name], ['WhatsApp', phone]
     ];
     if (email) rows.push(['Email', email]);
     if (refCode()) rows.push(['Partner code', refCode()]);
     $('bkReceipt').innerHTML = rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('');
-    var msg = 'Hi Nandi Go! I would like to book a trip.\n\n' + rows.map(function (r) { return '• ' + r[0] + ': ' + r[1]; }).join('\n') +
-      '\n\nPlease confirm availability and share the payment details.';
-    state.summary = 'NANDI GO — BOOKING REQUEST\n\n' + rows.map(function (r) { return r[0] + ': ' + r[1]; }).join('\n') +
-      '\n\nPay only to Nandi Go\'s official UPI / bank account after confirmation.\nWhatsApp: ' + NG.PHONES[0];
+    var msg = 'Hi Nandi Go! I have booked on the website and would like to complete the payment.\n\n' + rows.map(function (r) { return '• ' + r[0] + ': ' + r[1]; }).join('\n');
+    state.summary = 'NANDI GO — BOOKING\n\n' + rows.map(function (r) { return r[0] + ': ' + r[1]; }).join('\n') +
+      '\n\nNandi Go never asks you to pay a partner or a personal account.\nWhatsApp: ' + NG.PHONES[0];
     var link = 'https://wa.me/' + NG.WHATSAPP + '?text=' + encodeURIComponent(msg);
     $('bkWa').href = link;
 
@@ -274,26 +295,26 @@
       ref: state.ref, trip_id: t.id, trip_title: t.title, style_id: state.style, variant: variant ? variant.label : null,
       batch_id: b && b.live ? b.id : null, travel_date: b ? b.start : (state.date || null),
       travellers: state.pax, unit: p.unit, estimated_total: p.price * state.pax,
-      name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refCode()
+      name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refCode(), guests: guests
     };
     var submitBtn = form.querySelector('[type=submit]');
-    var w = window.open('', '_blank'); // open now so the pop-up is not blocked
+    // Razorpay checkout will open here once it is connected; for now the booking is saved for the team.
     if (submitBtn) submitBtn.disabled = true;
     var save = NG.DB ? NG.DB.insert('bookings', row) : Promise.resolve(false);
     save.then(finish, function (e) {
       console.warn('Nandi Go: booking not saved', e);
       if (/no longer open/i.test(e.message)) {
-        if (w) w.close();
         if (submitBtn) submitBtn.disabled = false;
         if (NG.refreshBatches) NG.refreshBatches().then(function () { go(1); $('bkError1').textContent = 'Sorry, that batch just filled up. Please choose another date.'; $('bkError1').hidden = false; });
         return;
       }
-      finish();
+      if (submitBtn) submitBtn.disabled = false;
+      $('bkError').innerHTML = 'Sorry, we could not save your booking. Please try again, or <a href="' + link + '" target="_blank" rel="noopener">book on WhatsApp</a>.';
+      $('bkError').hidden = false;
     });
     function finish() {
       if (submitBtn) submitBtn.disabled = false;
       $('bkFormView').hidden = true; $('bkDoneView').hidden = false;
-      if (w) { try { w.opener = null; w.location.href = link; } catch (x) { window.open(link, '_blank', 'noopener'); } }
     }
   });
 
@@ -314,7 +335,7 @@
     if ((x = e.target.closest('#bkCal [data-date]'))) { state.date = x.dataset.date; var di = $('bkDate'); if (di) di.value = state.date; renderCalendar([]); return; }
     if ((x = e.target.closest('#bkCal [data-month]'))) { shiftMonth(+x.dataset.month); return; }
     if (e.target.closest('[data-back]')) { go(1); return; }
-    if ((x = e.target.closest('[data-step]'))) { state.pax = Math.max(1, Math.min(maxPax(), state.pax + Number(x.dataset.step))); renderTotal(); }
+    if ((x = e.target.closest('[data-step]'))) { state.pax = Math.max(1, Math.min(maxPax(), state.pax + Number(x.dataset.step))); renderGuests(); renderTotal(); }
   });
   document.addEventListener('keydown', function (e) {
     if (bk.hidden) return;

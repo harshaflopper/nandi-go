@@ -59,7 +59,8 @@
     pause: '<path d="M8.5 5.5v13M15.5 5.5v13"/>',
     prev: '<path d="m14.5 6-6 6 6 6"/>',
     next: '<path d="m9.5 6 6 6-6 6"/>',
-    send: '<path d="m4 11.5 16-7-6 16-2.5-6.5Z"/><path d="m11.5 14 8.5-9.5"/>'
+    send: '<path d="m4 11.5 16-7-6 16-2.5-6.5Z"/><path d="m11.5 14 8.5-9.5"/>',
+    card: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6.5 15h4"/>'
   };
   var sprite = '<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">' +
     Object.keys(P).map(function (k) {

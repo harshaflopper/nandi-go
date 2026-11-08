@@ -232,3 +232,19 @@ body.ad{background:var(--cream);min-height:100vh}
 .ad-gone{margin-top:14px;font-size:13px;color:var(--muted)}
 .ad-gone summary{cursor:pointer;margin-bottom:8px}
 @media(max-width:900px){.ad-ptmap{grid-template-columns:minmax(0,1fr)}.ad-mapcard{position:relative;top:0;max-width:420px}}
+
+/* reviews */
+.ad-rvlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.ad-rv{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.ad-rv.feat{border-color:var(--gold)}
+.ad-rv-ph{display:flex;gap:2px}
+.ad-rv-ph a{flex:1;height:120px;background:#eee center/cover}
+.ad-rv-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px}
+.ad-rv-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ad-stars{color:#DCD3BF;font-size:15px;margin-right:4px}.ad-stars i{font-style:normal}.ad-stars i.on{color:var(--gold)}
+.ad-rv-title{color:var(--forest);font-size:15px}
+.ad-rv p{margin:0;font-size:13.5px;line-height:1.6;color:#3E5247;white-space:pre-wrap}
+.ad-rv small{color:var(--muted);font-size:12px}
+.ad-rv small a{text-decoration:underline}
+.ad-rv .ad-row-actions{margin-top:6px}
+.ad-tabs i{font-style:normal}

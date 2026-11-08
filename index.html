@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=37"/>
+<link rel="stylesheet" href="site.css?v=43"/>
 </head>
 <body>
 
@@ -21,6 +21,7 @@
    <a href="#trips">Trips</a>
    <a href="#retreat" class="nav-new"><span class="dot" aria-hidden="true"></span>Coffee Retreat</a>
    <a href="#how">How it works</a>
+   <a href="#reviews">Reviews</a>
    <a href="#about">About</a>
    <div class="nav-drop"><a href="partners.html" aria-haspopup="true">Business Partners <svg class="ic"><use href="#i-chevron"/></svg></a>
     <div class="nav-drop-menu"><a href="partners.html#district">District Partners</a><a href="partners.html#taluk">Taluk Partners</a></div></div>
@@ -95,8 +96,8 @@
     <div class="tk-meta">
      <div><span>Duration</span><b>1 Night · 2 Days</b></div>
      <div><span>Group</span><b>20 seats per batch</b></div>
-     <div><span>To reserve</span><b>₹1,000 advance</b></div>
-     <div><span>Balance</span><b>On arrival</b></div>
+     <div><span>Payment</span><b>Full, online</b></div>
+     <div><span>Pay with</span><b>UPI · Card · Net banking</b></div>
     </div>
     <div class="tk-tabs" role="tablist" id="tkTabs"></div>
     <div class="tk-pkg" id="tkPkg"></div>
@@ -123,10 +124,31 @@
   <div class="steps">
    <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-users"/></svg></div><h3>Pick your style</h3><p>Girls only, strangers to friends, couples or the whole family. Choose who you travel with.</p></article>
    <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-calendar"/></svg></div><h3>Choose trip and date</h3><p>Open a trip and pick one of our batch dates. Seats left are shown live.</p></article>
-   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-rupee"/></svg></div><h3>Book and pay</h3><p>Add your details and pay the advance to Nandi Go's official account. Your booking reaches our team instantly.</p></article>
+   <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-rupee"/></svg></div><h3>Book and pay</h3><p>Add every traveller's name and pay the full amount securely online. Your seats are confirmed right away.</p></article>
    <article class="step reveal"><div class="step-ic"><svg class="ic"><use href="#i-bus"/></svg></div><h3>Travel</h3><p>We handle transport, stay, food and sightseeing. You just enjoy the trip.</p></article>
   </div>
-  <p class="pay-note reveal"><svg class="ic"><use href="#i-shield"/></svg>Nandi Go never asks you to pay a partner or a personal account. Payments go only to the company's official UPI / bank account.</p>
+  <p class="pay-note reveal"><svg class="ic"><use href="#i-shield"/></svg>Pay only on this website through our secure payment page. Nandi Go never asks you to pay a partner or a personal account.</p>
+ </div>
+</section>
+
+<!-- ============ REVIEWS ============ -->
+<section class="section reviews" id="reviews">
+ <div class="container">
+  <div class="rv-top">
+   <div class="section-head reveal">
+    <span class="kicker"><svg class="ic"><use href="#i-star"/></svg>Traveller stories</span>
+    <h2>Told by the people who <em>went</em></h2>
+    <p>Real words and photos from Nandi Go travellers. Back from a trip? Tell us how it went.</p>
+   </div>
+   <div class="rv-score reveal">
+    <b id="rvAvg">–</b>
+    <div><span id="rvAvgStars"></span><small id="rvCount"></small></div>
+    <button type="button" class="btn btn-gold" data-write-review><svg class="ic"><use href="#i-heart"/></svg>Write a review</button>
+   </div>
+  </div>
+  <div class="chips rv-chips" id="rvChips" role="tablist" aria-label="Filter reviews"></div>
+  <div class="rv-list" id="rvList"><p class="rv-empty">Loading reviews…</p></div>
+  <div class="rv-more-wrap"><button type="button" class="btn btn-ghost" id="rvMore" hidden>Show more reviews</button></div>
  </div>
 </section>
 
@@ -223,7 +245,7 @@
    </div>
    <div>
     <h4>Explore</h4>
-    <a href="#home">Destinations</a><a href="#trips">Trips</a><a href="#retreat">Coffee Estate Retreat</a><a href="#how">How booking works</a>
+    <a href="#home">Destinations</a><a href="#trips">Trips</a><a href="#retreat">Coffee Estate Retreat</a><a href="#how">How booking works</a><a href="#reviews">Traveller reviews</a>
    </div>
    <div>
     <h4>Company</h4>
@@ -256,6 +278,40 @@
   <div class="sp-body"><div class="trips" id="tripGrid"></div></div>
  </div>
 </div>
+<div class="pm" id="rvForm" hidden>
+ <div class="pm-card rv-pm" role="dialog" aria-modal="true" aria-labelledby="rvFormTitle">
+  <button type="button" class="pm-close" data-rv-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+  <div class="pm-body" id="rvFormBox">
+   <span class="kicker">Share your trip</span>
+   <h3 id="rvFormTitle">Write a review</h3>
+   <form id="rvFormEl" novalidate>
+    <div class="rv-rate"><div class="rv-pick" id="rvPick" role="radiogroup" aria-label="Your rating"></div><span id="rvPickLabel">Tap to rate</span></div>
+    <div class="rv-grid">
+     <label>Your name *<input name="name" maxlength="60" autocomplete="name" placeholder="As you want it shown"></label>
+     <label>Where are you from<input name="place" maxlength="60" placeholder="Bengaluru"></label>
+     <label>Trip<select name="trip" id="rvTrip"></select></label>
+     <label>Travel style<select name="style" id="rvStyle"></select></label>
+     <label class="rv-full">Headline<input name="title" maxlength="90" placeholder="Sum it up in a line"></label>
+     <label class="rv-full">Your review *<textarea name="body" maxlength="1200" rows="5" placeholder="What did you love? The stay, the people, the moments…"></textarea></label>
+     <div class="rv-full"><span class="rv-lab">Photos <small>(up to 3)</small></span><div class="rv-thumbs" id="rvThumbs"></div></div>
+     <label>WhatsApp <small>(optional, not shown)</small><input name="phone" type="tel" inputmode="numeric" maxlength="14" placeholder="So we can thank you"></label>
+     <span></span>
+     <label class="ng-check rv-full"><input type="checkbox" name="consent"><span>Nandi Go may show my name, review and photos on its website.</span></label>
+    </div>
+    <p class="pm-error" id="rvErr" role="alert" hidden></p>
+    <button type="submit" class="btn btn-forest rv-submit" id="rvSubmit"><svg class="ic"><use href="#i-send"/></svg><span>Post my review</span></button>
+    <p class="rv-note">Reviews appear after a quick check by our team, usually within a day.</p>
+   </form>
+  </div>
+  <div class="pm-body pm-done" id="rvDone" hidden>
+   <div class="pm-mark"><svg class="ic"><use href="#i-heart"/></svg></div>
+   <h3>Thank you!</h3>
+   <p>Your review is with our team and will appear here soon. We are so glad you travelled with Nandi Go.</p>
+   <button type="button" class="green-btn" data-rv-close>Done</button>
+  </div>
+ </div>
+</div>
+<div class="rv-lb" id="rvLightbox" hidden><img id="rvLbImg" alt="Traveller photo"></div>
 <div class="dm" id="dm" hidden>
  <div class="dm-card" role="dialog" aria-modal="true" aria-labelledby="dmTitle">
   <button type="button" class="dp-close" data-dm-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
@@ -270,7 +326,7 @@
  </div>
 </div>
 
-<script src="assets/icons.js?v=32"></script>
+<script src="assets/icons.js?v=40"></script>
 <script src="assets/data.js?v=36"></script>
 <script src="assets/map-data.js?v=32"></script>
 <script src="assets/db.js?v=36"></script>
@@ -328,7 +384,7 @@
         (full ? '<button type="button" class="btn btn-ghost light btn-sm" disabled>Batch full</button>'
               : '<button type="button" class="btn btn-gold btn-sm" data-book="' + t.id + '" data-style="' + tkStyle + '" data-batch="' + b.id + '">' + I('ticket') + 'Book this batch</button>') + '</div>';
     }).join('') + (list.length ? '' : '<p class="tk-stub-foot">No ' + (st.name || '') + ' dates yet. <button type="button" class="tk-ask" data-book="' + t.id + '" data-style="' + tkStyle + '">Request a date</button></p>') +
-      '<p class="tk-stub-foot">₹1,000 advance reserves your seat. Balance on arrival.</p><div class="tk-barcode" aria-hidden="true"></div>';
+      '<p class="tk-stub-foot">Pay in full online. Your seats are confirmed on payment.</p><div class="tk-barcode" aria-hidden="true"></div>';
   }
   $('tkTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tkstyle]'); if (b) { tkStyle = b.dataset.tkstyle; renderTicket(); } });
   renderTicket();
@@ -371,13 +427,12 @@
     $('tripCount').textContent = list.length + ' trip' + (list.length === 1 ? '' : 's');
     $('tripGrid').innerHTML = list.map(function (t) {
       var nb = nextBatch(t.id, st.id), pr = NG.priceFor(t, st.id);
-      return '<article class="trip"><div class="trip-img" style="background-image:url(\'' + t.image + '\')"><span class="trip-tag">' + tag(t) + '</span></div>' +
+      return '<article class="trip trip-click" tabindex="0" role="button" aria-label="' + t.title + ': choose dates" data-book="' + t.id + '" data-style="' + st.id + '"><div class="trip-img" style="background-image:url(\'' + t.image + '\')"><span class="trip-tag">' + tag(t) + '</span></div>' +
         '<div class="trip-body"><div class="trip-meta"><span>' + I('clock') + t.duration + '</span><span class="' + (nb ? 'has-date' : '') + '">' + I('calendar') + (nb ? 'Next ' + dShort(nb.start) : 'Dates on request') + '</span></div>' +
         '<h3>' + t.title + '</h3><p>' + t.description + '</p>' +
         '<div class="trip-perks">' + t.perks.slice(0, 3).map(function (p) { return '<span>' + p + '</span>'; }).join('') + '</div>' +
         '<div class="trip-foot"><div class="trip-price"><small>' + (t.variants ? 'From' : 'Price') + '</small><b>' + NG.fmt(pr.price) + '</b> <em>/ ' + pr.unit + '</em></div>' +
-        '<div class="trip-actions"><button type="button" class="btn btn-ghost btn-sm" data-details="' + t.id + '">Details</button>' +
-        '<button type="button" class="btn btn-gold btn-sm" data-book="' + t.id + '" data-style="' + st.id + '">' + I('calendar') + 'Choose dates</button></div></div></div></article>';
+        '<div class="trip-actions"><span class="trip-go">' + I('calendar') + (nb ? 'See dates' : 'Pick a date') + I('arrow') + '</span></div></div></div></article>';
     }).join('');
   }
   /* Pop-up with the trips of the chosen style */
@@ -397,6 +452,7 @@
     if (spLast && spLast.focus) spLast.focus({ preventScroll: true });
   }
   $('styleGrid').addEventListener('click', function (e) { var b = e.target.closest('[data-pick-style]'); if (b) openStyle(b.dataset.pickStyle); });
+  $('tripGrid').addEventListener('keydown', function (e) { var c = e.target.closest('.trip-click'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); c.click(); } });
   sp.addEventListener('click', function (e) { if (e.target === sp || e.target.closest('[data-sp-close]')) closeStyle(); });
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape' || sp.hidden) return;
@@ -413,7 +469,8 @@
   document.querySelectorAll('.reveal').forEach(function (el) { io ? io.observe(el) : el.classList.add('visible'); });
 })();
 </script>
-<script src="assets/booking.js?v=36"></script>
+<script src="assets/booking.js?v=41"></script>
+<script src="assets/reviews.js?v=2"></script>
 <script src="assets/scenes.js?v=32"></script>
 <script src="assets/hero.js?v=33"></script>
 <script src="assets/about.js?v=32"></script>

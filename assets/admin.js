@@ -7,7 +7,7 @@
 
   var DISTRICTS = ['Bagalkote','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Chamarajanagar','Chikkaballapura','Chikkamagaluru','Chitradurga','Dakshina Kannada','Davanagere','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Kodagu','Kolar','Koppal','Mandya','Mysuru','Raichur','Ramanagara','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayanagara','Vijayapura','Yadgir'];
   var KIT_TARGET = 10; // confirmed persons before the ₹4,999 kit is refunded
-  var S = { batches: [], bookings: [], partners: [], kyc: [], settings: {}, trips: [], styles: [], tab: 'overview' };
+  var S = { batches: [], bookings: [], partners: [], kyc: [], reviews: [], settings: {}, trips: [], styles: [], tab: 'overview' };
 
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
@@ -19,7 +19,7 @@
   var tripName = function (id) { var t = byId(S.trips, id) || NG.trip(id); return t ? t.title : id; };
   var styleName = function (id) { var st = NG.style(id); return st ? st.name : (id || ''); };
   var unitFor = function (styleId, trip) { return styleId === 'couples' || (trip && trip.unit === 'couple') ? 'couple' : 'person'; };
-  var STATUS_LABEL = { new: 'New request', confirmed: 'Confirmed', cancelled: 'Cancelled', completed: 'Completed', open: 'Open', full: 'Full', closed: 'Closed', applied: 'Applied', approved: 'Approved', active: 'Active', paused: 'Paused', rejected: 'Rejected', terminated: 'Terminated' };
+  var STATUS_LABEL = { new: 'Awaiting payment', confirmed: 'Confirmed', cancelled: 'Cancelled', completed: 'Completed', open: 'Open', full: 'Full', closed: 'Closed', applied: 'Applied', approved: 'Approved', active: 'Active', paused: 'Paused', rejected: 'Rejected', terminated: 'Terminated' };
   var pill = function (s) { return '<span class="ad-pill s-' + esc(s) + '">' + esc(STATUS_LABEL[s] || s) + '</span>'; };
 
   function toast(msg, bad) {
@@ -84,17 +84,18 @@
       sb.from('app_settings').select('key,value'),
       sb.from('trips').select('*').order('sort').order('title'),
       sb.from('styles').select('*').order('sort'),
-      sb.from('partner_kyc').select('*').order('created_at', { ascending: false })
+      sb.from('partner_kyc').select('*').order('created_at', { ascending: false }),
+      sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(500)
     ]).then(function (r) {
       var bad = r.filter(function (x) { return x.error; })[0];
       if (bad) { toast(friendly(bad.error), true); return; }
       S.batches = r[0].data; S.bookings = r[1].data; S.partners = r[2].data;
       S.settings = {}; r[3].data.forEach(function (x) { S.settings[x.key] = x.value; });
-      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data;
+      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data;
       renderAll();
     });
   }
-  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); }
+  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); }
 
   /* ---------------- Overview ---------------- */
   function renderOverview() {
@@ -114,7 +115,8 @@
       stat(fmt(paid), 'Amount received (confirmed)', 'bookings') +
       stat(live.length, 'Upcoming batches', 'batches') +
       stat(waiting.length, 'Partner applications to review', 'partners') +
-      stat(refunds.length, 'Kit refunds due', 'partners');
+      stat(refunds.length, 'Kit refunds due', 'partners') +
+      stat(S.reviews.filter(function (x) { return x.status === 'pending'; }).length, 'Reviews to approve', 'reviews');
     $('adOvBatches').innerHTML = live.length ? live.slice().sort(function (a, b) { return a.start_date < b.start_date ? -1 : 1; }).map(batchRow).join('') : '<p class="ad-empty">No upcoming batches. Create one in Batches.</p>';
     $('adOvBookings').innerHTML = newReq.length ? newReq.slice(0, 6).map(function (k) {
       return '<button class="ad-mini" data-edit-booking="' + k.id + '"><b>' + esc(k.name) + '</b><span>' + esc(k.trip_title) + ' · ' + seatsOf(k) + ' seat' + (seatsOf(k) > 1 ? 's' : '') + '</span><em>' + day(k.created_at.slice(0, 10)) + '</em></button>';
@@ -269,6 +271,12 @@
       return '<option value="' + b.id + '"' + (b.id === sel ? ' selected' : '') + '>' + esc(b.label + ' · ' + range(b) + ' · ' + b.seats_taken + '/' + b.seats_total + ' (' + (STATUS_LABEL[b.status]) + ')') + '</option>';
     }).join('');
   }
+  function guestsBlock(k) {
+    var g = k.guests || []; if (!g.length) return '';
+    return '<div class="ad-box"><h4>Travellers (' + g.length + ')</h4><dl class="ad-dl">' + g.map(function (x, i) {
+      return '<div><dt>' + (i === 0 ? 'Traveller 1 (booked)' : 'Traveller ' + (i + 1)) + '</dt><dd>' + esc(x.name || '') + (x.age != null ? ', ' + esc(x.age) + ' yrs' : '') + '</dd></div>';
+    }).join('') + '</dl></div>';
+  }
   function editBooking(k) {
     var isNew = !k;
     k = k || { trip_id: (S.trips[0] || {}).id, style_id: 'friends', travellers: 1, status: 'confirmed', unit: 'person' };
@@ -289,7 +297,7 @@
       '<div class="ad-2"><label class="ad-check"><input type="checkbox" name="advance_paid"' + (k.advance_paid ? ' checked' : '') + '/> Advance received</label>' +
       '<label>Payment reference (UPI / bank)<input name="payment_ref" maxlength="80" value="' + esc(k.payment_ref || '') + '"/></label></div>' +
       '<label>Notes<textarea name="admin_notes" rows="2">' + esc(k.admin_notes || '') + '</textarea></label>' +
-      (isNew ? '' : '<p class="ad-hint">Requested ' + day(k.created_at.slice(0, 10)) + (k.variant ? ' · ' + esc(k.variant) : '') + '. Confirmed seats count towards the batch; when it is full the batch closes and you get an email.</p>'),
+      (isNew ? '' : guestsBlock(k)) + (isNew ? '' : '<p class="ad-hint">Booked ' + day(k.created_at.slice(0, 10)) + (k.variant ? ' · ' + esc(k.variant) : '') + '. Confirmed seats count towards the batch; when it is full the batch closes and you get an email.</p>'),
       function (v) {
         var t = byId(S.trips, v.trip_id) || { title: v.trip_id, unit: 'person' };
         var phone = v.phone.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '').replace(/^0(?=\d{10}$)/, '');
@@ -316,10 +324,10 @@
     $('mTrip').addEventListener('change', syncBooking); $('mStyle').addEventListener('change', syncBooking);
   }
   $('adExport').addEventListener('click', function () {
-    var cols = ['ref', 'created_at', 'status', 'trip_title', 'style_id', 'variant', 'travel_date', 'travellers', 'unit', 'name', 'phone', 'email', 'estimated_total', 'advance_paid', 'amount_paid', 'payment_ref', 'partner_code', 'admin_notes'];
+    var cols = ['ref', 'created_at', 'status', 'trip_title', 'style_id', 'variant', 'travellers_names', 'travel_date', 'travellers', 'unit', 'name', 'phone', 'email', 'estimated_total', 'advance_paid', 'amount_paid', 'payment_ref', 'partner_code', 'admin_notes'];
     var lines = [cols.concat('batch').join(',')].concat(filteredBookings().map(function (k) {
       var b = byId(S.batches, k.batch_id);
-      return cols.map(function (c) { return k[c]; }).concat(b ? b.label + ' ' + b.start_date : '').map(function (v) {
+      return cols.map(function (c) { return c === 'travellers_names' ? (k.guests || []).map(function (g) { return g.name + (g.age != null ? ' (' + g.age + ')' : ''); }).join('; ') : k[c]; }).concat(b ? b.label + ' ' + b.start_date : '').map(function (v) {
         v = v == null ? '' : String(v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"';
       }).join(',');
     }));
@@ -659,6 +667,44 @@
         return sb.from('partners').delete().eq('id', p.id);
       });
   }
+
+  /* ---------------- Reviews ---------------- */
+  var RV_PHOTO = SB_URL + '/storage/v1/object/public/review-photos/';
+  function renderReviews() {
+    var waiting = S.reviews.filter(function (x) { return x.status === 'pending'; }).length;
+    $('adRvCount').hidden = !waiting; $('adRvCount').textContent = waiting;
+    var st = $('adRvStatus').value, list = S.reviews.filter(function (x) { return !st || x.status === st; });
+    var stars = function (n) { var o = ''; for (var i = 1; i <= 5; i++) o += '<i' + (i <= n ? ' class="on"' : '') + '>★</i>'; return '<span class="ad-stars">' + o + '</span>'; };
+    var label = { pending: 'Waiting', approved: 'On website', hidden: 'Hidden' };
+    $('adRvList').innerHTML = list.length ? list.map(function (r) {
+      var acts = '';
+      if (r.status !== 'approved') acts += '<button class="btn btn-gold btn-sm" data-rv-set="approved" data-id="' + r.id + '">Approve</button>';
+      if (r.status !== 'hidden') acts += '<button class="btn btn-ghost btn-sm" data-rv-set="hidden" data-id="' + r.id + '">Hide</button>';
+      if (r.status === 'approved') acts += '<button class="btn btn-ghost btn-sm" data-rv-feature="' + r.id + '">' + (r.featured ? 'Unfeature' : 'Feature') + '</button>';
+      acts += '<button class="btn btn-ghost btn-sm ad-danger" data-rv-del="' + r.id + '">Delete</button>';
+      return '<article class="ad-rv' + (r.featured ? ' feat' : '') + '">' +
+        ((r.photos || []).length ? '<div class="ad-rv-ph">' + r.photos.map(function (p) { return '<a href="' + esc(RV_PHOTO + p) + '" target="_blank" rel="noopener" style="background-image:url(\'' + esc(RV_PHOTO + p) + '\')"></a>'; }).join('') + '</div>' : '') +
+        '<div class="ad-rv-body"><div class="ad-rv-top">' + stars(r.rating) + '<span class="ad-pill s-' + (r.status === 'approved' ? 'active' : r.status === 'pending' ? 'new' : 'closed') + '">' + label[r.status] + '</span>' +
+        (r.featured ? '<span class="ad-pill s-full">Featured</span>' : '') + (r.is_sample ? '<span class="ad-pill">Sample</span>' : '') + '</div>' +
+        (r.title ? '<b class="ad-rv-title">' + esc(r.title) + '</b>' : '') + '<p>' + esc(r.body) + '</p>' +
+        '<small>' + esc(r.name) + (r.place ? ' · ' + esc(r.place) : '') + (r.phone ? ' · <a href="https://wa.me/91' + esc(r.phone) + '" target="_blank" rel="noopener">' + esc(r.phone) + '</a>' : '') + ' · ' + day(r.created_at.slice(0, 10)) + '</small>' +
+        '<small>' + esc(r.trip_title || 'No trip chosen') + (r.style_id ? ' · ' + esc(styleName(r.style_id)) : '') + '</small>' +
+        '<div class="ad-row-actions">' + acts + '</div></div></article>';
+    }).join('') : '<p class="ad-empty">' + (st === 'pending' ? 'No reviews waiting. New ones from the website appear here.' : 'No reviews here.') + '</p>';
+  }
+  $('adRvStatus').addEventListener('input', renderReviews);
+  document.addEventListener('click', function (e) {
+    var x, done = function (msg) { return function (r) { if (r.error) toast(friendly(r.error), true); else { toast(msg); loadAll(); } }; };
+    if ((x = e.target.closest('[data-rv-set]'))) sb.from('reviews').update({ status: x.dataset.rvSet }).eq('id', x.dataset.id).then(done(x.dataset.rvSet === 'approved' ? 'Review is on the website' : 'Review hidden'));
+    else if ((x = e.target.closest('[data-rv-feature]'))) { var r = byId(S.reviews, x.dataset.rvFeature); sb.from('reviews').update({ featured: !r.featured }).eq('id', r.id).then(done(r.featured ? 'No longer featured' : 'Featured first')); }
+    else if ((x = e.target.closest('[data-rv-del]'))) {
+      var rv = byId(S.reviews, x.dataset.rvDel);
+      if (!confirm('Delete this review' + (rv.photos && rv.photos.length ? ' and its photos' : '') + ' permanently?')) return;
+      (rv.photos && rv.photos.length ? sb.storage.from('review-photos').remove(rv.photos) : Promise.resolve()).then(function () {
+        return sb.from('reviews').delete().eq('id', rv.id);
+      }).then(done('Review deleted'));
+    }
+  });
 
   /* ---------------- Settings ---------------- */
   var SETTING_KEYS = ['notify_email', 'mail_webhook_url', 'mail_webhook_secret', 'notify_new_bookings', 'site_url'];

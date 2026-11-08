@@ -1421,3 +1421,99 @@ html.sp-lock{overflow:hidden}
 .pf-kyc-line{margin:8px 0 0;font-size:14px;color:var(--muted)}
 .pf-kyc-line .ng-inline-link{background:none;border:0;padding:0;font:inherit;cursor:pointer}
 @media(max-width:620px){.pm{padding:0;place-items:end stretch}.pm-card{max-height:94vh;border-radius:22px 22px 0 0}.pm-body{padding:26px 18px 24px}}
+
+/* Clickable trip cards (style pop-up) + traveller list + pay button */
+.trip-click{cursor:pointer;transition:transform var(--ease),box-shadow var(--ease),border-color var(--ease)}
+.trip-click:hover{transform:translateY(-3px);box-shadow:0 22px 44px -26px #1A3D2E;border-color:#D4AF3780}
+.trip-click:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.trip-go{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--forest);background:#F3E7C1;border-radius:var(--btn-r);padding:9px 14px}
+.trip-go .ic{width:15px;height:15px}
+.trip-click:hover .trip-go{background:var(--gold);color:var(--forest)}
+.bk-guests{display:grid;gap:8px}
+.bk-guest{display:grid;grid-template-columns:150px minmax(0,1fr) 84px;gap:8px;align-items:center}
+.bk-guest span{font-size:12.5px;font-weight:600;color:#3E5247}
+.bk-guest input{height:44px;border:1px solid #D8CFBA;border-radius:12px;background:#FBF9F3;padding:0 12px;font:500 14.5px var(--sans);color:var(--ink);width:100%;min-width:0}
+.bk-guest input:focus{outline:none;border-color:var(--forest);box-shadow:0 0 0 3px #2F5F4626;background:#fff}
+#bkPay{gap:10px}
+#bkPay .ic{color:var(--gold2)}
+.bk-fine .ic{width:14px;height:14px;vertical-align:-2px;margin-right:5px;color:var(--success)}
+.bk-error a{color:inherit;font-weight:600;text-decoration:underline}
+@media(max-width:560px){.bk-guest{grid-template-columns:minmax(0,1fr) 76px}.bk-guest span{grid-column:1/-1}}
+
+/* Kit photos (cream backgrounds match the card) */
+.kit-ph{aspect-ratio:1/1;background:#FBF3E8}
+.kit-ph img{width:100%;height:100%;max-height:none;object-fit:cover}
+.kit-ph img[src$=".svg?v=3"]{width:74%;height:74%;object-fit:contain}
+.kit-item:hover .kit-ph img{transform:scale(1.03)}
+
+/* ==========================================================================
+   Reviews — traveller stories wall + write-a-review pop-up
+   ========================================================================== */
+.reviews{background:linear-gradient(180deg,var(--cream) 0%,#F1EADB 100%)}
+.rv-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:end;margin-bottom:22px}
+.rv-top .section-head{margin-bottom:0;text-align:left}
+.rv-top .section-head .kicker{justify-content:flex-start}
+.rv-top h2 em{font-style:italic;color:var(--gold-ink)}
+.rv-score{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px 18px 16px 22px;box-shadow:0 18px 40px -30px #1A3D2E}
+.rv-score>b{font:700 48px/1 var(--serif);color:var(--forest)}
+.rv-score small{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.rv-stars{display:inline-flex;gap:1px;font-size:15px;line-height:1;color:#DCD3BF}
+.rv-stars i{font-style:normal}.rv-stars i.on{color:var(--gold)}
+.rv-stars.lg{font-size:20px}
+.rv-chips{margin:0 0 22px}
+.rv-list{columns:3 300px;column-gap:18px}
+.rv-card{break-inside:avoid;margin:0 0 18px;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 14px 34px -28px #1A3D2E;transition:transform var(--ease),box-shadow var(--ease)}
+.rv-card:hover{transform:translateY(-3px);box-shadow:0 24px 48px -30px #1A3D2E}
+.rv-card.featured{border-color:#D4AF3799;box-shadow:0 0 0 1px #D4AF3755,0 18px 40px -28px #1A3D2E}
+.rv-photos{display:grid;gap:3px}
+.rv-photos.n1{grid-template-columns:1fr}.rv-photos.n2{grid-template-columns:1fr 1fr}.rv-photos.n3{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}
+.rv-photos.n3 .rv-ph:first-child{grid-row:1/3}
+.rv-ph{border:0;padding:0;min-height:120px;background:#E8E1D1 center/cover;cursor:zoom-in}
+.rv-photos.n1 .rv-ph{aspect-ratio:4/3}.rv-photos.n2 .rv-ph{aspect-ratio:1}.rv-photos.n3 .rv-ph{min-height:90px}.rv-photos.n3 .rv-ph:first-child{min-height:183px}
+.rv-body{padding:18px 20px 20px;position:relative}
+.rv-body h3{font:600 19px/1.3 var(--serif);color:var(--forest);margin:10px 0 6px}
+.rv-text{margin:8px 0 0;color:#3E5247;font-size:14.5px;line-height:1.7;position:relative}
+.rv-body h3+.rv-text{margin-top:0}
+.rv-card:not(:has(.rv-photos)) .rv-body::before{content:"\201C";position:absolute;right:18px;top:4px;font:700 72px/1 var(--serif);color:#D4AF3733}
+.rv-sample{display:inline-block;margin-left:8px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-ink);background:#F3E7C1;border-radius:99px;padding:3px 8px;vertical-align:2px}
+.rv-who{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px dashed #E2DACA}
+.rv-av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--forest);color:var(--gold2);font:600 13px var(--sans);flex:none}
+.rv-who b{display:block;font-size:14px;color:var(--ink)}
+.rv-who small{display:block;font-size:12px;color:var(--muted)}
+.rv-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.rv-tags span{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:var(--moss);background:#EEF2EC;border-radius:99px;padding:4px 10px}
+.rv-tags .ic{width:12px;height:12px;color:var(--gold-ink)}
+.rv-empty{color:var(--muted);text-align:center;padding:30px 0;column-span:all}
+.rv-more-wrap{text-align:center;margin-top:8px}
+.rv-more-wrap .btn[hidden]{display:none}
+/* pop-up */
+.rv-pm{width:min(680px,100%)}
+.rv-rate{display:flex;align-items:center;gap:14px;background:var(--cream);border-radius:16px;padding:12px 16px;margin:6px 0 18px}
+.rv-pick{display:flex;gap:4px}
+.rv-pick button{border:0;background:none;font-size:34px;line-height:1;color:#DCD3BF;padding:0 2px;cursor:pointer;transition:transform .12s,color .12s}
+.rv-pick button.on,.rv-pick button.hover{color:var(--gold)}
+.rv-pick button:hover{transform:scale(1.12)}
+#rvPickLabel{font-weight:600;color:var(--forest);font-size:14px}
+.rv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.rv-grid label,.rv-lab{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#3E5247}
+.rv-grid small{font-weight:400;color:var(--muted)}
+.rv-full{grid-column:1/-1}
+.rv-grid input:not([type=checkbox]),.rv-grid select,.rv-grid textarea{border:1px solid #D8CFBA;border-radius:12px;background:#FBF9F3;padding:11px 13px;font:500 14.5px var(--sans);color:var(--ink);width:100%}
+.rv-grid textarea{resize:vertical;min-height:110px;line-height:1.55}
+.rv-grid input:focus,.rv-grid select:focus,.rv-grid textarea:focus{outline:none;border-color:var(--forest);box-shadow:0 0 0 3px #2F5F4626;background:#fff}
+.rv-grid .ng-check{flex-direction:row;align-items:flex-start;gap:10px;font-weight:400}
+.rv-thumbs{display:flex;gap:10px;flex-wrap:wrap}
+.rv-thumb{position:relative;width:86px;height:86px;border-radius:14px;background:#eee center/cover;box-shadow:0 6px 14px -8px #0006}
+.rv-thumb button{position:absolute;top:-7px;right:-7px;width:24px;height:24px;border-radius:50%;border:0;background:var(--charcoal);color:#fff;font-size:15px;line-height:1;cursor:pointer}
+.rv-add{width:86px;height:86px;border-radius:14px;border:1.5px dashed #CDBF9C;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--gold-ink);cursor:pointer;background:#FBF9F3}
+.rv-add .ic{width:22px;height:22px}
+.rv-add:hover{border-color:var(--gold);background:#fff}
+.rv-submit{width:100%;height:52px;margin-top:16px;gap:10px}
+.rv-submit .ic{color:var(--gold2)}
+.rv-note{text-align:center;font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.rv-lb{position:fixed;inset:0;z-index:120;background:#0F1C18e6;display:grid;place-items:center;padding:24px;opacity:0;transition:opacity .2s;cursor:zoom-out}
+.rv-lb.open{opacity:1}.rv-lb[hidden]{display:none}
+.rv-lb img{max-width:100%;max-height:100%;border-radius:14px;box-shadow:0 30px 80px -20px #000}
+@media(max-width:900px){.rv-top{grid-template-columns:1fr}.rv-score{justify-self:start}}
+@media(max-width:560px){.rv-score{flex-wrap:wrap;width:100%}.rv-score .btn{width:100%}.rv-grid{grid-template-columns:1fr}.rv-list{columns:1}}
+.rv-score>b.rv-new{font-size:26px;font-style:italic;color:var(--gold-ink)}
