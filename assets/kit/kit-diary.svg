@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Premium diary"><defs>
+<linearGradient id="nv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E4580"/><stop offset=".55" stop-color="#1F3163"/><stop offset="1" stop-color="#15224A"/></linearGradient>
+<linearGradient id="nv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2A57"/><stop offset="1" stop-color="#111C3D"/></linearGradient>
+<linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E3A1"/><stop offset=".5" stop-color="#D4AF37"/><stop offset="1" stop-color="#A8841F"/></linearGradient>
+<linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF1"/><stop offset="1" stop-color="#F3E8CC"/></linearGradient>
+<radialGradient id="sh"><stop offset="0" stop-color="#0F1C18" stop-opacity=".22"/><stop offset="1" stop-color="#0F1C18" stop-opacity="0"/></radialGradient>
+</defs><ellipse cx="120" cy="214" rx="66" ry="9" fill="url(#sh)"/>
+<rect x="170" y="50" width="12" height="150" rx="3" fill="#F4EEDC"/>
+<path d="M172 56 V196 M176 56 V196" stroke="#E2D8BE" stroke-width="1"/>
+<rect x="62" y="42" width="114" height="162" rx="9" fill="url(#nv)"/>
+<rect x="62" y="42" width="16" height="162" rx="8" fill="#15224A"/>
+<rect x="92" y="62" width="64" height="122" rx="5" fill="none" stroke="#D4AF37" stroke-width="1.4" opacity=".55"/>
+<rect x="156" y="42" width="7" height="162" fill="url(#gd)"/>
+<path d="M104 200 V226 L110 219 L116 226 V200 Z" fill="url(#gd)"/>
+<text x="124" y="140" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-weight="700" font-size="56" text-anchor="middle" fill="url(#gd)">N</text>
+<path d="M108 156 H140" stroke="#D4AF37" stroke-width="1.2" opacity=".6"/></svg>

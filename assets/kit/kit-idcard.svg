@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Partner ID card"><defs>
+<linearGradient id="nv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E4580"/><stop offset=".55" stop-color="#1F3163"/><stop offset="1" stop-color="#15224A"/></linearGradient>
+<linearGradient id="nv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2A57"/><stop offset="1" stop-color="#111C3D"/></linearGradient>
+<linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E3A1"/><stop offset=".5" stop-color="#D4AF37"/><stop offset="1" stop-color="#A8841F"/></linearGradient>
+<linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF1"/><stop offset="1" stop-color="#F3E8CC"/></linearGradient>
+<radialGradient id="sh"><stop offset="0" stop-color="#0F1C18" stop-opacity=".22"/><stop offset="1" stop-color="#0F1C18" stop-opacity="0"/></radialGradient>
+</defs><ellipse cx="120" cy="218" rx="58" ry="9" fill="url(#sh)"/>
+<path d="M96 14 L113 66 M144 14 L127 66" stroke="url(#gd)" stroke-width="8" stroke-linecap="round"/>
+<rect x="109" y="60" width="22" height="16" rx="4" fill="#C3C9D4"/><rect x="115" y="64" width="10" height="5" rx="2" fill="#8C95A6"/>
+<rect x="68" y="72" width="104" height="138" rx="12" fill="#fff" stroke="#DCE0E8" stroke-width="2"/>
+<path d="M68 84 Q68 72 80 72 H160 Q172 72 172 84 V106 H68 Z" fill="url(#nv)"/>
+<text x="128" y="94" font-family="Poppins,Arial,sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.4" text-anchor="middle" fill="#fff">NANDI GO</text>
+<text x="86" y="97" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-weight="700" font-size="18" text-anchor="middle" fill="url(#gd)">N</text>
+<rect x="96" y="116" width="48" height="50" rx="7" fill="#EEF1F6"/>
+<circle cx="120" cy="134" r="10" fill="#B7C0D0"/><path d="M103 164 Q120 142 137 164 Z" fill="#B7C0D0"/>
+<text x="120" y="181" font-family="Poppins,Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.6" text-anchor="middle" fill="#A8841F">PARTNER</text>
+<rect x="90" y="187" width="60" height="5" rx="2.5" fill="#1F3163"/>
+<path d="M68 198 H172 V200 Q172 210 160 210 H80 Q68 210 68 200 Z" fill="url(#gd)"/></svg>

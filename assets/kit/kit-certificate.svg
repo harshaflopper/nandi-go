@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Partnership certificate"><defs>
+<linearGradient id="nv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E4580"/><stop offset=".55" stop-color="#1F3163"/><stop offset="1" stop-color="#15224A"/></linearGradient>
+<linearGradient id="nv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2A57"/><stop offset="1" stop-color="#111C3D"/></linearGradient>
+<linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E3A1"/><stop offset=".5" stop-color="#D4AF37"/><stop offset="1" stop-color="#A8841F"/></linearGradient>
+<linearGradient id="pp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF1"/><stop offset="1" stop-color="#F3E8CC"/></linearGradient>
+<radialGradient id="sh"><stop offset="0" stop-color="#0F1C18" stop-opacity=".22"/><stop offset="1" stop-color="#0F1C18" stop-opacity="0"/></radialGradient>
+</defs><ellipse cx="120" cy="206" rx="86" ry="9" fill="url(#sh)"/>
+<rect x="58" y="62" width="124" height="128" fill="url(#pp)" stroke="#E2D2A6" stroke-width="1.5"/>
+<rect x="66" y="70" width="108" height="112" fill="none" stroke="#D4AF37" stroke-width="1.6"/>
+<rect x="70" y="74" width="100" height="104" fill="none" stroke="#D4AF37" stroke-width=".8" opacity=".7"/>
+<rect x="40" y="54" width="24" height="144" rx="12" fill="#EFE2BF" stroke="#DCC894" stroke-width="1.5"/>
+<rect x="176" y="54" width="24" height="144" rx="12" fill="#EFE2BF" stroke="#DCC894" stroke-width="1.5"/>
+<ellipse cx="52" cy="54" rx="12" ry="4" fill="#E2D2A6"/><ellipse cx="188" cy="54" rx="12" ry="4" fill="#E2D2A6"/>
+<text x="120" y="96" font-family="'Playfair Display',Georgia,serif" font-size="12" font-weight="700" letter-spacing="1.5" text-anchor="middle" fill="#1F3163">CERTIFICATE</text>
+<text x="120" y="108" font-family="Poppins,Arial,sans-serif" font-size="6.5" letter-spacing="1.4" text-anchor="middle" fill="#8C6D1F">OF PARTNERSHIP</text>
+<rect x="86" y="118" width="68" height="4" rx="2" fill="#D9CBA6"/><rect x="94" y="128" width="52" height="4" rx="2" fill="#E3D7B8"/>
+<path d="M142 156 L134 192 L142 186 L148 194 L152 160 Z M158 156 L166 192 L158 186 L152 194 L148 160 Z" fill="#1F3163"/>
+<circle cx="150" cy="156" r="17" fill="url(#gd)"/><circle cx="150" cy="156" r="12.5" fill="none" stroke="#A8841F" stroke-width="1.2"/>
+<text x="150" y="163" font-family="'Playfair Display',Georgia,'Times New Roman',serif" font-weight="700" font-size="20" text-anchor="middle" fill="#7A5E14">N</text></svg>
