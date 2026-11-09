@@ -304,8 +304,8 @@
     if (p.trip_id) form.elements.trip.value = p.trip_id;
     if (p.style_id) form.elements.style.value = p.style_id;
     if (p.ref) form.elements.ref.value = p.ref;
-    $('rvHello').hidden = !p.first_name;
-    if (p.first_name) $('rvHello').textContent = 'Hi ' + p.first_name + '! How was ' + (p.trip_title || 'your trip') + '? Enter the WhatsApp number you booked with to get the Verified traveller badge.';
+    $('rvHello').hidden = !p.trip_title;
+    if (p.trip_title) $('rvHello').textContent = 'How was ' + p.trip_title + '? Enter the WhatsApp number you booked with to get the Verified traveller badge.';
     pm.hidden = false; requestAnimationFrame(function () { pm.classList.add('open'); });
     document.documentElement.classList.add('sp-lock');
   }

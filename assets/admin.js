@@ -7,7 +7,7 @@
 
   var DISTRICTS = ['Bagalkote','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Chamarajanagar','Chikkaballapura','Chikkamagaluru','Chitradurga','Dakshina Kannada','Davanagere','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Kodagu','Kolar','Koppal','Mandya','Mysuru','Raichur','Ramanagara','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayanagara','Vijayapura','Yadgir'];
   var KIT_TARGET = 10; // confirmed persons before the ₹4,999 kit is refunded
-  var S = { batches: [], bookings: [], partners: [], kyc: [], reviews: [], feedback: [], settings: {}, trips: [], styles: [], tab: 'overview' };
+  var S = { batches: [], bookings: [], partners: [], kyc: [], reviews: [], feedback: [], tkyc: [], settings: {}, trips: [], styles: [], tab: 'overview' };
 
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
@@ -86,13 +86,14 @@
       sb.from('styles').select('*').order('sort'),
       sb.from('partner_kyc').select('*').order('created_at', { ascending: false }),
       sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(500),
-      sb.from('feedback').select('*').order('created_at', { ascending: false }).limit(500)
+      sb.from('feedback').select('*').order('created_at', { ascending: false }).limit(500),
+      sb.from('traveller_kyc').select('*')
     ]).then(function (r) {
       var bad = r.filter(function (x) { return x.error; })[0];
       if (bad) { toast(friendly(bad.error), true); return; }
       S.batches = r[0].data; S.bookings = r[1].data; S.partners = r[2].data;
       S.settings = {}; r[3].data.forEach(function (x) { S.settings[x.key] = x.value; });
-      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data;
+      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data; S.tkyc = r[9].data;
       renderAll();
     });
   }
@@ -257,7 +258,7 @@
         '<td data-l="Seats">' + seatsOf(k) + (k.unit === 'couple' ? '<small>' + k.travellers + ' couple' + (k.travellers > 1 ? 's' : '') + '</small>' : '') + '</td>' +
         '<td data-l="Estimate">' + fmt(k.estimated_total) + '</td>' +
         '<td data-l="Paid">' + (k.amount_paid ? fmt(k.amount_paid) : (k.advance_paid ? 'Advance' : '—')) + '</td>' +
-        '<td data-l="Status">' + pill(k.status) + '</td>' +
+        '<td data-l="Status">' + pill(k.status) + kycChip(k) + '</td>' +
         '<td class="ad-td-act">' + (k.status === 'new' ? '<button class="btn btn-gold btn-sm" data-quick-confirm="' + k.id + '">Confirm</button>' : '') +
           (k.status === 'confirmed' || k.status === 'completed' ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + askReviewLink(k) + '" title="Send a WhatsApp message with their review link">Ask for review</a>' : '') +
           '<button class="btn btn-ghost btn-sm" data-edit-booking="' + k.id + '">Open</button></td></tr>';
@@ -280,6 +281,59 @@
       return '<option value="' + b.id + '"' + (b.id === sel ? ' selected' : '') + '>' + esc(b.label + ' · ' + range(b) + ' · ' + b.seats_taken + '/' + b.seats_total + ' (' + (STATUS_LABEL[b.status]) + ')') + '</option>';
     }).join('');
   }
+  /* ---------- E-ticket + traveller KYC ---------- */
+  var ID_NAMES = { aadhaar: 'Masked Aadhaar', dl: 'Driving licence', voter: 'Voter ID', passport: 'Passport' };
+  function seatCount(k) { return k.travellers * (k.unit === 'couple' ? 2 : 1); }
+  function guestList(k) {
+    var g = k.guests || [], n = Math.max(seatCount(k), g.length || 1);
+    return Array.apply(null, Array(n)).map(function (_, i) { return { name: (g[i] && g[i].name) || (i === 0 ? k.name : 'Traveller ' + (i + 1)), age: g[i] ? g[i].age : null }; });
+  }
+  function kycFor(k) { return S.tkyc.filter(function (x) { return x.booking_id === k.id; }); }
+  function kycChip(k) {
+    if (k.status !== 'confirmed' && k.status !== 'completed') return '';
+    var n = guestList(k).length, list = kycFor(k), ok = list.filter(function (x) { return x.status === 'approved'; }).length, sent = list.filter(function (x) { return x.status === 'submitted'; }).length;
+    return '<small class="ad-kyc-chip ' + (ok === n ? 'ok' : sent ? 'wait' : 'todo') + '">ID ' + ok + '/' + n + (sent ? ' · ' + sent + ' to check' : '') + '</small>';
+  }
+  function ticketLink(k) { return (S.settings.site_url || 'https://nandigo.co').replace(/\/$/, '') + '/ticket?b=' + encodeURIComponent(k.ref) + '&k=' + k.ticket_key; }
+  function waTo(k, msg) { return 'https://wa.me/91' + String(k.phone || '').replace(/\D/g, '').slice(-10) + '?text=' + encodeURIComponent(msg); }
+  function ticketBlock(k) {
+    if (k.status !== 'confirmed' && k.status !== 'completed') return '<div class="ad-box"><h4>E-ticket and ID</h4><p class="ad-hint">The e-ticket and ID upload open when the booking is confirmed.</p></div>';
+    var first = String(k.name || '').trim().split(/\s+/)[0], link = ticketLink(k), guests = guestList(k), list = kycFor(k);
+    var pending = guests.filter(function (_, i) { var x = list.filter(function (y) { return y.guest_index === i; })[0]; return !x || x.status === 'rejected'; }).length;
+    var sendMsg = 'Hi ' + first + '! Your Nandi Go booking ' + k.ref + ' (' + (k.trip_title || '') + ') is confirmed. Here is your e-ticket:\n' + link + '\n\nPlease upload an ID for each traveller on the same page before the trip. Keep this link private.';
+    var remindMsg = 'Hi ' + first + ', a quick reminder from Nandi Go: please upload the ID for ' + pending + ' traveller' + (pending > 1 ? 's' : '') + ' on booking ' + k.ref + ' before the trip. It takes a minute:\n' + link;
+    return '<div class="ad-box" id="mKycBox"><h4>E-ticket and traveller ID</h4>' +
+      '<div class="ad-row-actions"><a class="btn btn-ghost btn-sm" href="' + esc(link) + '" target="_blank" rel="noopener">Open e-ticket</a>' +
+        '<a class="btn btn-gold btn-sm" href="' + esc(waTo(k, sendMsg)) + '" target="_blank" rel="noopener">Send ticket on WhatsApp</a>' +
+        (pending ? '<a class="btn btn-ghost btn-sm" href="' + esc(waTo(k, remindMsg)) + '" target="_blank" rel="noopener">Remind about ID (' + pending + ')</a>' : '') + '</div>' +
+      '<div class="ad-kyc-list">' + guests.map(function (g, i) {
+        var x = list.filter(function (y) { return y.guest_index === i; })[0];
+        var st = !x ? '<span class="ad-pill">Not uploaded</span>' : x.status === 'approved' ? '<span class="ad-pill s-approved">Approved</span>' : x.status === 'rejected' ? '<span class="ad-pill s-rejected">Rejected</span>' : '<span class="ad-pill s-new">To check</span>';
+        return '<div class="ad-kyc-row"><div><b>' + esc(g.name) + '</b><small>' + (g.age != null ? esc(g.age) + ' yrs · ' : '') + (x ? ID_NAMES[x.id_type] : 'No ID yet') + (x && x.note ? ' · ' + esc(x.note) : '') + '</small></div>' + st +
+          (x ? '<button type="button" class="btn btn-ghost btn-sm" data-kyc-view="' + x.id + '">View</button>' +
+            (x.status !== 'approved' ? '<button type="button" class="btn btn-gold btn-sm" data-kyc-set="approved" data-id="' + x.id + '">Approve</button>' : '') +
+            (x.status !== 'rejected' ? '<button type="button" class="btn btn-ghost btn-sm ad-danger" data-kyc-set="rejected" data-id="' + x.id + '">Reject</button>' : '') : '') +
+        '</div>';
+      }).join('') + '</div>' +
+      '<p class="ad-hint">ID files are private: "View" opens a link that expires in 5 minutes. They are deleted automatically 30 days after the trip. If someone has not uploaded, check their original ID at pickup.</p></div>';
+  }
+  document.addEventListener('click', function (e) {
+    var x;
+    if ((x = e.target.closest('[data-kyc-view]'))) {
+      var row = byId(S.tkyc, x.dataset.kycView);
+      sb.storage.from('traveller-kyc').createSignedUrl(row.file_path, 300).then(function (r) { if (r.error) toast(friendly(r.error), true); else window.open(r.data.signedUrl, '_blank', 'noopener'); });
+    } else if ((x = e.target.closest('[data-kyc-set]'))) {
+      var to = x.dataset.kycSet, note = null;
+      if (to === 'rejected') { note = prompt('Why? The traveller sees this and can upload again (for example: "Photo is blurry" or "Please upload the masked Aadhaar").'); if (note === null) return; }
+      var r0 = byId(S.tkyc, x.dataset.id), bk = byId(S.bookings, r0.booking_id);
+      sb.from('traveller_kyc').update({ status: to, note: note ? note.slice(0, 200) : null, updated_at: new Date().toISOString() }).eq('id', r0.id).then(function (r) {
+        if (r.error) return toast(friendly(r.error), true);
+        toast(to === 'approved' ? 'ID approved' : 'ID rejected'); r0.status = to; r0.note = note;
+        if ($('mKycBox')) $('mKycBox').outerHTML = ticketBlock(bk);
+        loadAll();
+      });
+    }
+  });
   function guestsBlock(k) {
     var g = k.guests || []; if (!g.length) return '';
     return '<div class="ad-box"><h4>Travellers (' + g.length + ')</h4><dl class="ad-dl">' + g.map(function (x, i) {
@@ -306,7 +360,7 @@
       '<div class="ad-2"><label class="ad-check"><input type="checkbox" name="advance_paid"' + (k.advance_paid ? ' checked' : '') + '/> Advance received</label>' +
       '<label>Payment reference (UPI / bank)<input name="payment_ref" maxlength="80" value="' + esc(k.payment_ref || '') + '"/></label></div>' +
       '<label>Notes<textarea name="admin_notes" rows="2">' + esc(k.admin_notes || '') + '</textarea></label>' +
-      (isNew ? '' : guestsBlock(k)) + (isNew ? '' : '<p class="ad-hint">Booked ' + day(k.created_at.slice(0, 10)) + (k.variant ? ' · ' + esc(k.variant) : '') + '. Confirmed seats count towards the batch; when it is full the batch closes and you get an email.</p>'),
+      (isNew ? '' : guestsBlock(k) + ticketBlock(k)) + (isNew ? '' : '<p class="ad-hint">Booked ' + day(k.created_at.slice(0, 10)) + (k.variant ? ' · ' + esc(k.variant) : '') + '. Confirmed seats count towards the batch; when it is full the batch closes and you get an email.</p>'),
       function (v) {
         var t = byId(S.trips, v.trip_id) || { title: v.trip_id, unit: 'person' };
         var phone = v.phone.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '').replace(/^0(?=\d{10}$)/, '');

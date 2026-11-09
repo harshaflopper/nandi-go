@@ -51,7 +51,7 @@
     '    <h2 id="bkDoneTitle">Booking saved</h2>' +
     '    <p id="bkDoneText">Online payment is being switched on. Our team will contact you on WhatsApp shortly to complete the payment and confirm your seats.</p>' +
     '    <dl class="bk-receipt" id="bkReceipt"></dl>' +
-    '    <div class="bk-done-actions"><button type="button" class="btn btn-gold" id="bkRetry" hidden>' + I('card') + '<span>Pay now</span></button><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Chat on WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
+    '    <div class="bk-done-actions"><a class="btn btn-gold bk-ticket" id="bkTicket" hidden>' + I('ticket') + 'Open my e-ticket</a><button type="button" class="btn btn-gold" id="bkRetry" hidden>' + I('card') + '<span>Pay now</span></button><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Chat on WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
     '    <button type="button" class="bk-link" data-bk-close>Done</button>' +
     '   </div>' +
     '  </div>' +
@@ -276,10 +276,16 @@
     if (sbtn) sbtn.disabled = false;
     $('bkFormView').hidden = true; $('bkDoneView').hidden = false;
     $('bkRetry').hidden = kind !== 'pending';
+    $('bkTicket').hidden = !(kind === 'paid' && extra && extra.ticket_key);
     $('bkDoneView').classList.toggle('is-pending', kind === 'pending');
     if (kind === 'paid') {
       $('bkDoneTitle').textContent = 'Booking confirmed';
-      $('bkDoneText').textContent = 'Payment of ' + NG.fmt(extra.amount || state.payTotal) + ' received. Booking ' + ref + ' is confirmed. Razorpay has sent you a receipt, and our team will WhatsApp you the trip details.';
+      $('bkDoneText').textContent = 'Payment of ' + NG.fmt(extra.amount || state.payTotal) + ' received. Booking ' + ref + ' is confirmed. Open your e-ticket to download it and upload every traveller ID before the trip.';
+      if (extra.ticket_key) {
+        var url = 'ticket?b=' + encodeURIComponent(extra.ref || ref) + '&k=' + extra.ticket_key;
+        $('bkTicket').href = url;
+        try { var list = JSON.parse(localStorage.getItem('ng_tickets') || '[]'); list.unshift({ ref: extra.ref || ref, url: url, t: Date.now() }); localStorage.setItem('ng_tickets', JSON.stringify(list.slice(0, 10))); } catch (e) {}
+      }
     } else if (kind === 'pending') {
       $('bkDoneTitle').textContent = 'Payment not completed';
       $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + 'Your booking ' + ref + ' is saved, but seats are confirmed only after payment.';
@@ -303,7 +309,7 @@
         prefill: o.prefill, notes: { booking_ref: ref }, theme: { color: '#1A3D2E' },
         handler: function (resp) {
           payApi({ action: 'verify', razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature })
-            .then(function (v) { v.ok ? doneState('paid', { amount: v.amount }) : doneState('pending', { msg: v.error || 'We could not confirm the payment.' }); },
+            .then(function (v) { v.ok ? doneState('paid', { amount: v.amount, ref: v.ref, ticket_key: v.ticket_key }) : doneState('pending', { msg: v.error || 'We could not confirm the payment.' }); },
                   function () { doneState('pending', { msg: 'We could not confirm the payment yet. If money was debited, it will be confirmed automatically.' }); });
         },
         modal: { ondismiss: function () { doneState('pending', {}); } }

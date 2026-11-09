@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#0F1F18"/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta name="referrer" content="no-referrer"/>
+<title>Your e-ticket — Nandi Go</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png"/>
+<link rel="stylesheet" href="site.css?v=61"/>
+</head>
+<body class="et-page">
+
+<header class="et-bar">
+ <a href="index.html" class="et-brand"><img src="logo.png" alt="Nandi Go" width="120" height="36"/></a>
+ <a href="https://wa.me/919513646646?text=Hi%20Nandi%20Go%2C%20I%20have%20a%20question%20about%20my%20booking." class="et-help" target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg>Need help?</a>
+</header>
+
+<main class="et" id="et">
+ <div class="et-wrap">
+  <p class="et-loading" id="etLoading">Loading your ticket…</p>
+  <div id="etApp" hidden>
+   <div class="et-banner" id="etBanner" hidden></div>
+
+   <!-- The ticket (this block is what "Download" saves) -->
+   <article class="et-pass" id="etPass">
+    <div class="et-main">
+     <div class="et-top"><img src="logo.png" alt="Nandi Go" class="et-logo"/><span class="et-state" id="etState"></span></div>
+     <div class="et-route">
+      <div><b>BLR</b><span>Bengaluru</span></div>
+      <div class="et-line" aria-hidden="true"><svg class="ic"><use href="#i-bus"/></svg></div>
+      <div class="to"><b id="etTo"></b><span id="etToName"></span></div>
+     </div>
+     <h1 id="etTitle"></h1>
+     <div class="et-meta" id="etMeta"></div>
+     <div class="et-pax"><span class="et-lab">Travellers</span><ol id="etPax"></ol></div>
+    </div>
+    <aside class="et-stub">
+     <span class="et-lab">Boarding pass</span>
+     <div class="et-qr" id="etQr" aria-label="Ticket QR code"></div>
+     <b class="et-ref" id="etRef"></b>
+     <small>Show this QR to your trip captain at pickup</small>
+    </aside>
+   </article>
+
+   <div class="et-actions">
+    <button type="button" class="btn btn-gold" id="etDownload"><svg class="ic"><use href="#i-download"/></svg>Download ticket</button>
+    <a class="btn btn-forest" id="etWa" target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg>Send to my WhatsApp</a>
+    <button type="button" class="btn btn-ghost" id="etCopy"><svg class="ic"><use href="#i-send"/></svg>Copy ticket link</button>
+   </div>
+   <p class="et-keep"><svg class="ic"><use href="#i-shield"/></svg>Keep this link private. Anyone with it can see your ticket and upload ID for your booking.</p>
+
+   <section class="et-card" id="etPickWrap" hidden><h2>Pickup points</h2><ul class="et-pick" id="etPick"></ul></section>
+
+   <!-- Traveller KYC -->
+   <section class="et-card et-kyc" id="etKyc">
+    <div class="et-kyc-head">
+     <div><span class="et-lab">Before you travel</span><h2>Traveller ID (KYC)</h2></div>
+     <span class="et-kyc-count" id="etKycCount"></span>
+    </div>
+    <p class="et-kyc-why">Hotels and homestays must see a government ID for every guest at check-in. Upload one ID per traveller here so check-in is quick.</p>
+    <div class="et-kyc-note" id="etIdNote"></div>
+    <label class="et-consent"><input type="checkbox" id="etConsent"/><span>I agree that Nandi Go may use these IDs only for hotel check-in and travel permits for this trip. The files are stored privately and deleted 30 days after the trip.</span></label>
+    <div class="et-kyc-list" id="etKycList"></div>
+    <p class="et-kyc-safe"><svg class="ic"><use href="#i-lock"/></svg>Private: only the Nandi Go team can open these files. They are never shown on the website and are deleted automatically 30 days after your trip.</p>
+   </section>
+  </div>
+ </div>
+</main>
+
+<script src="assets/icons.js?v=52"></script>
+<script src="assets/data.js?v=49"></script>
+<script src="assets/db.js?v=51"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="assets/ticket.js?v=1"></script>
+</body>
+</html>

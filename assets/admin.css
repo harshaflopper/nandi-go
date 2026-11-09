@@ -253,3 +253,9 @@ body.ad{background:var(--cream);min-height:100vh}
 .ad-sb .ad-sbk{background:#1A3D2E;color:#F1DFA4}
 .ad-sb.k-secret{border-left:4px solid #B84A4A}.ad-sb.k-suggestion{border-left:4px solid var(--gold)}.ad-sb.k-experience{border-left:4px solid var(--moss)}
 .ad-sb-msg{white-space:pre-line;font-size:14px;line-height:1.6;margin:4px 0}
+
+.ad-kyc-chip{display:block;margin-top:4px;font-size:11.5px;font-weight:600}
+.ad-kyc-chip.ok{color:var(--success)}.ad-kyc-chip.wait{color:var(--info)}.ad-kyc-chip.todo{color:#9a6a1f}
+.ad-kyc-list{display:grid;gap:8px;margin:12px 0 6px}
+.ad-kyc-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.ad-kyc-row>div{flex:1;min-width:160px}.ad-kyc-row b{display:block;font-size:14px}.ad-kyc-row small{display:block;font-size:12px;color:var(--muted)}

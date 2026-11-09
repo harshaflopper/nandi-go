@@ -17,7 +17,9 @@
   var START = Math.max(0, DEST.map(function (d) { return d.id; }).indexOf('chikkamagaluru'));
   var cur = -1;
 
-  function minPrice(d) { return Math.min.apply(null, d.trips.map(function (id) { return NG.trip(id).from; })); }
+  // only trips that are live (hidden trips are dropped from the catalogue)
+  function live(d) { return d.trips.filter(function (id) { return NG.trip(id); }); }
+  function minPrice(d) { return Math.min.apply(null, live(d).map(function (id) { return NG.trip(id).from; })); }
   function sized(url, w) { return /images\.unsplash\.com/.test(url) ? url.replace(/w=\d+/, 'w=' + w) : url; }
   function big(d) { return sized(NG.POSTCARDS[d.id].photo, 2000); }
   function small(d) { return sized(NG.POSTCARDS[d.id].photo, 420); }
@@ -183,14 +185,14 @@
   /* ---------- Choose a place ---------- */
   var textBox = $('hxText'), swapTimer = 0;
   function fillText(d) {
-    var pc = NG.POSTCARDS[d.id], t = NG.trip(d.trips[0]);
+    var pc = NG.POSTCARDS[d.id], t = NG.trip(live(d)[0]) || NG.trip(d.trips[0]); if (!t) return;
     $('hxKicker').innerHTML = I(d.mode === 'air' ? 'plane' : 'pin') + d.name + ' · ' + d.km;
     $('hxTitle').textContent = pc.line;
     $('hxSub').textContent = pc.text;
     $('hxMeta').innerHTML = '<span>' + I('clock') + t.duration + '</span>' +
       '<span>' + I(d.mode === 'air' ? 'plane' : 'bus') + (d.mode === 'air' ? 'Flight from Bengaluru' : 'By road from Bengaluru') + '</span>' +
       '<span class="hx-price">from <b>' + NG.fmt(minPrice(d)) + '</b> / ' + t.unit + '</span>' +
-      (d.trips.length > 1 ? '<span>' + I('route') + d.trips.length + ' trips here</span>' : '');
+      (live(d).length > 1 ? '<span>' + I('route') + live(d).length + ' trips here</span>' : '');
     $('hxBook').dataset.book = t.id; $('hxDetails').dataset.details = t.id;
   }
   function select(i, user) {
