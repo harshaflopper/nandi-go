@@ -2107,3 +2107,43 @@ a.rvx-trip:hover{text-decoration:underline}
 .pc-sign{padding-right:84px}
 @media(max-width:640px){.pc-sign{padding-right:0}}
 @media(max-width:640px){.pc-blank .pc-stamp{width:54px;height:62px}.pc-blank h3{margin-right:64px}.pc-blank .btn{align-self:stretch;justify-content:center}.pc-place{font-size:18px}}
+
+/* ===== How it works: journey route ===== */
+.how .section-head h2 em{font-style:italic;color:var(--gold-ink)}
+.jr{position:relative;margin-top:10px}
+.jr-road{position:absolute;left:calc(100%/12);right:calc(100%/12);top:30px;height:4px;border-radius:4px;background:repeating-linear-gradient(90deg,#D8CBA8 0 12px,transparent 12px 22px)}
+.jr-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:4px;background:linear-gradient(90deg,var(--forest),var(--moss));transition:width 2.6s cubic-bezier(.45,.05,.2,1) .3s}
+.jr-bus{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--gold);color:var(--forest);box-shadow:0 10px 20px -8px #1A3D2E99;transition:left 2.6s cubic-bezier(.45,.05,.2,1) .3s;z-index:2}
+.jr-bus .ic{width:22px;height:22px}
+.jr.visible .jr-fill{width:100%}.jr.visible .jr-bus{left:100%}
+.jr-stops{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;position:relative}
+.jr-stop{display:flex;flex-direction:column;align-items:center;text-align:center}
+.jr-pin{position:relative;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--forest);border:2px solid var(--forest);box-shadow:0 0 0 6px var(--white),0 14px 26px -16px #1A3D2E;transition:background .4s,color .4s,transform .4s;transition-delay:calc(.3s + var(--i) * .42s);z-index:1}
+.jr-pin .ic{width:26px;height:26px}
+.jr-pin em{position:absolute;right:-6px;top:-6px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:var(--forest);font:700 12px var(--sans);font-style:normal;box-shadow:0 0 0 3px var(--white)}
+.jr.visible .jr-pin{background:var(--forest);color:var(--gold2)}
+.jr-stop.last .jr-pin{border-color:var(--gold)}
+.jr.visible .jr-stop.last .jr-pin{background:var(--gold);color:var(--forest)}
+.jr-card{margin-top:18px;background:var(--cream);border:1px solid var(--line);border-radius:18px;padding:18px 16px 16px;flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .25s,box-shadow .25s,border-color .25s}
+.jr-stop:hover .jr-card{transform:translateY(-4px);border-color:#D4AF3799;box-shadow:0 18px 30px -24px #1A3D2E}
+.jr-k{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink)}
+.jr-card h3{font:600 18px/1.25 var(--serif);color:var(--forest);margin:0}
+.jr-card p{margin:0;font-size:13.5px;line-height:1.6;color:var(--muted);flex:1}
+.jr-tag{margin-top:6px;font-size:11.5px;font-weight:600;color:var(--moss);background:#E6F1EC;border-radius:99px;padding:4px 10px}
+.jr-end{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:30px}
+.jr-end .btn{gap:8px;height:52px;padding:0 28px}
+.jr-end .pay-note{margin:0}
+@media(prefers-reduced-motion:reduce){.jr-fill{width:100%;transition:none}.jr-bus{left:100%;transition:none}.jr-pin{transition:none}}
+@media(max-width:1100px){.jr-stops{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:28px}.jr-road{display:none}}
+@media(max-width:700px){
+ .jr-road{display:block;left:31px;right:auto;top:32px;bottom:60px;width:4px;height:auto;background:repeating-linear-gradient(180deg,#D8CBA8 0 12px,transparent 12px 22px)}
+ .jr-fill{width:100%!important;height:0;bottom:auto;transition:height 2.6s cubic-bezier(.45,.05,.2,1) .3s;background:linear-gradient(180deg,var(--forest),var(--moss))}
+ .jr.visible .jr-fill{height:100%}
+ .jr-bus{left:50%!important;top:0;transition:top 2.6s cubic-bezier(.45,.05,.2,1) .3s}
+ .jr.visible .jr-bus{top:100%}
+ .jr-stops{grid-template-columns:1fr;row-gap:16px}
+ .jr-stop{flex-direction:row;align-items:flex-start;text-align:left;gap:16px}
+ .jr-card{margin-top:0;align-items:flex-start;padding:14px 16px}
+ .jr-card p{flex:none}}
+.jr-tag{white-space:nowrap}
+@media(max-width:700px){.jr-pin{transition-delay:calc(.2s + var(--i) * .12s)}.jr-fill,.jr-bus{transition-duration:1.6s}}
