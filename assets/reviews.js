@@ -25,17 +25,19 @@
   /* ---------- markup ---------- */
   function shell() {
     if (MODE === 'home') {
-      var sec = mount.closest('section'); if (sec) sec.classList.add('rvh-sec');
-      mount.innerHTML = '<div class="rvh">' +
-        '<div class="rvh-top">' +
-          '<div class="rvh-intro"><span class="rvh-kick">' + I('star') + 'Traveller stories</span><h2>Told by the people<br>who <em>went</em></h2>' +
-            '<p>Real words and real photos from Nandi Go travellers. Never edited, never invented.</p>' +
-            '<div class="rvh-cta"><button type="button" class="btn btn-gold" data-write-review>' + I('star') + 'Write a review</button>' +
-            '<button type="button" class="rvh-link" data-secret="experience">' + I('lock') + 'Or tell us privately</button></div></div>' +
-          '<div class="rvh-score" id="rvSum"></div>' +
-        '</div>' +
-        '<div class="rvh-stage" id="rvList"></div>' +
-      '</div>' + secretBand();
+      mount.innerHTML =
+        '<div class="rs-head"><div><span class="kicker">' + I('star') + 'Traveller reviews</span><h2>What our travellers <em>say</em></h2>' +
+          '<p>Honest ratings and photos from people who travelled with Nandi Go.</p></div>' +
+          '<button type="button" class="btn btn-gold rs-write-top" data-write-review>' + I('star') + 'Write a review</button></div>' +
+        '<div class="rs">' +
+          '<aside class="rs-sum" id="rvSum"></aside>' +
+          '<div class="rs-main">' +
+            '<div class="rs-bar"><div class="chips rv-chips" id="rvChips" role="tablist" aria-label="Filter by travel style"></div>' +
+              '<div class="rs-nav"><button type="button" class="rs-arr" data-rs="-1" aria-label="Previous reviews">' + I('prev') + '</button><button type="button" class="rs-arr" data-rs="1" aria-label="Next reviews">' + I('next') + '</button></div></div>' +
+            '<div class="rs-track" id="rvList"></div>' +
+            '<div class="rs-dots" id="rsDots"></div>' +
+          '</div>' +
+        '</div>' + secretBand();
       if (!$('rvForm')) document.body.insertAdjacentHTML('beforeend', formHtml() + secretHtml() + viewHtml());
       return;
     }
@@ -92,7 +94,7 @@
   /* ---------- render ---------- */
   function scoped() { return all.filter(function (r) { return !TRIP || r.trip_id === TRIP; }); }
   function render() {
-    if (MODE === 'home') return renderHome();
+    if (MODE === 'home') { renderHome(); if (!renderHome.wired) { renderHome.wired = 1; $('rvList').addEventListener('scroll', syncDots, { passive: true }); } return; }
     var base = scoped();
     $('rvSum').innerHTML = summary(base);
     mount.querySelector('.rvx').classList.toggle('empty', !base.length);
@@ -124,71 +126,94 @@
     }
   }
 
-  /* ---------- home: dark cinematic wall ---------- */
-  function dial(a, n) {
-    var C = 2 * Math.PI * 52;
-    return '<div class="rvh-dial' + (n ? '' : ' new') + '"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="52"/>' +
-      '<circle class="fg" cx="60" cy="60" r="52" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '" data-off="' + (C * (1 - (n ? a / 5 : 0))).toFixed(1) + '"/></svg>' +
-      '<div class="rvh-num">' + (n ? '<b data-count="' + a.toFixed(1) + '">0.0</b><small>out of 5</small>' : '<b class="sm">New</b><small>reviews open</small>') + '</div></div>';
-  }
-  function renderHome() {
-    var list = all.slice().sort(function (a, b) { return (b.featured - a.featured) || (b.verified - a.verified) || (photosOf(b).length - photosOf(a).length) || (a.created_at < b.created_at ? 1 : -1); });
+  /* ---------- home: rating summary + review carousel ---------- */
+  var LABEL = ['', 'Poor', 'Okay', 'Good', 'Very good', 'Excellent'];
+  function summaryHome(list) {
     var n = list.length, a = avg(list, 'rating'), ver = list.filter(function (r) { return r.verified; }).length;
     var dist = [5, 4, 3, 2, 1].map(function (x) { return list.filter(function (r) { return r.rating === x; }).length; });
-    var subs = SUBS.map(function (x) { return [x[1], avg(list, x[0])]; }).filter(function (x) { return x[1]; });
-    $('rvSum').innerHTML = dial(a, n) +
-      '<div class="rvh-meta">' + (n
-        ? stars(a, 'lg') + '<p><b>' + n + '</b> traveller review' + (n === 1 ? '' : 's') + (ver ? ' · <b>' + ver + '</b> verified' : '') + '</p>' +
-          '<div class="rvh-dist">' + dist.map(function (c, i) { return '<div><span>' + (5 - i) + '★</span><i><em data-w="' + (c / n * 100) + '"></em></i><small>' + c + '</small></div>'; }).join('') + '</div>' +
-          (subs.length ? '<div class="rvh-subs">' + subs.map(function (x) { return '<span>' + x[0] + ' <b>' + x[1].toFixed(1) + '</b></span>'; }).join('') + '</div>' : '')
-        : '<p class="rvh-open">Reviews just opened.<br>Every one you see here will come from a real Nandi Go traveller.</p>') +
-      '</div>';
-    if (!n) $('rvList').innerHTML = emptyStage();
-    else if (n < 5) $('rvList').innerHTML = '<div class="rvh-row static">' + list.map(glass).join('') + '</div>';
-    else {
-      var r1 = list.filter(function (_, i) { return i % 2 === 0; }), r2 = list.filter(function (_, i) { return i % 2 === 1; });
-      var row = function (arr, rev) { var h = arr.map(glass).join(''); return '<div class="rvh-marq' + (rev ? ' rev' : '') + '" style="--dur:' + Math.max(30, arr.length * 9) + 's"><div class="rvh-track">' + h + h + '</div></div>'; };
-      $('rvList').innerHTML = row(r1) + row(r2, true);
-    }
-    animateIn();
+    var subs = SUBS.map(function (x) { return [x[1], avg(list, x[0])]; });
+    return '<div class="rs-score' + (n ? '' : ' new') + '"><b>' + (n ? a.toFixed(1) : 'New') + '</b><div>' + stars(n ? a : 0, 'lg') +
+        '<span class="rs-word">' + (n ? LABEL[Math.round(a)] : 'No ratings yet') + '</span></div></div>' +
+      '<p class="rs-based">' + (n ? 'Based on <b>' + n + '</b> review' + (n === 1 ? '' : 's') + (ver ? ' · <b>' + ver + '</b> verified' : '') : 'Reviews from our travellers will appear here.') + '</p>' +
+      '<div class="rs-dist">' + dist.map(function (c, i) {
+        return '<button type="button" class="rs-drow' + (filter === String(5 - i) ? ' on' : '') + '" data-rv-star="' + (5 - i) + '"' + (c ? '' : ' disabled') + '><span>' + (5 - i) + '<i>★</i></span><span class="rs-track-bar"><em data-w="' + (n ? c / n * 100 : 0) + '"></em></span><small>' + c + '</small></button>';
+      }).join('') + '</div>' +
+      '<div class="rs-subs"><span class="rs-lab">Rated on</span>' + subs.map(function (x) {
+        return '<div><span>' + x[0] + '</span><span class="rs-track-bar sm"><em data-w="' + (x[1] / 5 * 100) + '"></em></span><b>' + (x[1] ? x[1].toFixed(1) : '–') + '</b></div>';
+      }).join('') + '</div>' +
+      '<button type="button" class="btn btn-forest rs-write" data-write-review>' + I('star') + (n ? 'Write a review' : 'Be the first to review') + '</button>';
   }
-  function glass(r) {
-    var ph = photosOf(r), st = r.style_id && NG.style(r.style_id);
-    return '<article class="rvg" tabindex="0" data-rv-open="' + esc(r.id) + '">' +
-      (ph.length ? '<div class="rvg-pols">' + ph.slice(0, 2).map(function (p, i) { return '<span class="rvg-pol p' + i + '" style="background-image:url(\'' + esc(p) + '\')"></span>'; }).join('') + '</div>' : '') +
-      '<span class="rvg-q">“</span>' + stars(r.rating) +
+  function reviewCard(r) {
+    var ph = photosOf(r), st = r.style_id && NG.style(r.style_id), long = (r.body || '').length > 220;
+    return '<article class="rc">' +
+      '<div class="rc-top">' + stars(r.rating) + '<span>' + monthYear(r.travel_month || r.created_at) + '</span></div>' +
       (r.title ? '<h3>' + esc(r.title) + '</h3>' : '') +
-      '<p>' + esc(r.body) + '</p>' +
-      '<div class="rvg-who"><span class="rv-av" style="background:' + avColor(r.name) + '">' + esc(initials(r.name)) + '</span><div><b>' + esc(r.name) + (r.verified ? ' <i class="rvg-ok" title="Verified traveller">' + I('check') + '</i>' : '') + '</b>' +
-        '<small>' + esc([r.trip_title, st && st.name].filter(Boolean).join(' · ') || (r.place || '')) + '</small></div></div>' +
+      '<p class="rc-text">' + esc(r.body) + '</p>' +
+      (long ? '<button type="button" class="rc-more" data-rv-open="' + esc(r.id) + '">Read full review</button>' : '') +
+      (ph.length ? '<div class="rc-ph">' + ph.slice(0, 3).map(function (p, i) { return '<button type="button" data-photo="' + esc(p) + '" data-set="' + esc(ph.join('|')) + '" data-i="' + i + '" style="background-image:url(\'' + esc(p) + '\')" aria-label="Open photo ' + (i + 1) + '">' + (i === 2 && ph.length > 3 ? '<em>+' + (ph.length - 3) + '</em>' : '') + '</button>'; }).join('') + '</div>' : '') +
+      '<div class="rc-who"><span class="rv-av" style="background:' + avColor(r.name) + '">' + esc(initials(r.name)) + '</span><div>' +
+        '<b>' + esc(r.name) + (r.verified ? '<span class="rc-ok">' + I('check') + 'Verified</span>' : '') + '</b>' +
+        '<small>' + esc([r.trip_title, st && st.name].filter(Boolean).join(' · ') || r.place || '') + '</small></div></div>' +
     '</article>';
   }
-  function emptyStage() {
-    var pics = [], seen = {};
-    NG.TRIPS.forEach(function (t) { var ph = (t.photos || []).concat([t.image, (NG.POSTCARDS[t.dest] || {}).photo]).filter(function (x) { return x && !/poster|flyer|retreat|style-/.test(x); })[0]; if (ph && !seen[ph] && pics.length < 5) { seen[ph] = 1; pics.push([ph, (NG.dest(t.dest) || {}).name || t.place || t.title]); } });
-    return '<div class="rvh-empty">' +
-      '<div class="rvh-collage">' + pics.map(function (p, i) { return '<figure class="rvh-pol q' + i + '"><span style="background-image:url(\'' + esc(p[0]) + '\')"></span><figcaption>' + esc(String(p[1]).split('·')[0].trim()) + '</figcaption></figure>'; }).join('') + '</div>' +
-      '<div class="rvh-stub"><div class="rvh-stub-main"><span class="rvh-stub-k">Nandi Go · Story pass</span><b>Your story<br>goes here</b>' +
-        '<p>Back from a trip with us? Rate it, write a few lines and add your photos. The first stories set the tone for every traveller after you.</p>' +
-        '<div class="rvh-stub-stars" aria-hidden="true">★★★★★</div>' +
-        '<button type="button" class="btn btn-gold" data-write-review>' + I('star') + 'Write the first review</button></div>' +
-        '<div class="rvh-stub-side"><span>Seat</span><b>01</b><span>Review</span><b>#1</b></div></div>' +
-    '</div>';
+  function renderHome() {
+    var list = all.filter(function (r) { return filter === 'all' || r.style_id === filter || String(r.rating) === filter; })
+      .sort(function (a, b) { return (b.featured - a.featured) || (b.verified - a.verified) || (photosOf(b).length - photosOf(a).length) || (a.created_at < b.created_at ? 1 : -1); });
+    $('rvSum').innerHTML = summaryHome(all);
+    var styles = NG.STYLES.filter(function (x) { return !x.hidden && all.some(function (r) { return r.style_id === x.id; }); });
+    $('rvChips').innerHTML = all.length ? '<button type="button" class="chip' + (filter === 'all' ? ' active' : '') + '" data-rvf="all">All reviews</button>' +
+      styles.map(function (x) { return '<button type="button" class="chip' + (filter === x.id ? ' active' : '') + '" data-rvf="' + x.id + '">' + esc(x.name) + '</button>'; }).join('') +
+      (/^\d$/.test(filter) ? '<button type="button" class="chip active" data-rvf="all">' + filter + '★ only ×</button>' : '') : '';
+    mount.querySelector('.rs').classList.toggle('empty', !all.length);
+    $('rvList').innerHTML = list.length ? list.slice(0, 24).map(reviewCard).join('') : (all.length ? '<div class="rc rc-empty"><p>No reviews match this filter.</p></div>' : emptyHome());
+    $('rvList').scrollLeft = 0;
+    dots(); animateBars();
   }
-  var io = null;
-  function animateIn() {
+  function emptyHome() {
+    return '<div class="rc-empty-box"><div class="rc-empty-ic">' + I('star') + '</div><h3>Be the first to review Nandi Go</h3>' +
+      '<p>Reviews here come only from people who travelled with us. Tell future travellers about the stay, the food, the trip captain and the moments you loved.</p>' +
+      '<ul><li>' + I('star') + 'Rate your trip out of 5</li><li>' + I('camera') + 'Add up to 4 photos</li><li>' + I('check') + 'Get a Verified badge with your Booking ID</li></ul>' +
+      '<button type="button" class="btn btn-gold" data-write-review>' + I('star') + 'Write the first review</button></div>';
+  }
+  function dots() {
+    var tr = $('rvList'), cards = tr.querySelectorAll('.rc:not(.rc-empty)'), per = Math.max(1, Math.round(tr.clientWidth / ((cards[0] || {}).offsetWidth || 340)));
+    var pages = Math.ceil(cards.length / per);
+    mount.querySelector('.rs-nav').hidden = pages < 2;
+    $('rsDots').innerHTML = pages > 1 ? Array.apply(null, Array(pages)).map(function (_, i) { return '<button type="button" data-dot="' + i + '" aria-label="Page ' + (i + 1) + '"></button>'; }).join('') : '';
+    syncDots();
+  }
+  function syncDots() {
+    var tr = $('rvList'), d = $('rsDots').children; if (!d.length) return;
+    var i = Math.round(tr.scrollLeft / Math.max(1, tr.scrollWidth - tr.clientWidth) * (d.length - 1));
+    [].forEach.call(d, function (x, k) { x.classList.toggle('on', k === i); });
+  }
+  function slide(dir) {
+    var tr = $('rvList'), c = tr.querySelector('.rc'); if (!c) return;
+    var step = (c.offsetWidth + 20) * Math.max(1, Math.floor(tr.clientWidth / (c.offsetWidth + 20)));
+    if (dir > 0 && tr.scrollLeft + tr.clientWidth >= tr.scrollWidth - 4) tr.scrollTo({ left: 0, behavior: 'smooth' });
+    else tr.scrollBy({ left: dir * step, behavior: 'smooth' });
+  }
+  var io = null, auto = 0;
+  function animateBars() {
     var el = $('rvSum');
-    var go = function () {
-      var fg = el.querySelector('.fg'); if (fg) fg.style.strokeDashoffset = fg.dataset.off;
-      el.querySelectorAll('[data-w]').forEach(function (e) { e.style.width = e.dataset.w + '%'; });
-      var num = el.querySelector('[data-count]'); if (!num) return;
-      var target = +num.dataset.count, t0 = performance.now();
-      (function tick(t) { var k = Math.min(1, (t - t0) / 1400); num.textContent = (target * (1 - Math.pow(1 - k, 3))).toFixed(1); if (k < 1) requestAnimationFrame(tick); })(t0);
-    };
+    var go = function () { el.querySelectorAll('[data-w]').forEach(function (e) { e.style.width = e.dataset.w + '%'; }); };
     if (!('IntersectionObserver' in window)) return go();
     if (io) io.disconnect();
-    io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { go(); io.disconnect(); } }, { threshold: 0.35 });
+    io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { go(); io.disconnect(); } }, { threshold: 0.3 });
     io.observe(el);
+  }
+  if (MODE === 'home') {
+    mount.addEventListener('click', function (e) {
+      var b;
+      if ((b = e.target.closest('[data-rs]'))) slide(+b.dataset.rs);
+      else if ((b = e.target.closest('[data-dot]'))) { var tr = $('rvList'); tr.scrollTo({ left: (tr.scrollWidth - tr.clientWidth) * (+b.dataset.dot) / Math.max(1, $('rsDots').children.length - 1), behavior: 'smooth' }); }
+    });
+    // gentle auto-advance, paused while the visitor hovers or touches the reviews
+    var paused = false;
+    mount.addEventListener('mouseenter', function () { paused = true; }); mount.addEventListener('mouseleave', function () { paused = false; });
+    mount.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+    setInterval(function () { if (!paused && !document.hidden && $('rvList') && $('rvList').querySelectorAll('.rc').length > 3 && !matchMedia('(prefers-reduced-motion: reduce)').matches) slide(1); }, 7000);
+    addEventListener('resize', function () { if ($('rsDots')) dots(); });
   }
   function viewHtml() {
     return '<div class="pm rvv" id="rvView" hidden><div class="pm-card" role="dialog" aria-modal="true"><button type="button" class="pm-close" data-rvv-close aria-label="Close">' + I('close') + '</button><div class="pm-body" id="rvViewBody"></div></div></div>';
@@ -380,15 +405,14 @@
     ['secret', 'shield', 'Tell us secretly', 'Anything you want to tell only us.', 'Anything at all — a concern about a person, a stay or safety. Only the Nandi Go team reads this.']
   ];
   function secretBand() {
-    return '<div class="sbp' + (MODE === 'trip' ? ' compact' : '') + '"><div class="sbp-in">' +
-      '<div class="sbp-head"><img src="logo.png" alt="Nandi Go" class="sbp-logo" loading="lazy"><h3>Nandi Secret Box</h3><p>Your voice, 100% private.</p>' +
-        '<span class="sbp-pill">' + I('lock') + '<span>100% confidential · Only the Nandi Go team reads this<br>' + I('shield') + 'Your name will never be shared</span>' + I('lock') + '</span></div>' +
-      '<div class="sbp-cards">' + SB_KINDS.map(function (k, i) {
-        return '<button type="button" class="sbp-card" data-secret="' + k[0] + '"><span class="sbp-n">' + (i + 1) + '</span><span class="sbp-txt"><span class="sbp-ic">' + I(k[1]) + '</span><b>' + k[2].replace(/\b\w/g, function (c) { return c.toUpperCase(); }) + '</b><small>' + k[3] + '</small></span></button>';
+    return '<div class="sb2' + (MODE === 'trip' ? ' compact' : '') + '">' +
+      '<div class="sb2-intro"><span class="sb2-lock">' + I('lock') + '</span><div><span class="sb2-k">Private feedback</span><h3>Nandi Secret Box</h3>' +
+        '<p>Something you would rather tell only us? Share it here. It is never posted on the website.</p>' +
+        '<ul class="sb2-trust"><li>' + I('shield') + '100% confidential</li><li>' + I('users') + 'Only the Nandi Go team reads it</li><li>' + I('check') + 'Your name is optional</li></ul></div></div>' +
+      '<div class="sb2-opts">' + SB_KINDS.map(function (k, i) {
+        return '<button type="button" class="sb2-opt" data-secret="' + k[0] + '"><span class="sb2-n">' + (i + 1) + '</span><span class="sb2-t"><b>' + k[2] + '</b><small>' + k[3] + '</small></span>' + I('next') + '</button>';
       }).join('') + '</div>' +
-      '<button type="button" class="sbp-go" data-secret="experience">' + I('lock') + 'Share Secretly</button>' +
-      '<p class="sbp-foot">Your feedback stays secret with us.</p>' +
-    '</div></div>';
+    '</div>';
   }
   function secretHtml() {
     return '<div class="pm sbx-pm" id="sbForm" hidden><div class="pm-card" role="dialog" aria-modal="true" aria-labelledby="sbTitle">' +
