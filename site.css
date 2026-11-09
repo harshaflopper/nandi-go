@@ -1535,3 +1535,8 @@ html.sp-lock{overflow:hidden}
 @media(max-width:900px){.styles{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:620px){.sp-head{grid-template-columns:1fr;padding:16px 16px 14px}.sp-head-txt h3{font-size:24px}.sc-bar{padding:10px 14px}.style-card{min-height:0}}
 .sc-poster,.sp-poster{height:auto}
+
+/* Bigger header logo */
+.brand-logo{height:64px}
+.site-header.scrolled .brand-logo{height:52px}
+@media(max-width:900px){.brand-logo{height:58px}.site-header.scrolled .brand-logo{height:48px}}
