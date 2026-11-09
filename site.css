@@ -1560,3 +1560,30 @@ html.sp-lock{overflow:hidden}
 #trips .style-card:hover .sc-go{background:#2F5F46}
 @media(max-width:900px){#trips .styles{grid-template-columns:minmax(0,1fr);gap:18px;max-width:640px}}
 @media(max-width:560px){#trips .sc-bar{padding:12px 14px}#trips .sc-go{padding:8px 12px;font-size:12.5px}#trips .style-card{border-radius:18px}}
+
+/* ==========================================================================
+   Travel style cards — one even row that fits the screen
+   ========================================================================== */
+#trips .section-head{margin-bottom:28px}
+#trips .styles{max-width:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:stretch}
+#trips .style-card{height:100%;transform:none}
+#trips .style-card:hover{transform:translateY(-5px)}
+#trips .sc-poster{aspect-ratio:16/9}
+#trips .sc-bar{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px 14px}
+#trips .sc-bar small{font-size:12.5px;white-space:nowrap}
+#trips .sc-go{padding:8px 12px;font-size:12.5px;white-space:nowrap}
+/* tablets: two by two */
+@media(max-width:1099px){#trips .styles{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:900px;margin:0 auto}}
+/* phones: one swipeable row, next card peeking in */
+@media(max-width:700px){
+  #trips .styles{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:84%;gap:14px;max-width:none;
+    overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 16px 14px;margin:0 -16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #trips .styles::-webkit-scrollbar{display:none}
+  #trips .style-card{scroll-snap-align:center}
+  #trips .style-card:hover{transform:none}
+}
+.styles-dots{display:none}
+@media(max-width:700px){.styles-dots{display:flex;justify-content:center;gap:7px;margin-top:4px}
+  .styles-dots i{width:7px;height:7px;border-radius:50%;background:#D8CFBA;transition:width var(--ease),background var(--ease)}
+  .styles-dots i.on{width:20px;border-radius:99px;background:var(--forest)}}
+@media(min-width:1100px){#trips .container{max-width:min(1400px,calc(100% - 2 * max(24px,5vw)));width:100%}#trips .styles{gap:22px}}

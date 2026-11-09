@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=48"/>
+<link rel="stylesheet" href="site.css?v=50"/>
 </head>
 <body>
 
@@ -73,6 +73,7 @@
    <p>Every trip runs in four styles. Pick yours to see the trips and their dates.</p>
   </div>
   <div class="styles reveal" id="styleGrid" role="tablist" aria-label="Travel styles"></div>
+  <div class="styles-dots" id="styleDots" aria-hidden="true"></div>
  </div>
 </section>
 
@@ -451,6 +452,13 @@
     if (spLast && spLast.focus) spLast.focus({ preventScroll: true });
   }
   $('styleGrid').addEventListener('click', function (e) { var b = e.target.closest('[data-pick-style]'); if (b) openStyle(b.dataset.pickStyle); });
+  /* phones: dots under the swipeable row */
+  function syncDots() { var g = $('styleGrid'), cards = g.querySelectorAll('.style-card'); if (!cards.length) return;
+    if ($('styleDots').children.length !== cards.length) $('styleDots').innerHTML = [].map.call(cards, function () { return '<i></i>'; }).join('');
+    var w = cards[0].offsetWidth + 14, i = Math.round(g.scrollLeft / (w || 1));
+    [].forEach.call($('styleDots').children, function (d, j) { d.classList.toggle('on', j === Math.min(i, cards.length - 1)); }); }
+  $('styleGrid').addEventListener('scroll', syncDots, { passive: true });
+  document.addEventListener('ng:catalog', syncDots); setTimeout(syncDots, 50);
   $('tripGrid').addEventListener('keydown', function (e) { var c = e.target.closest('.trip-click'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); c.click(); } });
   sp.addEventListener('click', function (e) { if (e.target === sp || e.target.closest('[data-sp-close]')) closeStyle(); });
   document.addEventListener('keydown', function (e) {
