@@ -150,5 +150,5 @@
     trip: function (id) { return TRIPS.filter(function (t) { return t.id === id; })[0]; },
     dest: function (id) { return DESTINATIONS.filter(function (d) { return d.id === id; })[0]; },
     fmt: fmt, todayISO: todayISO,
-    WHATSAPP: '919513646646', PHONES: ['+91 95136 46646', '+91 90712 28822'], EMAIL: 'nandigo@gmail.com' };
+    WHATSAPP: '919513646646', PHONES: ['+91 95136 46646', '+91 90712 28822'], EMAIL: 'nandigo2026@gmail.com' };
 })();
