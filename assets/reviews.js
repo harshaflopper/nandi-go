@@ -132,28 +132,49 @@
     var n = list.length, a = avg(list, 'rating'), ver = list.filter(function (r) { return r.verified; }).length;
     var dist = [5, 4, 3, 2, 1].map(function (x) { return list.filter(function (r) { return r.rating === x; }).length; });
     var subs = SUBS.map(function (x) { return [x[1], avg(list, x[0])]; });
-    return '<div class="rs-score' + (n ? '' : ' new') + '"><b>' + (n ? a.toFixed(1) : 'New') + '</b><div>' + stars(n ? a : 0, 'lg') +
-        '<span class="rs-word">' + (n ? LABEL[Math.round(a)] : 'No ratings yet') + '</span></div></div>' +
-      '<p class="rs-based">' + (n ? 'Based on <b>' + n + '</b> review' + (n === 1 ? '' : 's') + (ver ? ' · <b>' + ver + '</b> verified' : '') : 'Reviews from our travellers will appear here.') + '</p>' +
-      '<div class="rs-dist">' + dist.map(function (c, i) {
-        return '<button type="button" class="rs-drow' + (filter === String(5 - i) ? ' on' : '') + '" data-rv-star="' + (5 - i) + '"' + (c ? '' : ' disabled') + '><span>' + (5 - i) + '<i>★</i></span><span class="rs-track-bar"><em data-w="' + (n ? c / n * 100 : 0) + '"></em></span><small>' + c + '</small></button>';
-      }).join('') + '</div>' +
-      '<div class="rs-subs"><span class="rs-lab">Rated on</span>' + subs.map(function (x) {
-        return '<div><span>' + x[0] + '</span><span class="rs-track-bar sm"><em data-w="' + (x[1] / 5 * 100) + '"></em></span><b>' + (x[1] ? x[1].toFixed(1) : '–') + '</b></div>';
-      }).join('') + '</div>' +
-      '<button type="button" class="btn btn-forest rs-write" data-write-review>' + I('star') + (n ? 'Write a review' : 'Be the first to review') + '</button>';
+    var tops = {}; list.forEach(function (r) { if (r.trip_id) tops[r.trip_id] = (tops[r.trip_id] || 0) + 1; });
+    return '<div class="rt-top">' +
+        '<div class="rt-route"><span>BLR</span><i>' + I('plane') + '</i><span>Anywhere</span></div>' +
+        '<span class="rt-k">Traveller rating</span>' +
+        '<div class="rt-score' + (n ? '' : ' new') + '"><b>' + (n ? a.toFixed(1) : 'New') + '</b><div>' + stars(n ? a : 0, 'lg') + '<span>' + (n ? LABEL[Math.round(a)] + ' · ' + n + ' review' + (n === 1 ? '' : 's') : 'Be the first to rate us') + '</span></div></div>' +
+        (ver ? '<span class="rt-ver">' + I('check') + ver + ' verified traveller' + (ver === 1 ? '' : 's') + '</span>' : '') +
+        '<span class="rt-stamp" aria-hidden="true"><span>Real<br>reviews<br>only</span></span>' +
+      '</div>' +
+      '<div class="rt-cut" aria-hidden="true"></div>' +
+      '<div class="rt-bot">' +
+        '<div class="rs-dist">' + dist.map(function (c, i) {
+          return '<button type="button" class="rs-drow' + (filter === String(5 - i) ? ' on' : '') + '" data-rv-star="' + (5 - i) + '"' + (c ? '' : ' disabled') + '><span>' + (5 - i) + '<i>★</i></span><span class="rs-track-bar"><em data-w="' + (n ? c / n * 100 : 0) + '"></em></span><small>' + c + '</small></button>';
+        }).join('') + '</div>' +
+        '<div class="rs-subs">' + subs.map(function (x) {
+          return '<div><span>' + x[0] + '</span><span class="rs-track-bar sm"><em data-w="' + (x[1] / 5 * 100) + '"></em></span><b>' + (x[1] ? x[1].toFixed(1) : '–') + '</b></div>';
+        }).join('') + '</div>' +
+        '<button type="button" class="btn btn-gold rs-write" data-write-review>' + I('star') + (n ? 'Write a review' : 'Be the first to review') + '</button>' +
+      '</div>';
   }
+  function cardPhoto(r) {
+    var ph = photosOf(r); if (ph.length) return { url: ph[0], own: true, all: ph };
+    var t = r.trip_id && NG.trip(r.trip_id), pc = t && NG.POSTCARDS[t.dest];
+    return { url: (pc && pc.photo) || (t && t.image) || '', own: false, all: [] };
+  }
+  function placeOf(r) { var t = r.trip_id && NG.trip(r.trip_id), d = t && NG.dest(t.dest); return (d && d.name) || (t && t.place) || r.trip_title || 'Nandi Go'; }
   function reviewCard(r) {
-    var ph = photosOf(r), st = r.style_id && NG.style(r.style_id), long = (r.body || '').length > 220;
-    return '<article class="rc">' +
-      '<div class="rc-top">' + stars(r.rating) + '<span>' + monthYear(r.travel_month || r.created_at) + '</span></div>' +
-      (r.title ? '<h3>' + esc(r.title) + '</h3>' : '') +
-      '<p class="rc-text">' + esc(r.body) + '</p>' +
-      (long ? '<button type="button" class="rc-more" data-rv-open="' + esc(r.id) + '">Read full review</button>' : '') +
-      (ph.length ? '<div class="rc-ph">' + ph.slice(0, 3).map(function (p, i) { return '<button type="button" data-photo="' + esc(p) + '" data-set="' + esc(ph.join('|')) + '" data-i="' + i + '" style="background-image:url(\'' + esc(p) + '\')" aria-label="Open photo ' + (i + 1) + '">' + (i === 2 && ph.length > 3 ? '<em>+' + (ph.length - 3) + '</em>' : '') + '</button>'; }).join('') + '</div>' : '') +
-      '<div class="rc-who"><span class="rv-av" style="background:' + avColor(r.name) + '">' + esc(initials(r.name)) + '</span><div>' +
-        '<b>' + esc(r.name) + (r.verified ? '<span class="rc-ok">' + I('check') + 'Verified</span>' : '') + '</b>' +
-        '<small>' + esc([r.trip_title, st && st.name].filter(Boolean).join(' · ') || r.place || '') + '</small></div></div>' +
+    var ph = cardPhoto(r), st = r.style_id && NG.style(r.style_id), long = (r.body || '').length > 200, where = placeOf(r);
+    var code = (where.replace(/[^A-Za-z]/g, '').slice(0, 3) || 'NGO').toUpperCase();
+    return '<article class="rc pc">' +
+      '<div class="pc-pic" style="background-image:url(\'' + esc(ph.url) + '\')">' +
+        (ph.own ? '<button type="button" class="pc-zoom" data-photo="' + esc(ph.url) + '" data-set="' + esc(ph.all.join('|')) + '" data-i="0" aria-label="Open traveller photos">' + I('camera') + ph.all.length + '</button>' : '') +
+        '<span class="pc-place">' + esc(where.split('·')[0].trim()) + '</span>' +
+      '</div>' +
+      '<div class="pc-note">' +
+        '<span class="pc-stamp" aria-label="' + r.rating + ' out of 5"><b>' + r.rating + '.0</b><i>' + '★★★★★'.slice(0, r.rating) + '</i></span>' +
+        '<span class="pc-mark" aria-hidden="true"><span>BLR → ' + code + '<br>' + esc(monthYear(r.travel_month || r.created_at)) + '</span></span>' +
+        (r.title ? '<h3>' + esc(r.title) + '</h3>' : '<h3>Dear Nandi Go,</h3>') +
+        '<p class="pc-text">' + esc(r.body) + '</p>' +
+        (long ? '<button type="button" class="pc-more" data-rv-open="' + esc(r.id) + '">Read the full postcard</button>' : '') +
+        '<div class="pc-sign"><span class="rv-av" style="background:' + avColor(r.name) + '">' + esc(initials(r.name)) + '</span><div>' +
+          '<b>' + esc(r.name) + (r.verified ? '<span class="rc-ok">' + I('check') + 'Verified</span>' : '') + '</b>' +
+          '<small>' + esc([st && st.name, r.place].filter(Boolean).join(' · ') || r.trip_title || '') + '</small></div></div>' +
+      '</div>' +
     '</article>';
   }
   function renderHome() {
@@ -165,18 +186,26 @@
       styles.map(function (x) { return '<button type="button" class="chip' + (filter === x.id ? ' active' : '') + '" data-rvf="' + x.id + '">' + esc(x.name) + '</button>'; }).join('') +
       (/^\d$/.test(filter) ? '<button type="button" class="chip active" data-rvf="all">' + filter + '★ only ×</button>' : '') : '';
     mount.querySelector('.rs').classList.toggle('empty', !all.length);
-    $('rvList').innerHTML = list.length ? list.slice(0, 24).map(reviewCard).join('') : (all.length ? '<div class="rc rc-empty"><p>No reviews match this filter.</p></div>' : emptyHome());
+    $('rvList').innerHTML = list.length ? list.slice(0, 24).map(reviewCard).join('') : (all.length ? '<div class="rc pc-none"><p>No reviews match this filter.</p></div>' : emptyHome());
     $('rvList').scrollLeft = 0;
     dots(); animateBars();
   }
   function emptyHome() {
-    return '<div class="rc-empty-box"><div class="rc-empty-ic">' + I('star') + '</div><h3>Be the first to review Nandi Go</h3>' +
-      '<p>Reviews here come only from people who travelled with us. Tell future travellers about the stay, the food, the trip captain and the moments you loved.</p>' +
-      '<ul><li>' + I('star') + 'Rate your trip out of 5</li><li>' + I('camera') + 'Add up to 4 photos</li><li>' + I('check') + 'Get a Verified badge with your Booking ID</li></ul>' +
-      '<button type="button" class="btn btn-gold" data-write-review>' + I('star') + 'Write the first review</button></div>';
+    var t = NG.trip('coorg-ooty') || NG.TRIPS[0] || {}, pc = (t.dest && NG.POSTCARDS[t.dest]) || {};
+    return '<div class="rc pc pc-blank">' +
+      '<div class="pc-pic" style="background-image:url(\'' + esc(pc.photo || t.image || '') + '\')"><span class="pc-place">Wish you were here</span></div>' +
+      '<div class="pc-note">' +
+        '<span class="pc-stamp blank"><b>' + I('star') + '</b><i>your stars</i></span>' +
+        '<span class="pc-mark" aria-hidden="true"><span>NANDI GO<br>REVIEWS OPEN</span></span>' +
+        '<h3>Your postcard goes here</h3>' +
+        '<p class="pc-text">Back from a trip with us? Send future travellers a postcard: rate the stay, the food and the trip captain, add your photos, and tell them what to look forward to.</p>' +
+        '<div class="pc-lines" aria-hidden="true"><i></i><i></i></div>' +
+        '<button type="button" class="btn btn-gold" data-write-review>' + I('send') + 'Write the first postcard</button>' +
+      '</div>' +
+    '</div>';
   }
   function dots() {
-    var tr = $('rvList'), cards = tr.querySelectorAll('.rc:not(.rc-empty)'), per = Math.max(1, Math.round(tr.clientWidth / ((cards[0] || {}).offsetWidth || 340)));
+    var tr = $('rvList'), cards = tr.querySelectorAll('.rc:not(.pc-none)'), per = Math.max(1, Math.round(tr.clientWidth / ((cards[0] || {}).offsetWidth || 340)));
     var pages = Math.ceil(cards.length / per);
     mount.querySelector('.rs-nav').hidden = pages < 2;
     $('rsDots').innerHTML = pages > 1 ? Array.apply(null, Array(pages)).map(function (_, i) { return '<button type="button" data-dot="' + i + '" aria-label="Page ' + (i + 1) + '"></button>'; }).join('') : '';
@@ -405,13 +434,21 @@
     ['secret', 'shield', 'Tell us secretly', 'Anything you want to tell only us.', 'Anything at all — a concern about a person, a stay or safety. Only the Nandi Go team reads this.']
   ];
   function secretBand() {
-    return '<div class="sb2' + (MODE === 'trip' ? ' compact' : '') + '">' +
-      '<div class="sb2-intro"><span class="sb2-lock">' + I('lock') + '</span><div><span class="sb2-k">Private feedback</span><h3>Nandi Secret Box</h3>' +
-        '<p>Something you would rather tell only us? Share it here. It is never posted on the website.</p>' +
-        '<ul class="sb2-trust"><li>' + I('shield') + '100% confidential</li><li>' + I('users') + 'Only the Nandi Go team reads it</li><li>' + I('check') + 'Your name is optional</li></ul></div></div>' +
-      '<div class="sb2-opts">' + SB_KINDS.map(function (k, i) {
-        return '<button type="button" class="sb2-opt" data-secret="' + k[0] + '"><span class="sb2-n">' + (i + 1) + '</span><span class="sb2-t"><b>' + k[2] + '</b><small>' + k[3] + '</small></span>' + I('next') + '</button>';
-      }).join('') + '</div>' +
+    var btn = ['Share privately', 'Send an idea', 'Tell us secretly'];
+    return '<div class="sb4' + (MODE === 'trip' ? ' compact' : '') + '">' +
+      '<div class="sb4-env" aria-hidden="true"><div class="sb4-paper"><span>To: Nandi Go team</span><span>Private &amp; confidential</span><i></i><i></i><i></i></div><div class="sb4-front"></div><div class="sb4-flap"></div><div class="sb4-seal">' + I('lock') + '</div></div>' +
+      '<div class="sb4-body">' +
+        '<span class="sb4-k">' + I('lock') + 'Only our team reads this</span>' +
+        '<h3>Nandi Secret Box</h3>' +
+        '<p>Not everything belongs in a public review. Drop a private note straight into our box. Your name is optional and nothing here is ever posted.</p>' +
+        '<div class="sb4-cards">' + SB_KINDS.map(function (k, i) {
+          return '<button type="button" class="sb4-card" data-secret="' + k[0] + '">' +
+            '<span class="sb4-ic">' + I(k[1]) + '<em>' + (i + 1) + '</em></span>' +
+            '<b>' + k[2] + '</b><small>' + k[3] + '</small>' +
+            '<span class="sb4-go">' + btn[i] + I('next') + '</span></button>';
+        }).join('') + '</div>' +
+        '<ul class="sb4-trust"><li>' + I('shield') + '100% confidential</li><li>' + I('users') + 'Name optional</li><li>' + I('heart') + 'Read by the founders</li></ul>' +
+      '</div>' +
     '</div>';
   }
   function secretHtml() {
