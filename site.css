@@ -2147,3 +2147,4 @@ a.rvx-trip:hover{text-decoration:underline}
  .jr-card p{flex:none}}
 .jr-tag{white-space:nowrap}
 @media(max-width:700px){.jr-pin{transition-delay:calc(.2s + var(--i) * .12s)}.jr-fill,.jr-bus{transition-duration:1.6s}}
+.bk-done-actions [hidden]{display:none!important}

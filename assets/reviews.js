@@ -521,7 +521,17 @@
 
   /* ---------- start ---------- */
   shell(); wireForm(); wireSecret(); load();
-  if (/[?&]secret\b/.test(location.search)) sbOpen();
+  // Secret Box link (?secret): open once the live trip list has loaded, so the trip menu is current
+  if (/[?&]secret\b/.test(location.search)) {
+    var sbOnce = function () { if (sbOnce.done) return; sbOnce.done = 1; sbOpen(); };
+    if (NG.DB.live) sbOnce(); else { document.addEventListener('ng:catalog', sbOnce); setTimeout(sbOnce, 2500); }
+  }
+  document.addEventListener('ng:catalog', function () {
+    var sel = $('sbTrip'); if (!sel || $('sbForm').hidden) return;
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">Choose the trip</option>' + NG.TRIPS.map(function (t) { return '<option value="' + esc(t.id) + '">' + esc(t.title) + '</option>'; }).join('');
+    sel.value = cur;
+  });
   // Review link from WhatsApp: nandigo.co/?review=NG-XXXX opens the form, prefilled for that booking
   var inviteRef = new URLSearchParams(location.search).get('review');
   if (inviteRef) {
