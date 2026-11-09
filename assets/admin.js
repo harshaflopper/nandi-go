@@ -7,7 +7,7 @@
 
   var DISTRICTS = ['Bagalkote','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Chamarajanagar','Chikkaballapura','Chikkamagaluru','Chitradurga','Dakshina Kannada','Davanagere','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Kodagu','Kolar','Koppal','Mandya','Mysuru','Raichur','Ramanagara','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayanagara','Vijayapura','Yadgir'];
   var KIT_TARGET = 10; // confirmed persons before the ₹4,999 kit is refunded
-  var S = { batches: [], bookings: [], partners: [], kyc: [], reviews: [], settings: {}, trips: [], styles: [], tab: 'overview' };
+  var S = { batches: [], bookings: [], partners: [], kyc: [], reviews: [], feedback: [], settings: {}, trips: [], styles: [], tab: 'overview' };
 
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
@@ -85,17 +85,18 @@
       sb.from('trips').select('*').order('sort').order('title'),
       sb.from('styles').select('*').order('sort'),
       sb.from('partner_kyc').select('*').order('created_at', { ascending: false }),
-      sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(500)
+      sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(500),
+      sb.from('feedback').select('*').order('created_at', { ascending: false }).limit(500)
     ]).then(function (r) {
       var bad = r.filter(function (x) { return x.error; })[0];
       if (bad) { toast(friendly(bad.error), true); return; }
       S.batches = r[0].data; S.bookings = r[1].data; S.partners = r[2].data;
       S.settings = {}; r[3].data.forEach(function (x) { S.settings[x.key] = x.value; });
-      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data;
+      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data;
       renderAll();
     });
   }
-  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); }
+  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); renderSecret(); }
 
   /* ---------------- Overview ---------------- */
   function renderOverview() {
@@ -116,7 +117,8 @@
       stat(live.length, 'Upcoming batches', 'batches') +
       stat(waiting.length, 'Partner applications to review', 'partners') +
       stat(refunds.length, 'Kit refunds due', 'partners') +
-      stat(S.reviews.filter(function (x) { return x.status === 'pending'; }).length, 'Reviews to approve', 'reviews');
+      stat(S.reviews.filter(function (x) { return x.status === 'pending'; }).length, 'Reviews to approve', 'reviews') +
+      stat(S.feedback.filter(function (x) { return x.status === 'new'; }).length, 'New Secret Box messages', 'secret');
     $('adOvBatches').innerHTML = live.length ? live.slice().sort(function (a, b) { return a.start_date < b.start_date ? -1 : 1; }).map(batchRow).join('') : '<p class="ad-empty">No upcoming batches. Create one in Batches.</p>';
     $('adOvBookings').innerHTML = newReq.length ? newReq.slice(0, 6).map(function (k) {
       return '<button class="ad-mini" data-edit-booking="' + k.id + '"><b>' + esc(k.name) + '</b><span>' + esc(k.trip_title) + ' · ' + seatsOf(k) + ' seat' + (seatsOf(k) > 1 ? 's' : '') + '</span><em>' + day(k.created_at.slice(0, 10)) + '</em></button>';
@@ -236,6 +238,12 @@
       return true;
     });
   }
+  function askReviewLink(k) {
+    var site = (S.settings.site_url || 'https://nandigo.co').replace(/\/$/, ''), first = String(k.name || '').trim().split(/\s+/)[0];
+    var msg = 'Hi ' + first + '! Thank you for travelling with Nandi Go on ' + (k.trip_title || 'your trip') + '. How was it? It would mean a lot if you could share a short review (photos welcome):\n' +
+      site + '/?review=' + encodeURIComponent(k.ref) + '\n\nWant to tell us something privately instead? Use the Nandi Secret Box: ' + site + '/?secret';
+    return 'https://wa.me/91' + String(k.phone || '').replace(/\D/g, '').slice(-10) + '?text=' + encodeURIComponent(msg);
+  }
   function renderBookings() {
     var list = filteredBookings();
     $('adBkEmpty').hidden = !!list.length;
@@ -251,6 +259,7 @@
         '<td data-l="Paid">' + (k.amount_paid ? fmt(k.amount_paid) : (k.advance_paid ? 'Advance' : '—')) + '</td>' +
         '<td data-l="Status">' + pill(k.status) + '</td>' +
         '<td class="ad-td-act">' + (k.status === 'new' ? '<button class="btn btn-gold btn-sm" data-quick-confirm="' + k.id + '">Confirm</button>' : '') +
+          (k.status === 'confirmed' || k.status === 'completed' ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + askReviewLink(k) + '" title="Send a WhatsApp message with their review link">Ask for review</a>' : '') +
           '<button class="btn btn-ghost btn-sm" data-edit-booking="' + k.id + '">Open</button></td></tr>';
     }).join('');
   }
@@ -689,6 +698,9 @@
 
   /* ---------------- Reviews ---------------- */
   var RV_PHOTO = SB_URL + '/storage/v1/object/public/review-photos/';
+  var RV_SRC = { website: 'From website', booking: 'Booking', whatsapp: 'Shared on WhatsApp', google: 'From Google', instagram: 'From Instagram', other: 'Added by team' };
+  var RV_SUBS = [['r_stay', 'Stay'], ['r_food', 'Food'], ['r_captain', 'Trip captain'], ['r_value', 'Value']];
+  function subLine(r) { return RV_SUBS.filter(function (x) { return r[x[0]]; }).map(function (x) { return x[1] + ' ' + r[x[0]] + '/5'; }).join(' · '); }
   function renderReviews() {
     var waiting = S.reviews.filter(function (x) { return x.status === 'pending'; }).length;
     $('adRvCount').hidden = !waiting; $('adRvCount').textContent = waiting;
@@ -704,10 +716,11 @@
       return '<article class="ad-rv' + (r.featured ? ' feat' : '') + '">' +
         ((r.photos || []).length ? '<div class="ad-rv-ph">' + r.photos.map(function (p) { return '<a href="' + esc(RV_PHOTO + p) + '" target="_blank" rel="noopener" style="background-image:url(\'' + esc(RV_PHOTO + p) + '\')"></a>'; }).join('') + '</div>' : '') +
         '<div class="ad-rv-body"><div class="ad-rv-top">' + stars(r.rating) + '<span class="ad-pill s-' + (r.status === 'approved' ? 'active' : r.status === 'pending' ? 'new' : 'closed') + '">' + label[r.status] + '</span>' +
-        (r.featured ? '<span class="ad-pill s-full">Featured</span>' : '') + (r.is_sample ? '<span class="ad-pill">Sample</span>' : '') + '</div>' +
+        (r.featured ? '<span class="ad-pill s-full">Featured</span>' : '') + (r.verified ? '<span class="ad-pill s-approved">Verified traveller</span>' : '<span class="ad-pill">' + (RV_SRC[r.source] || 'Website') + '</span>') + '</div>' +
+        (subLine(r) ? '<small class="ad-rv-subs">' + subLine(r) + '</small>' : '') +
         (r.title ? '<b class="ad-rv-title">' + esc(r.title) + '</b>' : '') + '<p>' + esc(r.body) + '</p>' +
         '<small>' + esc(r.name) + (r.place ? ' · ' + esc(r.place) : '') + (r.phone ? ' · <a href="https://wa.me/91' + esc(r.phone) + '" target="_blank" rel="noopener">' + esc(r.phone) + '</a>' : '') + ' · ' + day(r.created_at.slice(0, 10)) + '</small>' +
-        '<small>' + esc(r.trip_title || 'No trip chosen') + (r.style_id ? ' · ' + esc(styleName(r.style_id)) : '') + '</small>' +
+        '<small>' + esc(r.trip_title || 'No trip chosen') + (r.style_id ? ' · ' + esc(styleName(r.style_id)) : '') + (r.travel_month ? ' · travelled ' + esc(r.travel_month.slice(0, 7)) : '') + (r.booking_ref ? ' · ' + esc(r.booking_ref) : '') + '</small>' +
         '<div class="ad-row-actions">' + acts + '</div></div></article>';
     }).join('') : '<p class="ad-empty">' + (st === 'pending' ? 'No reviews waiting. New ones from the website appear here.' : 'No reviews here.') + '</p>';
   }
@@ -723,6 +736,75 @@
         return sb.from('reviews').delete().eq('id', rv.id);
       }).then(done('Review deleted'));
     }
+  });
+
+  $('adRvAdd').addEventListener('click', function () {
+    var opt = function (v, l) { return '<option value="' + esc(v) + '">' + esc(l) + '</option>'; };
+    var sel = function (name) { return '<select name="' + name + '"><option value="">—</option>' + [1, 2, 3, 4, 5].map(function (n) { return opt(n, n + ' / 5'); }).join('') + '</select>'; };
+    var files = [];
+    modal("Add a past traveller's review",
+      '<p class="ad-hint">Only for real feedback from someone who travelled with Nandi Go, in their own words, with their permission. It goes on the website straight away.</p>' +
+      '<div class="ad-2"><label>Traveller name *<input name="name" maxlength="60" required placeholder="Name as they want it shown"/></label><label>From (city)<input name="place" maxlength="60"/></label></div>' +
+      '<div class="ad-2"><label>Where did this feedback come from? *<select name="source">' + opt('whatsapp', 'WhatsApp message') + opt('google', 'Google review') + opt('instagram', 'Instagram') + opt('booking', 'Booked with us (has Booking ID)') + opt('other', 'Other (in person, call)') + '</select></label>' +
+        '<label>Booking ID <small>(gives the Verified badge)</small><input name="booking_ref" maxlength="20" placeholder="NG-…"/></label></div>' +
+      '<div class="ad-2"><label>Trip<select name="trip_id"><option value="">—</option>' + S.trips.map(function (t) { return opt(t.id, t.title); }).join('') + '</select></label>' +
+        '<label>Travel style<select name="style_id"><option value="">—</option>' + S.styles.map(function (x) { return opt(x.id, styleName(x.id)); }).join('') + '</select></label></div>' +
+      '<div class="ad-4"><label>Overall rating *<select name="rating" required>' + [5, 4, 3, 2, 1].map(function (n) { return opt(n, n + ' / 5'); }).join('') + '</select></label><label>Month travelled<input name="travel_month" type="month"/></label><label>Stay' + sel('r_stay') + '</label><label>Food' + sel('r_food') + '</label></div>' +
+      '<div class="ad-4"><label>Trip captain' + sel('r_captain') + '</label><label>Value' + sel('r_value') + '</label></div>' +
+      '<label>Headline<input name="title" maxlength="90"/></label>' +
+      '<label>Their review *<textarea name="body" rows="5" maxlength="1200" required placeholder="Copy their words exactly"></textarea></label>' +
+      '<div class="ad-field"><span>Photos <small>(up to 4, with their permission)</small></span><label class="btn btn-ghost btn-sm ad-upload">Choose photos<input type="file" id="mRvFiles" accept="image/jpeg,image/png,image/webp" multiple hidden/></label><small id="mRvMsg">None chosen</small></div>' +
+      '<label class="ad-check"><input type="checkbox" name="consent"/> This traveller agreed to show their name, words and photos on the website.</label>',
+      function (v) {
+        if (!v.name.trim() || v.body.trim().length < 10) throw new Error('Please add the traveller\'s name and their review.');
+        if (!v.consent) throw new Error('Please confirm the traveller agreed to show this review.');
+        if (v.source === 'booking' && !v.booking_ref.trim()) throw new Error('Add the Booking ID, or choose another source.');
+        var bk = v.booking_ref.trim() ? S.bookings.filter(function (k) { return k.ref.toUpperCase() === v.booking_ref.trim().toUpperCase(); })[0] : null;
+        if (v.booking_ref.trim() && !bk) throw new Error('No booking found with ID ' + v.booking_ref.trim() + '.');
+        var t = byId(S.trips, v.trip_id || (bk && bk.trip_id)), stamp = Date.now().toString(36);
+        return Promise.all(files.map(function (f, i) {
+          var path = 'reviews/team-' + stamp + '-' + i + '.' + (f.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+          return sb.storage.from('review-photos').upload(path, f, { contentType: f.type }).then(function (r) { if (r.error) throw r.error; return path; });
+        })).then(function (paths) {
+          var row = { name: v.name.trim(), place: v.place.trim() || null, source: bk ? 'booking' : v.source, booking_ref: bk ? bk.ref : null, verified: !!bk,
+            trip_id: t ? t.id : null, trip_title: t ? t.title : (bk ? bk.trip_title : null), style_id: v.style_id || (bk && bk.style_id) || null,
+            rating: +v.rating, title: v.title.trim() || null, body: v.body.trim(), photos: paths, status: 'approved',
+            travel_month: v.travel_month ? v.travel_month + '-01' : (bk && bk.travel_date ? bk.travel_date.slice(0, 8) + '01' : null) };
+          RV_SUBS.forEach(function (x) { if (v[x[0]]) row[x[0]] = +v[x[0]]; });
+          return sb.from('reviews').insert(row);
+        }, function (e) { return { error: e }; });
+      });
+    $('mRvFiles').addEventListener('change', function () {
+      files = [].slice.call(this.files).slice(0, 4).filter(function (f) { return f.size <= 5 * 1024 * 1024; });
+      $('mRvMsg').textContent = files.length ? files.length + ' photo' + (files.length > 1 ? 's' : '') + ' ready (uploaded when you save)' : 'None chosen (photos must be under 5 MB)';
+    });
+  });
+
+  /* ---------------- Secret Box ---------------- */
+  var SB_KIND = { experience: 'Experience', suggestion: 'Suggestion', secret: 'Secret' };
+  function renderSecret() {
+    var fresh = S.feedback.filter(function (x) { return x.status === 'new'; }).length;
+    $('adSbCount').hidden = !fresh; $('adSbCount').textContent = fresh;
+    var st = $('adSbStatus').value, kd = $('adSbKind').value;
+    var list = S.feedback.filter(function (x) { return (!st || x.status === st) && (!kd || x.kind === kd); });
+    $('adSbList').innerHTML = list.length ? list.map(function (f) {
+      var acts = (f.status !== 'read' ? '<button class="btn btn-ghost btn-sm" data-sb-set="read" data-id="' + f.id + '">Mark read</button>' : '') +
+        (f.status !== 'done' ? '<button class="btn btn-gold btn-sm" data-sb-set="done" data-id="' + f.id + '">Done</button>' : '') +
+        (f.phone ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/91' + esc(f.phone) + '">Reply on WhatsApp</a>' : '') +
+        '<button class="btn btn-ghost btn-sm ad-danger" data-sb-del="' + f.id + '">Delete</button>';
+      return '<article class="ad-rv ad-sb k-' + f.kind + '"><div class="ad-rv-body"><div class="ad-rv-top"><span class="ad-pill ad-sbk">' + SB_KIND[f.kind] + '</span>' +
+        '<span class="ad-pill s-' + (f.status === 'new' ? 'new' : f.status === 'done' ? 'approved' : 'closed') + '">' + ({ new: 'New', read: 'Read', done: 'Done' })[f.status] + '</span>' +
+        (f.rating ? '<span class="ad-stars">' + [1, 2, 3, 4, 5].map(function (i) { return '<i' + (i <= f.rating ? ' class="on"' : '') + '>★</i>'; }).join('') + '</span>' : '') + '</div>' +
+        '<p class="ad-sb-msg">' + esc(f.message) + '</p>' +
+        '<small>' + (f.name ? esc(f.name) : '<i>Anonymous</i>') + (f.phone ? ' · ' + esc(f.phone) : '') + (f.trip_title ? ' · ' + esc(f.trip_title) : '') + ' · ' + day(f.created_at.slice(0, 10)) + '</small>' +
+        '<div class="ad-row-actions">' + acts + '</div></div></article>';
+    }).join('') : '<p class="ad-empty">' + (st === 'new' ? 'No new messages.' : 'Nothing here.') + '</p>';
+  }
+  $('adSbStatus').addEventListener('input', renderSecret); $('adSbKind').addEventListener('input', renderSecret);
+  document.addEventListener('click', function (e) {
+    var x, done = function (msg) { return function (r) { if (r.error) toast(friendly(r.error), true); else { toast(msg); loadAll(); } }; };
+    if ((x = e.target.closest('[data-sb-set]'))) sb.from('feedback').update({ status: x.dataset.sbSet }).eq('id', x.dataset.id).then(done(x.dataset.sbSet === 'done' ? 'Marked done' : 'Marked read'));
+    else if ((x = e.target.closest('[data-sb-del]'))) { if (confirm('Delete this message permanently?')) sb.from('feedback').delete().eq('id', x.dataset.sbDel).then(done('Message deleted')); }
   });
 
   /* ---------------- Settings ---------------- */

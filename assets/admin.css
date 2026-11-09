@@ -248,3 +248,8 @@ body.ad{background:var(--cream);min-height:100vh}
 .ad-rv small a{text-decoration:underline}
 .ad-rv .ad-row-actions{margin-top:6px}
 .ad-tabs i{font-style:normal}
+
+.ad-rv-subs{color:var(--moss)}
+.ad-sb .ad-sbk{background:#1A3D2E;color:#F1DFA4}
+.ad-sb.k-secret{border-left:4px solid #B84A4A}.ad-sb.k-suggestion{border-left:4px solid var(--gold)}.ad-sb.k-experience{border-left:4px solid var(--moss)}
+.ad-sb-msg{white-space:pre-line;font-size:14px;line-height:1.6;margin:4px 0}

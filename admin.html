@@ -6,8 +6,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=54"/>
-<link rel="stylesheet" href="assets/admin.css?v=41"/>
+<link rel="stylesheet" href="site.css?v=57"/>
+<link rel="stylesheet" href="assets/admin.css?v=42"/>
 </head>
 <body class="ad">
 
@@ -35,6 +35,7 @@
    <button role="tab" data-tab="bookings">Bookings <i id="adNewCount" hidden></i></button>
    <button role="tab" data-tab="partners">Partners</button>
    <button role="tab" data-tab="reviews">Reviews <i id="adRvCount" hidden></i></button>
+   <button role="tab" data-tab="secret">Secret Box <i id="adSbCount" hidden></i></button>
    <button role="tab" data-tab="settings">Emails &amp; settings</button>
   </nav>
   <div class="ad-user"><span id="adEmail"></span><button type="button" class="btn btn-ghost btn-sm" id="adSignOut">Sign out</button></div>
@@ -118,10 +119,18 @@
 
   <!-- Reviews -->
   <section class="ad-panel" data-panel="reviews" hidden>
-   <div class="ad-head"><div><span class="ad-label">Traveller stories</span><h2>Reviews</h2></div></div>
-   <p class="ad-hint">New reviews from the website wait here until you approve them. Approved reviews show on the home page; "Feature" puts one first. Reviews marked "Sample" are examples: delete them once real reviews arrive.</p>
+   <div class="ad-head"><div><span class="ad-label">Traveller stories</span><h2>Reviews</h2></div><div class="ad-actions"><button class="btn btn-gold btn-sm" id="adRvAdd">Add a past traveller's review</button></div></div>
+   <p class="ad-hint">New reviews from the website wait here until you approve them. Approved reviews show on the home page and on the trip page; "Feature" puts one first. A review gets the <b>Verified traveller</b> badge only when its Booking ID and WhatsApp number match a confirmed booking. Got feedback on WhatsApp, Google or Instagram from someone who really travelled? Add it with "Add a past traveller's review" — only with their permission, in their own words.</p>
    <div class="ad-filter"><select id="adRvStatus"><option value="pending">Waiting for approval</option><option value="approved">On the website</option><option value="hidden">Hidden</option><option value="">All reviews</option></select></div>
    <div class="ad-rvlist" id="adRvList"></div>
+  </section>
+
+  <!-- Secret Box -->
+  <section class="ad-panel" data-panel="secret" hidden>
+   <div class="ad-head"><div><span class="ad-label">Private feedback</span><h2>Nandi Secret Box</h2></div></div>
+   <p class="ad-hint">Private messages from travellers: experiences, suggestions and things they want to tell only the team. These are never shown on the website. Name and number are optional, so many are anonymous. You get an email for each new one.</p>
+   <div class="ad-filter"><select id="adSbStatus"><option value="new">New</option><option value="read">Read</option><option value="done">Done</option><option value="">All</option></select><select id="adSbKind"><option value="">All kinds</option><option value="experience">Experiences</option><option value="suggestion">Suggestions</option><option value="secret">Secrets</option></select></div>
+   <div class="ad-rvlist" id="adSbList"></div>
   </section>
 
   <!-- Settings -->
@@ -155,10 +164,10 @@
 </div>
 <div class="ad-toast" id="adToast" role="status" hidden></div>
 
-<script src="assets/icons.js?v=51"></script>
+<script src="assets/icons.js?v=52"></script>
 <script src="assets/data.js?v=49"></script>
 <script src="assets/map-data.js?v=32"></script>
 <script src="assets/tripui.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="assets/admin.js?v=42"></script>
+<script src="assets/admin.js?v=43"></script>
 </body></html>

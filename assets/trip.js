@@ -64,7 +64,6 @@
     $('pkCarry').innerHTML = carry.map(function (c) { return '<li>' + I('check') + esc(c) + '</li>'; }).join('');
 
     renderBox();
-    loadReviews();
   }
 
   function renderInc() {
@@ -88,17 +87,6 @@
     var b = T.nextBatches(trip.id, style);
     $('pkNext').innerHTML = '<span class="pk-lab">Next dates</span>' + (b.length ? '<div>' + b.slice(0, 4).map(function (x) { return '<span>' + T.dShort(x.start) + (x.live ? '<small>' + x.left + ' left</small>' : '') + '</span>'; }).join('') + (b.length > 4 ? '<em>+' + (b.length - 4) + ' more</em>' : '') + '</div>' : '<p>Dates on request — pick your preferred date while booking.</p>');
     $('pkWa').href = T.waLink(trip);
-  }
-
-  function loadReviews() {
-    if (!NG.DB || loadReviews.done) return; loadReviews.done = true;
-    NG.DB.get('public_reviews?select=*&trip_id=eq.' + encodeURIComponent(trip.id) + '&is_sample=eq.false&order=created_at.desc&limit=6').then(function (rows) {
-      show('pkRevWrap', rows.length);
-      $('pkRevs').innerHTML = rows.map(function (r) {
-        var s = ''; for (var i = 1; i <= 5; i++) s += '<i' + (i <= r.rating ? ' class="on"' : '') + '>★</i>';
-        return '<div class="pk-rev"><span class="rv-stars">' + s + '</span>' + (r.title ? '<b>' + esc(r.title) + '</b>' : '') + '<p>' + esc(r.body) + '</p><small>' + esc(r.name) + (r.place ? ' · ' + esc(r.place) : '') + '</small></div>';
-      }).join('');
-    }).catch(function () {});
   }
 
   // Events
