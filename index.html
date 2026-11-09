@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=75"/>
+<link rel="stylesheet" href="site.css?v=76"/>
 </head>
 <body>
 
@@ -130,8 +130,9 @@
     <li class="jr-stop" style="--i:1"><span class="jr-pin"><svg class="ic"><use href="#i-pin"/></svg><em>2</em></span><div class="jr-card"><span class="jr-k">Stop 2</span><h3>Pick a place</h3><p>Coffee estates, hills, beaches, backwaters, snow or abroad. Open any trip to see photos, the plan and what is included.</p><span class="jr-tag">Hills to Thailand</span></div></li>
     <li class="jr-stop" style="--i:2"><span class="jr-pin"><svg class="ic"><use href="#i-calendar"/></svg><em>3</em></span><div class="jr-card"><span class="jr-k">Stop 3</span><h3>Pick a date</h3><p>Choose one of our batch dates on the calendar. Seats left are shown live, so you know exactly what is open.</p><span class="jr-tag">Live seats</span></div></li>
     <li class="jr-stop" style="--i:3"><span class="jr-pin"><svg class="ic"><use href="#i-users"/></svg><em>4</em></span><div class="jr-card"><span class="jr-k">Stop 4</span><h3>Add travellers and sign in</h3><p>Enter each traveller&#39;s name and age, then sign in with Google. Your booking and e-ticket are saved to your account.</p><span class="jr-tag">Google sign-in</span></div></li>
-    <li class="jr-stop" style="--i:4"><span class="jr-pin"><svg class="ic"><use href="#i-shield"/></svg><em>5</em></span><div class="jr-card"><span class="jr-k">Stop 5</span><h3>Upload IDs and pay</h3><p>Upload one ID per traveller for hotel check-in, then pay the full amount on our secure Razorpay page.</p><span class="jr-tag">UPI · Cards · Banking</span></div></li>
-    <li class="jr-stop last" style="--i:5"><span class="jr-pin"><svg class="ic"><use href="#i-ticket"/></svg><em>6</em></span><div class="jr-card"><span class="jr-k">Stop 6</span><h3>Get your e-ticket and travel</h3><p>Your QR e-ticket opens right after payment and stays in My trips. Show it to the trip captain at pickup and enjoy the trip.</p><span class="jr-tag">QR ticket</span></div></li>
+    <li class="jr-stop" style="--i:4"><span class="jr-pin"><svg class="ic"><use href="#i-shield"/></svg><em>5</em></span><div class="jr-card"><span class="jr-k">Stop 5</span><h3>Upload traveller IDs</h3><p>Upload one ID per traveller (masked Aadhaar, licence, voter ID or passport) for hotel check-in. Stored privately.</p><span class="jr-tag">Private &amp; secure</span></div></li>
+    <li class="jr-stop" style="--i:5"><span class="jr-pin"><svg class="ic"><use href="#i-card"/></svg><em>6</em></span><div class="jr-card"><span class="jr-k">Stop 6</span><h3>Pay securely</h3><p>Once every ID is in, pay the full amount on our secure Razorpay page. Your seats are confirmed instantly.</p><span class="jr-tag">UPI · Cards · Banking</span></div></li>
+    <li class="jr-stop last" style="--i:6"><span class="jr-pin"><svg class="ic"><use href="#i-ticket"/></svg><em>7</em></span><div class="jr-card"><span class="jr-k">Stop 7</span><h3>Get your e-ticket and travel</h3><p>Your QR e-ticket opens right after payment and stays in My trips. Show it to the trip captain at pickup and enjoy the trip.</p><span class="jr-tag">QR ticket</span></div></li>
    </ol>
   </div>
   <div class="jr-end reveal">
@@ -424,7 +425,7 @@
   document.addEventListener('ng:batches', renderStyles);
 
   /* Reveal on scroll */
-  var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } }); }, { threshold: .12 }) : null;
+  var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } }); }, { threshold: 0, rootMargin: '0px 0px -12% 0px' }) : null;
   document.querySelectorAll('.reveal').forEach(function (el) { io ? io.observe(el) : el.classList.add('visible'); });
 })();
 </script>

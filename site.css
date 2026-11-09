@@ -2220,3 +2220,13 @@ a.rvx-trip:hover{text-decoration:underline}
 .mt-head .btn[hidden]{display:none}
 footer.lg-foot{background:none;color:var(--muted);border:0;margin:0 auto}
 footer.lg-foot a{color:var(--moss)}
+/* How it works: 7 stops */
+.jr-stops{grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}
+.jr-road{left:calc(100%/14);right:calc(100%/14)}
+.jr-card{padding:16px 12px 14px}
+.jr-card h3{font-size:17px}
+.jr-card p{font-size:13px}
+.jr-tag{white-space:normal;text-align:center}
+@media(max-width:1100px){.jr-stops{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:26px}}
+@media(max-width:860px){.jr-stops{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.jr-stops{grid-template-columns:1fr}.jr-road{left:31px;right:auto}}
