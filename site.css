@@ -1540,3 +1540,23 @@ html.sp-lock{overflow:hidden}
 .brand-logo{height:64px}
 .site-header.scrolled .brand-logo{height:52px}
 @media(max-width:900px){.brand-logo{height:58px}.site-header.scrolled .brand-logo{height:48px}}
+.bk-done.is-pending .bk-done-mark{background:#FBEFD6;color:var(--warning)}
+
+/* ==========================================================================
+   Travel style cards — calm, even 2x2 grid of posters
+   ========================================================================== */
+#trips .styles{max-width:1120px;margin:0 auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+#trips .style-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  box-shadow:0 2px 0 #fff inset,0 18px 40px -30px #1A3D2E;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .35s ease}
+#trips .style-card:hover{transform:translateY(-4px);box-shadow:0 30px 60px -34px #1A3D2E;border-color:#D4AF3766}
+#trips .style-card.on{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 30px 60px -34px #1A3D2E}
+#trips .sc-poster{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:0;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+#trips .style-card:hover .sc-poster{transform:scale(1.025)}
+#trips .sc-bar{background:#fff;padding:16px 20px 18px;border-top:1px solid #EFE8D8}
+#trips .sc-bar small{color:var(--muted);font-size:13.5px;font-weight:500}
+#trips .sc-bar small .ic{color:var(--gold-ink)}
+#trips .sc-go{display:inline-flex;align-items:center;gap:6px;background:var(--forest);color:#fff;border-radius:var(--btn-r);padding:9px 16px;font-size:13.5px;font-weight:600;transition:background var(--ease)}
+#trips .sc-go .ic{color:var(--gold2)}
+#trips .style-card:hover .sc-go{background:#2F5F46}
+@media(max-width:900px){#trips .styles{grid-template-columns:minmax(0,1fr);gap:18px;max-width:640px}}
+@media(max-width:560px){#trips .sc-bar{padding:12px 14px}#trips .sc-go{padding:8px 12px;font-size:12.5px}#trips .style-card{border-radius:18px}}

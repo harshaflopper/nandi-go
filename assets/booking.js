@@ -48,10 +48,10 @@
     '   </div>' +
     '   <div id="bkDoneView" class="bk-done" hidden>' +
     '    <div class="bk-done-mark">' + I('check') + '</div>' +
-    '    <h2>Booking saved</h2>' +
+    '    <h2 id="bkDoneTitle">Booking saved</h2>' +
     '    <p id="bkDoneText">Online payment is being switched on. Our team will contact you on WhatsApp shortly to complete the payment and confirm your seats.</p>' +
     '    <dl class="bk-receipt" id="bkReceipt"></dl>' +
-    '    <div class="bk-done-actions"><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Chat on WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
+    '    <div class="bk-done-actions"><button type="button" class="btn btn-gold" id="bkRetry" hidden>' + I('card') + '<span>Pay now</span></button><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Chat on WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
     '    <button type="button" class="bk-link" data-bk-close>Done</button>' +
     '   </div>' +
     '  </div>' +
@@ -257,6 +257,66 @@
     setTimeout(function () { $('bkName').focus({ preventScroll: true }); }, 30);
   });
 
+  /* ---------- Razorpay payment ---------- */
+  function payApi(body) {
+    return fetch(NG.DB.url + '/functions/v1/razorpay', { method: 'POST', headers: { apikey: NG.DB.key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { j._status = r.status; return j; }); });
+  }
+  var rzLoading = null;
+  function loadCheckout() {
+    if (window.Razorpay) return Promise.resolve();
+    if (!rzLoading) rzLoading = new Promise(function (ok, no) {
+      var sc = document.createElement('script'); sc.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      sc.onload = ok; sc.onerror = function () { rzLoading = null; no(new Error('checkout')); }; document.head.appendChild(sc);
+    });
+    return rzLoading;
+  }
+  function doneState(kind, extra) {
+    var ref = state.paidRef || state.ref, sbtn = form.querySelector('[type=submit]');
+    if (sbtn) sbtn.disabled = false;
+    $('bkFormView').hidden = true; $('bkDoneView').hidden = false;
+    $('bkRetry').hidden = kind !== 'pending';
+    $('bkDoneView').classList.toggle('is-pending', kind === 'pending');
+    if (kind === 'paid') {
+      $('bkDoneTitle').textContent = 'Booking confirmed';
+      $('bkDoneText').textContent = 'Payment of ' + NG.fmt(extra.amount || state.payTotal) + ' received. Booking ' + ref + ' is confirmed. Razorpay has sent you a receipt, and our team will WhatsApp you the trip details.';
+    } else if (kind === 'pending') {
+      $('bkDoneTitle').textContent = 'Payment not completed';
+      $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + 'Your booking ' + ref + ' is saved, but seats are confirmed only after payment.';
+      $('bkRetry').querySelector('span').textContent = 'Pay ' + NG.fmt(state.payTotal) + ' now';
+    } else {
+      $('bkDoneTitle').textContent = 'Booking saved';
+      $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + 'Our team will contact you on WhatsApp shortly to complete the payment and confirm your seats.';
+    }
+  }
+  function startPayment() {
+    var ref = state.paidRef, btn = form.querySelector('[type=submit]');
+    $('bkRetry').disabled = true;
+    Promise.all([payApi({ action: 'order', ref: ref }), loadCheckout()]).then(function (r) {
+      var o = r[0];
+      $('bkRetry').disabled = false;
+      if (o.paid) return doneState('paid', {});
+      if (o.not_configured || !o.order_id) return doneState(o.not_configured ? 'saved' : 'pending', { msg: o.not_configured ? '' : o.error });
+      var rzp = new window.Razorpay({
+        key: o.key_id, order_id: o.order_id, amount: o.amount, currency: o.currency,
+        name: 'Nandi Go', description: o.description, image: location.origin + '/logo.png',
+        prefill: o.prefill, notes: { booking_ref: ref }, theme: { color: '#1A3D2E' },
+        handler: function (resp) {
+          payApi({ action: 'verify', razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature })
+            .then(function (v) { v.ok ? doneState('paid', { amount: v.amount }) : doneState('pending', { msg: v.error || 'We could not confirm the payment.' }); },
+                  function () { doneState('pending', { msg: 'We could not confirm the payment yet. If money was debited, it will be confirmed automatically.' }); });
+        },
+        modal: { ondismiss: function () { doneState('pending', {}); } }
+      });
+      rzp.on('payment.failed', function (resp) { console.warn('Nandi Go: payment failed', resp && resp.error); });
+      rzp.open();
+    }, function () {
+      $('bkRetry').disabled = false;
+      doneState('pending', { msg: 'The payment window could not open. Please check your internet and try again.' });
+    });
+  }
+  $('bkRetry').addEventListener('click', startPayment);
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var t = state.trip, phone = cleanPhone($('bkPhone').value), email = $('bkEmail').value.trim();
@@ -298,24 +358,19 @@
       name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refCode(), guests: guests
     };
     var submitBtn = form.querySelector('[type=submit]');
-    // Razorpay checkout will open here once it is connected; for now the booking is saved for the team.
     if (submitBtn) submitBtn.disabled = true;
-    var save = NG.DB ? NG.DB.insert('bookings', row) : Promise.resolve(false);
-    save.then(finish, function (e) {
+    state.paidRef = state.ref; state.payTotal = p.price * state.pax;
+    var save = NG.DB ? NG.DB.insert('bookings', row) : Promise.reject(new Error('offline'));
+    save.then(function () { startPayment(); }, function (e) {
       console.warn('Nandi Go: booking not saved', e);
+      if (submitBtn) submitBtn.disabled = false;
       if (/no longer open/i.test(e.message)) {
-        if (submitBtn) submitBtn.disabled = false;
         if (NG.refreshBatches) NG.refreshBatches().then(function () { go(1); $('bkError1').textContent = 'Sorry, that batch just filled up. Please choose another date.'; $('bkError1').hidden = false; });
         return;
       }
-      if (submitBtn) submitBtn.disabled = false;
       $('bkError').innerHTML = 'Sorry, we could not save your booking. Please try again, or <a href="' + link + '" target="_blank" rel="noopener">book on WhatsApp</a>.';
       $('bkError').hidden = false;
     });
-    function finish() {
-      if (submitBtn) submitBtn.disabled = false;
-      $('bkFormView').hidden = true; $('bkDoneView').hidden = false;
-    }
   });
 
   $('bkDownload').addEventListener('click', function () {
