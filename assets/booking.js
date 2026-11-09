@@ -1,6 +1,7 @@
 /* Nandi Go booking card — shared by every page.
  * Step 1: travel style + date (a calendar of that trip's batches for the style).
- * Step 2: lead traveller's contact, every traveller's name and age, total, Pay (Razorpay will be connected here).
+ * Step 2: lead traveller's contact, every traveller's name and age, total.
+ * Then: Google sign-in (the typed details are kept), Step 3: one ID per traveller, then Pay (Razorpay) and the e-ticket.
  * Open it from any element:  data-book="goa"  data-style="girls"  data-batch="<batch id>"  data-variant="standard" (all optional) */
 (function () {
   var NG = window.NG, I = window.NGIcon;
@@ -24,7 +25,7 @@
     '  </aside>' +
     '  <div class="bk-main">' +
     '   <div id="bkFormView">' +
-    '    <div class="bk-steps" aria-hidden="true"><span id="bkS1" class="on">1 · Dates</span><i></i><span id="bkS2">2 · Your details</span></div>' +
+    '    <div class="bk-steps" aria-hidden="true"><span id="bkS1" class="on">1 · Dates</span><i></i><span id="bkS2">2 · Your details</span><i></i><span id="bkS3">3 · IDs &amp; payment</span></div>' +
     '    <h2 id="bkTitle">Choose your dates</h2>' +
     '    <div id="bkStep1">' +
     '     <label class="bk-field bk-wide"><span>Trip</span><select id="bkTrip"></select></label>' +
@@ -42,16 +43,32 @@
     '     <div class="bk-field bk-wide"><span>Who is travelling</span><div class="bk-guests" id="bkGuests"></div></div>' +
     '     <div class="bk-total bk-wide"><div><span>Total amount</span><strong id="bkTotal"></strong><small id="bkTotalNote"></small></div><div class="bk-adv" id="bkAdvance"></div></div>' +
     '     <p class="bk-error bk-wide" id="bkError" role="alert" hidden></p>' +
-    '     <button type="submit" class="btn btn-forest bk-submit bk-wide" id="bkPay">' + I('card') + '<span id="bkPayText">Pay</span></button>' +
-    '     <p class="bk-fine bk-wide">' + I('shield') + 'Secure payment by Razorpay. Your seats are confirmed as soon as the payment goes through.</p>' +
+    '     <p class="bk-signed bk-wide" id="bkSigned" hidden></p>' +
+    '     <button type="submit" class="btn btn-forest bk-submit bk-wide" id="bkPay"><span id="bkPayText">Continue</span>' + I('arrow') + '</button>' +
+    '     <p class="bk-fine bk-wide">' + I('shield') + 'Next: sign in with Google and upload one ID per traveller, then pay securely with Razorpay.</p>' +
     '    </form>' +
+    '    <div class="bk-auth" id="bkAuth" hidden><div class="bk-auth-ic">' + I('lock') + '</div><h3>Sign in to continue</h3>' +
+    '     <p>Sign in with Google so your booking, traveller IDs and e-ticket are saved to your account. You can open them any time from <b>My trips</b>.</p>' +
+    '     <button type="button" class="bk-google" id="bkGoogle"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Continue with Google</button>' +
+    '     <p class="bk-error" id="bkAuthErr" role="alert" hidden></p>' +
+    '     <button type="button" class="bk-link" data-auth-back>Back to your details</button></div>' +
+    '    <div id="bkIds" hidden>' +
+    '     <div class="bk-picked bk-wide" id="bkIdsPicked"></div>' +
+    '     <p class="bk-ids-why">Hotels and homestays must see a government ID for every guest. Upload one ID per traveller to unlock payment.</p>' +
+    '     <div class="et-kyc-note" id="bkIdNote"></div>' +
+    '     <label class="et-consent"><input type="checkbox" id="bkConsent"><span>I agree that Nandi Go may use these IDs only for hotel check-in and travel permits for this trip. They are stored privately and deleted 30 days after the trip (or after 3 days if the booking is not paid).</span></label>' +
+    '     <div class="et-kyc-list" id="bkIdList"><p class="et-muted">Loading…</p></div>' +
+    '     <p class="bk-error" id="bkError3" role="alert" hidden></p>' +
+    '     <button type="button" class="btn btn-forest bk-submit" id="bkPayNow" disabled>' + I('card') + '<span id="bkPayNowText">Pay</span></button>' +
+    '     <p class="bk-fine">' + I('lock') + '<span id="bkIdsFine">Pay unlocks when every traveller has an ID. Close this any time and finish later from My trips.</span></p>' +
+    '    </div>' +
     '   </div>' +
     '   <div id="bkDoneView" class="bk-done" hidden>' +
     '    <div class="bk-done-mark">' + I('check') + '</div>' +
     '    <h2 id="bkDoneTitle">Booking saved</h2>' +
     '    <p id="bkDoneText">Online payment is being switched on. Our team will contact you on WhatsApp shortly to complete the payment and confirm your seats.</p>' +
     '    <dl class="bk-receipt" id="bkReceipt"></dl>' +
-    '    <div class="bk-done-actions"><a class="btn btn-gold bk-ticket" id="bkTicket" hidden>' + I('ticket') + 'Open my e-ticket</a><button type="button" class="btn btn-gold" id="bkRetry" hidden>' + I('card') + '<span>Pay now</span></button><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Chat on WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
+    '    <div class="bk-done-actions"><a class="btn btn-gold bk-ticket" id="bkTicket" hidden>' + I('ticket') + 'Open my e-ticket</a><button type="button" class="btn btn-gold" id="bkRetry" hidden>' + I('card') + '<span>Pay now</span></button><a class="btn btn-ghost" id="bkMyTrips" href="my-trips">' + I('users') + 'My trips</a><a class="btn btn-forest" id="bkWa" target="_blank" rel="noopener">' + I('chat') + 'Chat on WhatsApp</a><button type="button" class="btn btn-ghost" id="bkDownload">' + I('download') + 'Save summary</button></div>' +
     '    <button type="button" class="bk-link" data-bk-close>Done</button>' +
     '   </div>' +
     '  </div>' +
@@ -194,6 +211,12 @@
     $('bkPaxNote').textContent = b && b.live ? b.left + ' seat' + (b.left === 1 ? '' : 's') + ' left in this batch' : '';
     renderGuests();
     renderTotal();
+    var u = window.NGAuth && NGAuth.user();
+    $('bkSigned').hidden = !u;
+    if (u) {
+      $('bkSigned').innerHTML = I('check') + 'Signed in as <b>' + esc(u.email) + '</b> <button type="button" class="bk-link" data-signout>Not you?</button>';
+      if (!$('bkEmail').value) $('bkEmail').value = u.email || '';
+    }
   }
   function renderTotal() {
     var p = priceNow();
@@ -201,15 +224,15 @@
     $('bkTotal').textContent = NG.fmt(p.price * state.pax);
     $('bkTotalNote').textContent = NG.fmt(p.price) + ' × ' + state.pax + ' ' + unitWord(p.unit, state.pax);
     $('bkAdvance').innerHTML = '<b>Full payment</b><span>UPI · cards · net banking</span>';
-    $('bkPayText').textContent = 'Pay ' + NG.fmt(p.price * state.pax);
+    $('bkPayText').textContent = 'Continue';
   }
 
   function go(step) {
     state.step = step;
-    $('bkStep1').hidden = step !== 1; form.hidden = step !== 2;
-    $('bkS1').classList.toggle('on', step === 1); $('bkS2').classList.toggle('on', step === 2);
-    $('bkTitle').textContent = step === 1 ? 'Choose your dates' : 'Your details';
-    if (step === 1) renderStep1(); else renderStep2();
+    $('bkStep1').hidden = step !== 1; form.hidden = step !== 2; $('bkIds').hidden = step !== 3; $('bkAuth').hidden = step !== 'auth';
+    $('bkS1').classList.toggle('on', step === 1); $('bkS2').classList.toggle('on', step === 2 || step === 'auth'); $('bkS3').classList.toggle('on', step === 3);
+    $('bkTitle').textContent = step === 1 ? 'Choose your dates' : step === 3 ? 'Traveller IDs' : step === 'auth' ? 'Almost there' : 'Your details';
+    if (step === 1) renderStep1(); else if (step === 2) renderStep2(); else if (step === 3) renderIdsHead();
     bk.querySelector('.bk-main').scrollTop = 0;
   }
 
@@ -220,6 +243,7 @@
     state.trip = t;
     state.style = styleOk(opts.style) ? opts.style : (styleOk(state.style) ? state.style : (visibleStyles()[0] || NG.STYLES[0]).id);
     state.batch = opts.batch || null; state.variant = opts.variant || null; state.month = null; state.date = ''; state.guests = []; $('bkGuests').innerHTML = '';
+    state.paidRef = null; state.T = null; state.idChoice = {}; state.idBusy = {};
     fillTrips();
     $('bkFormView').hidden = false; $('bkDoneView').hidden = true; $('bkError').hidden = true; $('bkError1').hidden = true;
     go(1);
@@ -280,7 +304,7 @@
     $('bkDoneView').classList.toggle('is-pending', kind === 'pending');
     if (kind === 'paid') {
       $('bkDoneTitle').textContent = 'Booking confirmed';
-      $('bkDoneText').textContent = 'Payment of ' + NG.fmt(extra.amount || state.payTotal) + ' received. Booking ' + ref + ' is confirmed. Open your e-ticket to download it and upload every traveller ID before the trip.';
+      $('bkDoneText').textContent = 'Payment of ' + NG.fmt(extra.amount || state.payTotal) + ' received. Booking ' + ref + ' is confirmed. Your e-ticket is ready, and it is always in My trips.';
       if (extra.ticket_key) {
         var url = 'ticket?b=' + encodeURIComponent(extra.ref || ref) + '&k=' + extra.ticket_key;
         $('bkTicket').href = url;
@@ -288,7 +312,7 @@
       }
     } else if (kind === 'pending') {
       $('bkDoneTitle').textContent = 'Payment not completed';
-      $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + 'Your booking ' + ref + ' is saved, but seats are confirmed only after payment.';
+      $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + 'Your booking ' + ref + ' is saved, but seats are confirmed only after payment. You can pay any time in the next 3 days from My trips.';
       $('bkRetry').querySelector('span').textContent = 'Pay ' + NG.fmt(state.payTotal) + ' now';
     } else {
       $('bkDoneTitle').textContent = 'Booking saved';
@@ -302,6 +326,7 @@
       var o = r[0];
       $('bkRetry').disabled = false;
       if (o.paid) return doneState('paid', {});
+      if (o.kyc_missing) { $('bkFormView').hidden = false; $('bkDoneView').hidden = true; go(3); loadIds(); $('bkError3').textContent = o.error; $('bkError3').hidden = false; return; }
       if (o.not_configured || !o.order_id) return doneState(o.not_configured ? 'saved' : 'pending', { msg: o.not_configured ? '' : o.error });
       var rzp = new window.Razorpay({
         key: o.key_id, order_id: o.order_id, amount: o.amount, currency: o.currency,
@@ -363,11 +388,12 @@
       travellers: state.pax, unit: p.unit, estimated_total: p.price * state.pax,
       name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refCode(), guests: guests
     };
+    if (!window.NGAuth || !NGAuth.user()) { saveDraft(guests, phone, email); go('auth'); return; }
     var submitBtn = form.querySelector('[type=submit]');
     if (submitBtn) submitBtn.disabled = true;
     state.paidRef = state.ref; state.payTotal = p.price * state.pax;
-    var save = NG.DB ? NG.DB.insert('bookings', row) : Promise.reject(new Error('offline'));
-    save.then(function () { startPayment(); }, function (e) {
+    var save = NGAuth.client.from('bookings').insert(row).then(function (r) { if (r.error) throw new Error(r.error.message); });
+    save.then(function () { if (submitBtn) submitBtn.disabled = false; go(3); loadIds(); }, function (e) {
       console.warn('Nandi Go: booking not saved', e);
       if (submitBtn) submitBtn.disabled = false;
       if (/no longer open/i.test(e.message)) {
@@ -378,6 +404,119 @@
       $('bkError').hidden = false;
     });
   });
+
+
+  /* ---------- Google sign-in (details are kept across the sign-in page) ---------- */
+  var DRAFT = 'ng_bk_draft';
+  function saveDraft(guests, phone, email) {
+    try { sessionStorage.setItem(DRAFT, JSON.stringify({ trip: state.trip.id, style: state.style, batch: state.batch, variant: state.variant, date: state.date, pax: state.pax, guests: guests, phone: phone, email: email, t: Date.now() })); } catch (e) {}
+  }
+  $('bkGoogle').addEventListener('click', function () {
+    if (!window.NGAuth) { $('bkAuthErr').textContent = 'Sign-in could not load. Please refresh the page.'; $('bkAuthErr').hidden = false; return; }
+    this.disabled = true;
+    NGAuth.signIn().then(function (r) { if (r && r.error) throw r.error; }).catch(function (e) {
+      $('bkGoogle').disabled = false; $('bkAuthErr').textContent = 'Google sign-in failed: ' + (e.message || e); $('bkAuthErr').hidden = false;
+    });
+  });
+  function resumeDraft() {
+    var d; try { d = JSON.parse(sessionStorage.getItem(DRAFT) || 'null'); } catch (e) {}
+    if (!d || Date.now() - d.t > 3600e3 || !NG.trip(d.trip) || !NGAuth.user()) return;
+    sessionStorage.removeItem(DRAFT);
+    open(d.trip, { style: d.style, batch: d.batch, variant: d.variant });
+    state.date = d.date || ''; state.pax = d.pax || 1; state.guests = d.guests || [];
+    go(2);
+    $('bkPhone').value = d.phone || ''; if (d.email) $('bkEmail').value = d.email;
+    setTimeout(function () { form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })); }, 50);
+  }
+  document.addEventListener('ng:auth', function () {
+    if (window.NGAuth && NGAuth.user()) { if (NG.DB && NG.DB.live) resumeDraft(); else document.addEventListener('ng:catalog', function once() { document.removeEventListener('ng:catalog', once); resumeDraft(); }); }
+    if (!bk.hidden && state.step === 2) renderStep2();
+  });
+
+  /* ---------- Step 3: one ID per traveller, then pay ---------- */
+  var ID_NAMES = { aadhaar: 'Aadhaar (masked)', dl: 'Driving licence', voter: 'Voter ID', passport: 'Passport' };
+  function renderIdsHead() {
+    var t = state.trip, st = NG.style(state.style);
+    $('bkIdsPicked').innerHTML = '<div><b>' + esc(t.title) + '</b><span>' + esc(st ? st.name : '') + ' · Booking ' + esc(state.paidRef || '') + '</span></div>';
+    $('bkPayNowText').textContent = 'Pay ' + NG.fmt(state.payTotal || 0);
+    $('bkError3').hidden = true;
+  }
+  function loadIds() {
+    $('bkIdList').innerHTML = '<p class="et-muted">Loading…</p>';
+    return NGAuth.fn('ticket', { action: 'get', ref: state.paidRef }).then(function (T) { state.T = T; renderIds(); }, function (e) {
+      $('bkIdList').innerHTML = '<p class="bk-error">' + esc(e.message) + '</p>';
+    });
+  }
+  function kycOf(i) { return ((state.T && state.T.kyc) || []).filter(function (k) { return k.guest_index === i; })[0]; }
+  function renderIds() {
+    var T = state.T, ids = T.kyc_ids;
+    $('bkIdNote').innerHTML = I('info') + (ids.length === 1 ? 'This is an international trip: a valid <b>passport</b> is needed for every traveller.'
+      : ids.indexOf('aadhaar') < 0 ? 'For Nepal, Indian citizens need a <b>passport or voter ID</b>.'
+      : 'Accepted: masked Aadhaar, driving licence, voter ID or passport. For Aadhaar, use the <b>masked Aadhaar</b> (only the last 4 digits visible) from <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noopener">myaadhaar.uidai.gov.in</a> or DigiLocker.');
+    var done = 0;
+    $('bkIdList').innerHTML = T.guests.map(function (g, i) {
+      var k = kycOf(i), ok = k && k.status !== 'rejected'; if (ok) done++;
+      var cls = !k ? 'todo' : k.status === 'approved' ? 'ok' : k.status === 'rejected' ? 'bad' : 'wait';
+      var label = !k ? 'ID needed' : k.status === 'approved' ? 'Approved' : k.status === 'rejected' ? 'Please upload again' : 'Uploaded';
+      var sel = state.idChoice[i] || (k && ids.indexOf(k.id_type) >= 0 ? k.id_type : ids[0]);
+      return '<div class="et-kp ' + cls + '"><div class="et-kp-who"><span class="et-kp-n">' + (i + 1) + '</span><div><b>' + esc(g.name) + '</b><small>' + (g.age != null ? g.age + ' yrs · ' : '') + (k ? ID_NAMES[k.id_type] : 'No ID yet') + '</small></div>' +
+        '<em class="et-chip ' + cls + '">' + (ok ? I('check') : '') + label + '</em></div>' +
+        (k && k.status === 'rejected' && k.note ? '<p class="et-kp-note">' + esc(k.note) + '</p>' : '') +
+        (k && k.status === 'approved' ? '' : '<div class="et-kp-up"><select data-idtype="' + i + '" aria-label="ID type for ' + esc(g.name) + '">' + ids.map(function (x) { return '<option value="' + x + '"' + (x === sel ? ' selected' : '') + '>' + ID_NAMES[x] + '</option>'; }).join('') + '</select>' +
+          '<label class="btn btn-ghost btn-sm et-file">' + I('camera') + '<span>' + (state.idBusy[i] || (k ? 'Replace' : 'Upload photo or PDF')) + '</span><input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" data-idfile="' + i + '" hidden' + (state.idBusy[i] ? ' disabled' : '') + '></label></div>') +
+      '</div>';
+    }).join('');
+    var all = done === T.guests.length;
+    $('bkPayNow').disabled = !all;
+    $('bkIdsFine').textContent = all ? 'All IDs are in. Pay to confirm your seats.' : (T.guests.length - done) + ' of ' + T.guests.length + ' ID' + (T.guests.length > 1 ? 's' : '') + ' still needed. Pay unlocks when every traveller has an ID. You can also finish later from My trips.';
+  }
+  // Phone photos are often 5–10 MB: shrink images to ~1800px JPEG before upload (PDFs go as they are)
+  function prepareFile(file) {
+    if (file.type === 'application/pdf') return file.size <= 5 * 1024 * 1024 ? Promise.resolve(file) : Promise.reject(new Error('This PDF is over 5 MB. Please upload a photo instead.'));
+    if (!/^image\//.test(file.type)) return Promise.reject(new Error('Please choose a photo or a PDF.'));
+    return new Promise(function (ok, no) {
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        var sc = Math.min(1, 1800 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b && b.size <= 5 * 1024 * 1024 ? ok(b) : no(new Error('This photo is too large. Please try another.')); }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); no(new Error('This photo could not be read. Please try a JPG or PNG.')); };
+      img.src = url;
+    });
+  }
+  function uploadId(i, file) {
+    $('bkError3').hidden = true;
+    var type = state.idChoice[i] || (bk.querySelector('[data-idtype="' + i + '"]') || {}).value, blob;
+    state.idBusy[i] = 'Uploading…'; renderIds();
+    prepareFile(file).then(function (b) { blob = b; return NGAuth.fn('ticket', { action: 'kyc_upload', ref: state.paidRef, guest_index: i, id_type: type, content_type: b.type || 'application/pdf' }); })
+      .then(function (u) { return fetch(u.signed_url, { method: 'PUT', headers: { 'Content-Type': blob.type, 'x-upsert': 'false' }, body: blob }).then(function (r) { if (!r.ok) throw new Error('Upload failed. Please check your internet and try again.'); return u.path; }); })
+      .then(function (path) { return NGAuth.fn('ticket', { action: 'kyc_save', ref: state.paidRef, guest_index: i, id_type: type, path: path }); })
+      .then(function () { delete state.idBusy[i]; return loadIds(); })
+      .catch(function (e) { delete state.idBusy[i]; renderIds(); $('bkError3').textContent = e.message || 'Upload failed. Please try again.'; $('bkError3').hidden = false; });
+  }
+  bk.addEventListener('change', function (e) {
+    var el = e.target;
+    if (el.dataset.idtype != null) state.idChoice[+el.dataset.idtype] = el.value;
+    if (el.dataset.idfile != null && el.files[0]) { var f = el.files[0]; el.value = ''; uploadId(+el.dataset.idfile, f); }
+  });
+  bk.addEventListener('click', function (e) {
+    if (e.target.closest('.et-file') && !$('bkConsent').checked) {
+      e.preventDefault(); var c = $('bkConsent').closest('.et-consent'); c.classList.add('shake'); setTimeout(function () { c.classList.remove('shake'); }, 600);
+      $('bkError3').textContent = 'Please tick the consent box first.'; $('bkError3').hidden = false; return;
+    }
+    if (e.target.closest('[data-auth-back]')) { go(2); return; }
+    if (e.target.closest('[data-signout]')) { NGAuth.signOut().then(function () { renderStep2(); }); }
+  });
+  $('bkPayNow').addEventListener('click', function () { startPayment(); });
+
+  // Continue an unpaid booking (from My trips)
+  function resume(ref, tripId, total) {
+    open(tripId);
+    state.paidRef = ref; state.payTotal = total || 0;
+    go(3); loadIds();
+  }
 
   $('bkDownload').addEventListener('click', function () {
     var a = document.createElement('a');
@@ -426,5 +565,6 @@
   document.addEventListener('ng:catalog', function () { fillTrips(); if (!bk.hidden && state.trip) { state.trip = NG.trip(state.trip.id) || NG.TRIPS[0]; go(state.step); } });
   document.addEventListener('ng:batches', function () { if (!bk.hidden && state.trip && state.step === 1) renderStep1(); });
   if (/^#book/.test(location.hash)) { var id = location.hash.split('=')[1]; setTimeout(function () { open(id); }, 300); }
-  window.NGBooking = { open: open, close: close };
+  window.NGBooking = { open: open, close: close, resume: resume };
+  if (window.NGAuth && NGAuth.ready() && NGAuth.user()) resumeDraft();
 })();
