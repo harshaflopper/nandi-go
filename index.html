@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=50"/>
+<link rel="stylesheet" href="site.css?v=53"/>
 </head>
 <body>
 
@@ -276,7 +276,7 @@
    <img class="sp-poster" id="spPoster" alt="" width="1280" height="720"><div class="sp-head-txt"><span class="kicker light" id="stKicker"></span><h3 id="stTitle"></h3><span class="sp-count" id="tripCount"></span></div>
    <button type="button" class="sp-close" data-sp-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
   </div>
-  <div class="sp-body"><div class="trips" id="tripGrid"></div></div>
+  <div class="sp-body"><div class="tcs" id="tripGrid"></div></div>
  </div>
 </div>
 <div class="pm" id="rvForm" hidden>
@@ -327,10 +327,10 @@
  </div>
 </div>
 
-<script src="assets/icons.js?v=40"></script>
+<script src="assets/icons.js?v=51"></script>
 <script src="assets/data.js?v=49"></script>
 <script src="assets/map-data.js?v=32"></script>
-<script src="assets/db.js?v=36"></script>
+<script src="assets/db.js?v=51"></script>
 <script>
 (function () {
   var NG = window.NG, I = window.NGIcon, $ = function (id) { return document.getElementById(id); };
@@ -425,15 +425,7 @@
     $('stTitle').textContent = st.name;
     var list = NG.TRIPS.slice().sort(function (a, b) { var na = nextBatch(a.id, st.id), nb = nextBatch(b.id, st.id); return (na ? 0 : 1) - (nb ? 0 : 1) || (na && nb ? (na.start < nb.start ? -1 : 1) : 0); });
     $('tripCount').textContent = list.length + ' trip' + (list.length === 1 ? '' : 's');
-    $('tripGrid').innerHTML = list.map(function (t) {
-      var nb = nextBatch(t.id, st.id), pr = NG.priceFor(t, st.id);
-      return '<article class="trip trip-click" tabindex="0" role="button" aria-label="' + t.title + ': choose dates" data-book="' + t.id + '" data-style="' + st.id + '"><div class="trip-img" style="background-image:url(\'' + t.image + '\')"><span class="trip-tag">' + tag(t) + '</span></div>' +
-        '<div class="trip-body"><div class="trip-meta"><span>' + I('clock') + t.duration + '</span><span class="' + (nb ? 'has-date' : '') + '">' + I('calendar') + (nb ? 'Next ' + dShort(nb.start) : 'Dates on request') + '</span></div>' +
-        '<h3>' + t.title + '</h3><p>' + t.description + '</p>' +
-        '<div class="trip-perks">' + t.perks.slice(0, 3).map(function (p) { return '<span>' + p + '</span>'; }).join('') + '</div>' +
-        '<div class="trip-foot"><div class="trip-price"><small>' + (t.variants ? 'From' : 'Price') + '</small><b>' + NG.fmt(pr.price) + '</b> <em>/ ' + pr.unit + '</em></div>' +
-        '<div class="trip-actions"><span class="trip-go">' + I('calendar') + (nb ? 'See dates' : 'Pick a date') + I('arrow') + '</span></div></div></div></article>';
-    }).join('');
+    $('tripGrid').innerHTML = list.map(function (t) { return NGTrip.card(t, st.id); }).join('');
   }
   /* Pop-up with the trips of the chosen style */
   var sp = $('sp'), spLast = null;
@@ -476,6 +468,7 @@
   document.querySelectorAll('.reveal').forEach(function (el) { io ? io.observe(el) : el.classList.add('visible'); });
 })();
 </script>
+<script src="assets/tripui.js?v=1"></script>
 <script src="assets/booking.js?v=42"></script>
 <script src="assets/reviews.js?v=2"></script>
 <script src="assets/scenes.js?v=32"></script>

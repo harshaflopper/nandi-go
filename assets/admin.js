@@ -393,9 +393,21 @@
         NG.STYLES.map(function (x) { return '<label>' + esc(x.name) + '<input name="sp_' + x.id + '" type="number" min="0" value="' + esc(sp[x.id] == null ? '' : sp[x.id]) + '"/></label>'; }).join('') + '</div></div>' +
       '<div class="ad-2"><label>Old price, shown crossed out (₹)<input name="was" type="number" min="0" value="' + esc(t.was == null ? '' : t.was) + '"/></label>' +
       '<label>Offer note<input name="note" maxlength="80" placeholder="Save Rs 500 with early bird" value="' + esc(t.note || '') + '"/></label></div>' +
-      '<div class="ad-field"><span>Photo</span><div class="ad-photo"><span id="mPhotoPrev" style="background-image:url(\'' + esc(tripImg(t.image)) + '\')"></span>' +
-        '<div><input name="image" id="mImage" placeholder="Photo link, or upload" value="' + esc(t.image || '') + '"/><label class="btn btn-ghost btn-sm ad-upload">Upload photo<input type="file" id="mUpload" accept="image/jpeg,image/png,image/webp" hidden/></label><small id="mUpMsg">JPG, PNG or WebP, up to 5 MB.</small></div></div></div>' +
+      '<div class="ad-field"><span>Photos <small>(one link per line; the first is the main photo on cards — posters work well)</small></span><div class="ad-photo"><span id="mPhotoPrev" style="background-image:url(\'' + esc(tripImg((t.photos || [])[0] || t.image)) + '\')"></span>' +
+        '<div><textarea name="photos" id="mPhotos" rows="3" placeholder="assets/trips/poster-goa.webp">' + esc(((t.photos && t.photos.length) ? t.photos : (t.image ? [t.image] : [])).join('\n')) + '</textarea><label class="btn btn-ghost btn-sm ad-upload">Upload photos<input type="file" id="mUpload" accept="image/jpeg,image/png,image/webp" multiple hidden/></label><small id="mUpMsg">JPG, PNG or WebP, up to 5 MB each.</small></div></div></div>' +
       '<label>Description<textarea name="description" rows="3">' + esc(t.description || '') + '</textarea></label>' +
+      '<div class="ad-4"><label>Place shown<input name="place" maxlength="60" placeholder="Kathmandu · Pokhara" value="' + esc(t.place || '') + '"/></label>' +
+      '<label>Days<input name="days" type="number" min="1" max="60" value="' + esc(t.days == null ? '' : t.days) + '"/></label>' +
+      '<label>Nights<input name="nights" type="number" min="0" max="60" value="' + esc(t.nights == null ? '' : t.nights) + '"/></label>' +
+      '<label>Min age<input name="min_age" type="number" min="0" max="99" value="' + esc(t.min_age == null ? '' : t.min_age) + '"/></label></div>' +
+      '<label>Badge on the card <small>(e.g. Bestseller, Early bird, Land only)</small><input name="badge" maxlength="30" value="' + esc(t.badge || '') + '"/></label>' +
+      '<div class="ad-field"><span>Facilities <small>(icons on the card and the package page)</small></span><div class="ad-checks">' + (NGTrip ? Object.keys(NGTrip.AMENITIES) : []).map(function (k) { var a = NGTrip.AMENITIES[k]; return '<label class="ad-check"><input type="checkbox" name="am_' + k + '"' + ((t.amenities || []).indexOf(k) >= 0 ? ' checked' : '') + '/> ' + a[1] + '</label>'; }).join('') + '</div></div>' +
+      '<label>Highlights / places <small>(one per line)</small><textarea name="highlights" rows="4">' + esc((t.highlights || []).join('\n')) + '</textarea></label>' +
+      '<div class="ad-2"><label>Inclusions <small>(one per line)</small><textarea name="inclusions" rows="4">' + esc((t.inclusions || []).join('\n')) + '</textarea></label>' +
+      '<label>Exclusions <small>(one per line)</small><textarea name="exclusions" rows="4">' + esc((t.exclusions || []).join('\n')) + '</textarea></label></div>' +
+      '<label>Day-wise plan <small>(one day per line: Title | what happens)</small><textarea name="itinerary" rows="4" placeholder="Arrival and houseboat | Check in at Alleppey...">' + esc((t.itinerary || []).map(function (d) { return (d.title || '') + ' | ' + (d.text || ''); }).join('\n')) + '</textarea></label>' +
+      '<div class="ad-2"><label>Pickup points <small>(one per line: Place | time)</small><textarea name="pickups" rows="3" placeholder="Majestic | 9:00 PM">' + esc((t.pickups || []).map(function (x) { return (x.place || '') + (x.time ? ' | ' + x.time : ''); }).join('\n')) + '</textarea></label>' +
+      '<label>Things to carry <small>(one per line)</small><textarea name="carry" rows="3">' + esc((t.carry || []).join('\n')) + '</textarea></label></div>' +
       '<div class="ad-2"><label>What is included <small>(one per line)</small><textarea name="perks" rows="5">' + esc((t.perks || []).join('\n')) + '</textarea></label>' +
       '<label>Places you visit <small>(one per line)</small><textarea name="stops" rows="5">' + esc((t.stops || []).join('\n')) + '</textarea></label></div>' +
       '<label>Packages <small>(optional, one per line: Name | price | note, e.g. Standard | 13999 | Most popular)</small><textarea name="variants" rows="3">' + esc(variants) + '</textarea></label>' +
@@ -410,9 +422,15 @@
           if (!p[0] || !(+p[1] >= 0)) throw new Error('Package line ' + (i + 1) + ' should be: Name | price | note');
           return { id: slug(p[0]), label: p[0], price: +p[1], note: p[2] || '' };
         });
+        var photos = lines(v.photos), pair = function (l) { var k = l.indexOf('|'); return k < 0 ? [l.trim(), ''] : [l.slice(0, k).trim(), l.slice(k + 1).trim()]; };
         var row = { title: v.title.trim(), dest: v.dest || null, duration: v.duration.trim() || null, price: +v.price || 0, unit: v.unit,
-          style_prices: prices, was: v.was === '' ? null : +v.was, note: v.note.trim() || null, image: v.image.trim() || null,
+          style_prices: prices, was: v.was === '' ? null : +v.was, note: v.note.trim() || null, image: photos[0] || null, photos: photos,
           description: v.description.trim() || null, perks: lines(v.perks), stops: lines(v.stops), variants: vars.length ? vars : null,
+          place: v.place.trim() || null, days: v.days === '' ? null : +v.days, nights: v.nights === '' ? null : +v.nights, min_age: v.min_age === '' ? null : +v.min_age,
+          badge: v.badge.trim() || null, amenities: Object.keys(NGTrip.AMENITIES).filter(function (k) { return v['am_' + k]; }),
+          highlights: lines(v.highlights), inclusions: lines(v.inclusions), exclusions: lines(v.exclusions), carry: lines(v.carry),
+          itinerary: lines(v.itinerary).map(function (l) { var x = pair(l); return { title: x[0], text: x[1] }; }),
+          pickups: lines(v.pickups).map(function (l) { var x = pair(l); return { place: x[0], time: x[1] }; }),
           sort: +v.sort || 0, active: !!v.active, region: (NG.dest(v.dest) || {}).ka ? 'karnataka' : (t.region || null) };
         if (!isNew) return sb.from('trips').update(row).eq('id', t.id);
         var id = slug(row.title), n = 2; while (byId(S.trips, id)) id = slug(row.title).slice(0, 36) + '-' + n++;
@@ -424,17 +442,18 @@
         if (!confirm('Delete "' + t.title + '" permanently? Hiding it keeps it for later.')) return null;
         return sb.from('trips').delete().eq('id', t.id);
       });
-    $('mImage').addEventListener('input', function () { $('mPhotoPrev').style.backgroundImage = 'url("' + tripImg(this.value.trim()) + '")'; });
+    $('mPhotos').addEventListener('input', function () { var first = this.value.split('\n').map(function (l) { return l.trim(); }).filter(Boolean)[0]; $('mPhotoPrev').style.backgroundImage = 'url("' + tripImg(first || '') + '")'; });
     $('mUpload').addEventListener('change', function () {
-      var f = this.files[0]; if (!f) return;
-      if (f.size > 5 * 1024 * 1024) { $('mUpMsg').textContent = 'That photo is over 5 MB. Please pick a smaller one.'; return; }
-      var path = (t.id || slug($('adModalForm').elements.title.value)) + '/' + Date.now() + '.' + (f.name.split('.').pop() || 'jpg').toLowerCase();
-      $('mUpMsg').textContent = 'Uploading…';
-      sb.storage.from('trip-photos').upload(path, f, { upsert: true, contentType: f.type }).then(function (r) {
-        if (r.error) { $('mUpMsg').textContent = 'Upload failed: ' + r.error.message; return; }
-        var url = sb.storage.from('trip-photos').getPublicUrl(path).data.publicUrl;
-        $('mImage').value = url; $('mPhotoPrev').style.backgroundImage = 'url("' + url + '")'; $('mUpMsg').textContent = 'Uploaded. Press Save to keep it.';
-      });
+      var files = [].slice.call(this.files); if (!files.length) return;
+      if (files.some(function (f) { return f.size > 5 * 1024 * 1024; })) { $('mUpMsg').textContent = 'A photo is over 5 MB. Please pick smaller ones.'; return; }
+      $('mUpMsg').textContent = 'Uploading ' + files.length + ' photo' + (files.length > 1 ? 's' : '') + '…';
+      Promise.all(files.map(function (f, n) {
+        var path = (t.id || slug($('adModalForm').elements.title.value)) + '/' + Date.now() + '-' + n + '.' + (f.name.split('.').pop() || 'jpg').toLowerCase();
+        return sb.storage.from('trip-photos').upload(path, f, { upsert: true, contentType: f.type }).then(function (r) { if (r.error) throw r.error; return sb.storage.from('trip-photos').getPublicUrl(path).data.publicUrl; });
+      })).then(function (urls) {
+        var box = $('mPhotos'); box.value = (box.value.trim() ? box.value.trim() + '\n' : '') + urls.join('\n'); box.dispatchEvent(new Event('input'));
+        $('mUpMsg').textContent = 'Uploaded. Press Save to keep them.';
+      }, function (e) { $('mUpMsg').textContent = 'Upload failed: ' + (e.message || e); });
     });
   }
 

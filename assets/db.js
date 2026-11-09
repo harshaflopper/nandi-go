@@ -50,7 +50,9 @@
         image: t.image || old.image, description: t.description || '', perks: t.perks || [], stops: t.stops && t.stops.length ? t.stops : null,
         price: t.price, was: t.was, unit: t.unit, variants: t.variants && t.variants.length ? t.variants : null,
         style_prices: t.style_prices || {}, note: t.note, group: t.id === 'chikka-retreat' ? 'retreat' : (old.group || 'tour'),
-        from: t.variants && t.variants.length ? Math.min.apply(null, t.variants.map(function (v) { return v.price; })) : t.price
+        from: t.variants && t.variants.length ? Math.min.apply(null, t.variants.map(function (v) { return v.price; })) : t.price,
+        place: t.place || '', photos: t.photos || [], amenities: t.amenities || [], days: t.days, nights: t.nights, badge: t.badge, min_age: t.min_age,
+        highlights: t.highlights || [], inclusions: t.inclusions || [], exclusions: t.exclusions || [], itinerary: t.itinerary || [], pickups: t.pickups || [], carry: t.carry || []
       };
     });
     if (trips.length) replace(NG.TRIPS, trips);

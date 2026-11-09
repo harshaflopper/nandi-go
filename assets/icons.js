@@ -60,6 +60,14 @@
     prev: '<path d="m14.5 6-6 6 6 6"/>',
     next: '<path d="m9.5 6 6 6-6 6"/>',
     send: '<path d="m4 11.5 16-7-6 16-2.5-6.5Z"/><path d="m11.5 14 8.5-9.5"/>',
+    bed: '<path d="M3 18.5V6.5M3 14h18v4.5M21 14v-2.5a3 3 0 0 0-3-3h-7v5.5"/><circle cx="7" cy="11" r="2"/>',
+    binoculars: '<circle cx="6.5" cy="15.5" r="3.5"/><circle cx="17.5" cy="15.5" r="3.5"/><path d="M10 15.5h4M4.5 12.5 6.5 5h3l.5 7.5M19.5 12.5 17.5 5h-3l-.5 7.5"/>',
+    temple: '<path d="M12 2.5v2.5M8.5 9 12 5l3.5 4M6 9h12M7 9v4h10V9M5 13h14M6 13v7M18 13v7M10 20v-4h4v4M3.5 20.5h17"/>',
+    boat: '<path d="M3 15.5h18l-2.2 4H5.2Z"/><path d="M6 15.5V10h12v5.5M6 10l6-4 6 4"/><path d="M2.5 21c1.5 0 1.5-1 3-1s1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1"/>',
+    snow: '<path d="M12 2.5v19M4 7l16 10M20 7 4 17M9.5 4 12 6l2.5-2M9.5 20l2.5-2 2.5 2"/>',
+    snorkel: '<path d="M3.5 9.5h12a2 2 0 0 1 2 2V13a2 2 0 0 1-2 2h-2.5l-1.5-1.5L10 15H5.5a2 2 0 0 1-2-2Z"/><path d="M20 4v10.5a4 4 0 0 1-4 4h-2"/>',
+    hiker: '<circle cx="13" cy="4.5" r="1.8"/><path d="m9 21 2.5-6.5L14 17v4M11.5 14.5 12.5 9l3.5 3 2.5.5M12.5 9 9 10.5 8 14M18.5 9v12"/>',
+    beach: '<path d="M4 20.5h16M12 20.5 8.5 9.5"/><path d="M3.5 11.5c1.5-4.5 6-7 10.5-5.5 2.5.8 4.5 2.7 5.5 5Z"/>',
     card: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6.5 15h4"/>'
   };
   var sprite = '<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">' +
