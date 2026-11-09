@@ -1517,3 +1517,21 @@ html.sp-lock{overflow:hidden}
 @media(max-width:900px){.rv-top{grid-template-columns:1fr}.rv-score{justify-self:start}}
 @media(max-width:560px){.rv-score{flex-wrap:wrap;width:100%}.rv-score .btn{width:100%}.rv-grid{grid-template-columns:1fr}.rv-list{columns:1}}
 .rv-score>b.rv-new{font-size:26px;font-style:italic;color:var(--gold-ink)}
+
+/* Style cards use the client's posters (text is part of the poster) */
+.styles{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.style-card{min-height:0;justify-content:flex-start;background:#0F1C18}
+.style-card::after{display:none}
+.sc-poster{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;transition:transform .6s ease}
+.style-card:hover .sc-poster{transform:scale(1.03)}
+.sc-bar{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;background:var(--forest)}
+.sc-bar small{display:flex;align-items:center;gap:6px;font-size:13px;color:#E4E9E4}
+.sc-bar small .ic{width:15px;height:15px;color:var(--gold2)}
+.sc-bar .sc-go{margin:0;padding:0;border:0;font-size:13.5px}
+.style-card.on{box-shadow:0 0 0 3px var(--gold),0 26px 50px -26px #1A3D2E}
+/* pop-up header shows the poster */
+.sp-head{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);align-items:center;gap:24px;background:linear-gradient(135deg,#1A3D2E,#0F1C18);min-height:0;padding:20px 64px 20px 20px}
+.sp-poster{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;box-shadow:0 14px 30px -14px #000}
+@media(max-width:900px){.styles{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:620px){.sp-head{grid-template-columns:1fr;padding:16px 16px 14px}.sp-head-txt h3{font-size:24px}.sc-bar{padding:10px 14px}.style-card{min-height:0}}
+.sc-poster,.sp-poster{height:auto}

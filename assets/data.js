@@ -7,13 +7,13 @@
    * Couple Escape is priced per couple (twice the per-person price unless the trip sets its own). */
   var STYLES = [
     { id: 'girls', name: 'Girls Only Getaway', line: 'No boys, no worries, just us.', unit: 'person',
-      blurb: 'Women-only batches with verified stays and a woman coordinator on every trip.', photo: U('photo-1667029839636-af119b059c49') },
+      blurb: 'Women-only batches with verified stays and a woman coordinator on every trip.', photo: 'assets/styles/style-girls.webp' },
     { id: 'friends', name: 'Strangers to Friends', line: 'Meet strangers, leave as friends.', unit: 'person',
-      blurb: 'Open group batches for solo travellers and friends. Come alone, leave with a gang.', photo: U('photo-1606262482703-496941e54337') },
+      blurb: 'Open group batches for solo travellers and friends. Come alone, leave with a gang.', photo: 'assets/styles/style-friends.webp' },
     { id: 'couples', name: 'Couple Escape', line: 'Just you two.', unit: 'couple',
-      blurb: 'Couples-only batches with private rooms and an easy, slow pace.', photo: U('photo-1776436884406-956c98ce89f3') },
+      blurb: 'Couples-only batches with private rooms and an easy, slow pace.', photo: 'assets/styles/style-couples.webp' },
     { id: 'family', name: 'One Tribe, All Ages', line: 'Travel together, grow together.', unit: 'person',
-      blurb: 'Family batches for grandparents to kids, with comfortable travel and easy days.', photo: U('photo-1639979511572-ff346bc5b3b7') }
+      blurb: 'Family batches for grandparents to kids, with comfortable travel and easy days.', photo: 'assets/styles/style-family.webp' }
   ];
 
   var TRIPS = [
