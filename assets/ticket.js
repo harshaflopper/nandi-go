@@ -29,8 +29,12 @@
     var paid = t.status === 'confirmed' || t.status === 'completed';
     document.title = 'Ticket ' + t.ref + ' — Nandi Go';
     $('etLoading').hidden = true; $('etApp').hidden = false;
-    $('etBanner').hidden = paid;
-    if (!paid) $('etBanner').innerHTML = I('info') + (t.status === 'cancelled' ? 'This booking was cancelled.' : 'Payment is not complete yet, so seats are not confirmed. Our team will contact you on WhatsApp.');
+    var due = t.balance || 0, dueBy = '';
+    var start = (t.batch && t.batch.start_date) || t.travel_date;
+    if (start) { var d = new Date(start + 'T00:00:00'); d.setDate(d.getDate() - 3); dueBy = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); }
+    $('etBanner').hidden = paid && !due;
+    if (!paid) $('etBanner').innerHTML = I('info') + (t.status === 'cancelled' ? 'This booking was cancelled.' : 'The advance is not paid yet, so seats are not confirmed. Open My trips to pay.');
+    else if (due) $('etBanner').innerHTML = I('info') + '<span>Balance of <b>' + NG.fmt(due) + '</b> is due' + (dueBy ? ' by <b>' + dueBy + '</b>' : ' 3 days before the trip') + '. <a href="my-trips">Pay the balance in My trips</a></span>';
     $('etState').className = 'et-state ' + (paid ? 'ok' : 'wait');
     $('etState').innerHTML = paid ? I('check') + 'Confirmed' : 'Payment pending';
     var name = dest.name || trip.place || trip.title || '';
@@ -39,7 +43,7 @@
     $('etTitle').textContent = trip.title || t.trip_title;
     var when = t.batch ? day(t.batch.start_date) + (t.batch.end_date && t.batch.end_date !== t.batch.start_date ? ' → ' + day(t.batch.end_date) : '') : (t.travel_date ? day(t.travel_date) : 'Date to be confirmed');
     var meta = [['Travel dates', when], ['Booking ID', t.ref], ['Travel style', st ? st.name : '—'], ['Seats', t.seats + (t.unit === 'couple' ? ' (' + t.travellers + ' couple' + (t.travellers > 1 ? 's' : '') + ')' : '')],
-      ['Amount paid', t.amount_paid ? NG.fmt(t.amount_paid) : '—'], ['Booked by', t.name + ' · ••' + t.phone_last4]];
+      ['Paid', t.amount_paid ? NG.fmt(t.amount_paid) + (t.estimated_total ? ' of ' + NG.fmt(t.estimated_total) : '') : '—'], ['Balance', due ? NG.fmt(due) + (dueBy ? ' · due ' + dueBy : '') : 'Fully paid'], ['Booked by', t.name + ' · ••' + t.phone_last4]];
     if (t.variant) meta.splice(3, 0, ['Package', t.variant]);
     $('etMeta').innerHTML = meta.map(function (m) { return '<div><span>' + m[0] + '</span><b>' + esc(m[1]) + '</b></div>'; }).join('');
     $('etPax').innerHTML = t.guests.map(function (g, i) {

@@ -32,8 +32,9 @@
       var when = t.batch_label ? t.batch_label + ' · ' + day(t.start_date) + (t.end_date && t.end_date !== t.start_date ? ' – ' + day(t.end_date) : '') : (t.travel_date ? day(t.travel_date) : 'Date to be confirmed');
       var ids = t.ids_done + ' of ' + t.guests_total + ' ID' + (t.guests_total > 1 ? 's' : '');
       var acts = '';
+      if (t.status === 'confirmed' && t.balance > 0 && !ended(t)) acts += '<button type="button" class="btn btn-gold btn-sm" data-balance="' + esc(t.ref) + '">' + I('card') + 'Pay balance ' + NG.fmt(t.balance) + '</button>';
       if (t.status === 'confirmed' || t.status === 'completed') acts += '<a class="btn btn-gold btn-sm" href="ticket?b=' + encodeURIComponent(t.ref) + '&k=' + t.ticket_key + '">' + I('ticket') + 'Open e-ticket</a>';
-      if (t.status === 'new' && !expired(t)) acts += '<button type="button" class="btn btn-gold btn-sm" data-resume="' + esc(t.ref) + '">' + I('card') + (t.ids_done < t.guests_total ? 'Upload IDs &amp; pay' : 'Pay ' + NG.fmt(t.estimated_total || 0)) + '</button>';
+      if (t.status === 'new' && !expired(t)) acts += '<button type="button" class="btn btn-gold btn-sm" data-resume="' + esc(t.ref) + '">' + I('card') + (t.ids_done < t.guests_total ? 'Upload IDs &amp; pay' : 'Pay advance') + '</button>';
       if (s[0] === 'Completed') acts += '<a class="btn btn-ghost btn-sm" href="index.html?review=' + encodeURIComponent(t.ref) + '#reviews">' + I('star') + 'Write a review</a>';
       if (expired(t)) acts += '<a class="btn btn-ghost btn-sm" href="trip?id=' + encodeURIComponent(t.trip_id) + (t.style_id ? '&style=' + t.style_id : '') + '">Book again</a>';
       return '<article class="mt-card">' +
@@ -42,7 +43,7 @@
           '<h2>' + esc(t.trip_title) + '</h2>' +
           '<p class="mt-meta"><span>' + I('calendar') + esc(when) + '</span>' + (st ? '<span>' + I('users') + esc(st.name) + '</span>' : '') +
             '<span>' + I('shield') + esc(ids) + (t.ids_rejected ? ' · ' + t.ids_rejected + ' to redo' : '') + '</span>' +
-            '<span>' + I('rupee') + (t.amount_paid ? 'Paid ' + NG.fmt(t.amount_paid) : NG.fmt(t.estimated_total || 0)) + '</span></p>' +
+            '<span>' + I('rupee') + (t.amount_paid ? 'Paid ' + NG.fmt(t.amount_paid) + ' of ' + NG.fmt(t.estimated_total || t.amount_paid) + (t.balance > 0 ? ' · Balance ' + NG.fmt(t.balance) + ' due 3 days before the trip' : ' · Fully paid') : 'Total ' + NG.fmt(t.estimated_total || 0)) + '</span></p>' +
           (acts ? '<div class="mt-acts">' + acts + '</div>' : '') +
         '</div></article>';
     }).join('');
@@ -63,6 +64,8 @@
   });
   $('mtOut').addEventListener('click', function () { A.signOut(); });
   $('mtList').addEventListener('click', function (e) {
+    var pb = e.target.closest('[data-balance]');
+    if (pb) { var tb = trips.filter(function (x) { return x.ref === pb.dataset.balance; })[0]; if (tb && window.NGBooking) NGBooking.payBalance(tb.ref, tb.trip_id); return; }
     var b = e.target.closest('[data-resume]'); if (!b) return;
     var t = trips.filter(function (x) { return x.ref === b.dataset.resume; })[0];
     if (t && window.NGBooking) NGBooking.resume(t.ref, t.trip_id, t.estimated_total);

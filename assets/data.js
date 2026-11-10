@@ -138,6 +138,12 @@
     var price = batch && batch.price ? batch.price : (!v && sp ? sp : (unit === 'couple' && t.unit !== 'couple' ? base * 2 : base));
     return { price: price, unit: unit };
   };
+  /* Advance to book: the trip's own advance per traveller (flight trips, Rs 2,000), otherwise
+   * Rs 500 per traveller or 50% of the total, whichever is higher. Never more than the total. Same rule as the payment server. */
+  var advanceFor = function (t, total, persons) {
+    var a = t && t.advance_per_person ? t.advance_per_person * persons : Math.max(500 * persons, Math.ceil(total / 2));
+    return Math.min(total, a);
+  };
   var BATCHES = []; /* filled from the database by db.js */
   var batchesFor = function (tripId, styleId) {
     var t = todayISO();
@@ -146,7 +152,7 @@
   };
 
   window.NG = { TRIPS: TRIPS, STYLES: STYLES, BATCHES: BATCHES, DESTINATIONS: DESTINATIONS, ORIGIN: ORIGIN, POSTCARDS: POSTCARDS,
-    style: style, priceFor: priceFor, batchesFor: batchesFor,
+    style: style, priceFor: priceFor, advanceFor: advanceFor, batchesFor: batchesFor,
     trip: function (id) { return TRIPS.filter(function (t) { return t.id === id; })[0]; },
     dest: function (id) { return DESTINATIONS.filter(function (d) { return d.id === id; })[0]; },
     fmt: fmt, todayISO: todayISO,

@@ -257,7 +257,7 @@
         '<td data-l="Date">' + (b ? esc(b.label) + '<small>' + range(b) + '</small>' : day(k.travel_date)) + '</td>' +
         '<td data-l="Seats">' + seatsOf(k) + (k.unit === 'couple' ? '<small>' + k.travellers + ' couple' + (k.travellers > 1 ? 's' : '') + '</small>' : '') + '</td>' +
         '<td data-l="Estimate">' + fmt(k.estimated_total) + '</td>' +
-        '<td data-l="Paid">' + (k.amount_paid ? fmt(k.amount_paid) : (k.advance_paid ? 'Advance' : '—')) + '</td>' +
+        '<td data-l="Paid">' + (k.amount_paid ? fmt(k.amount_paid) + (k.estimated_total > k.amount_paid ? '<small class="ad-bal">Balance ' + fmt(k.estimated_total - k.amount_paid) + '</small>' : '<small class="ad-bal ok">Fully paid</small>') : '—') + '</td>' +
         '<td data-l="Status">' + pill(k.status) + kycChip(k) + '</td>' +
         '<td class="ad-td-act">' + (k.status === 'new' ? '<button class="btn btn-gold btn-sm" data-quick-confirm="' + k.id + '">Confirm</button>' : '') +
           (k.status === 'confirmed' || k.status === 'completed' ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + askReviewLink(k) + '" title="Send a WhatsApp message with their review link">Ask for review</a>' : '') +
@@ -464,6 +464,7 @@
       '<label>Nights<input name="nights" type="number" min="0" max="60" value="' + esc(t.nights == null ? '' : t.nights) + '"/></label>' +
       '<label>Min age<input name="min_age" type="number" min="0" max="99" value="' + esc(t.min_age == null ? '' : t.min_age) + '"/></label></div>' +
       '<label>Badge on the card <small>(e.g. Bestseller, Early bird, Land only)</small><input name="badge" maxlength="30" value="' + esc(t.badge || '') + '"/></label>' +
+      '<label>Advance per traveller (₹) <small>(leave empty for the standard rule: ₹500 per traveller or 50%, whichever is higher. Flight trips: 2000)</small><input name="advance_per_person" type="number" min="1" max="100000" value="' + esc(t.advance_per_person == null ? '' : t.advance_per_person) + '"/></label>' +
       '<div class="ad-field"><span>Facilities <small>(icons on the card and the package page)</small></span><div class="ad-checks">' + (NGTrip ? Object.keys(NGTrip.AMENITIES) : []).map(function (k) { var a = NGTrip.AMENITIES[k]; return '<label class="ad-check"><input type="checkbox" name="am_' + k + '"' + ((t.amenities || []).indexOf(k) >= 0 ? ' checked' : '') + '/> ' + a[1] + '</label>'; }).join('') + '</div></div>' +
       '<label>Highlights / places <small>(one per line)</small><textarea name="highlights" rows="4">' + esc((t.highlights || []).join('\n')) + '</textarea></label>' +
       '<div class="ad-2"><label>Inclusions <small>(one per line)</small><textarea name="inclusions" rows="4">' + esc((t.inclusions || []).join('\n')) + '</textarea></label>' +
@@ -490,7 +491,7 @@
           style_prices: prices, was: v.was === '' ? null : +v.was, note: v.note.trim() || null, image: photos[0] || null, photos: photos,
           description: v.description.trim() || null, perks: lines(v.perks), stops: lines(v.stops), variants: vars.length ? vars : null,
           place: v.place.trim() || null, days: v.days === '' ? null : +v.days, nights: v.nights === '' ? null : +v.nights, min_age: v.min_age === '' ? null : +v.min_age,
-          badge: v.badge.trim() || null, amenities: Object.keys(NGTrip.AMENITIES).filter(function (k) { return v['am_' + k]; }),
+          badge: v.badge.trim() || null, advance_per_person: v.advance_per_person === '' ? null : +v.advance_per_person, amenities: Object.keys(NGTrip.AMENITIES).filter(function (k) { return v['am_' + k]; }),
           highlights: lines(v.highlights), inclusions: lines(v.inclusions), exclusions: lines(v.exclusions), carry: lines(v.carry),
           itinerary: lines(v.itinerary).map(function (l) { var x = pair(l); return { title: x[0], text: x[1] }; }),
           pickups: lines(v.pickups).map(function (l) { var x = pair(l); return { place: x[0], time: x[1] }; }),

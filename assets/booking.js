@@ -20,7 +20,7 @@
     '    <h3 id="bkSumTitle"></h3>' +
     '    <div class="bk-sum-meta"><span>' + I('clock') + '<em id="bkSumDuration"></em></span><span>' + I('rupee') + '<em id="bkSumPrice"></em></span></div>' +
     '    <ul class="bk-sum-perks" id="bkSumPerks"></ul>' +
-    '    <p class="bk-sum-pay">' + I('shield') + '<span>Full payment online through Razorpay — UPI, cards and net banking. Nandi Go never asks you to pay a partner or a personal account.</span></p>' +
+    '    <p class="bk-sum-pay">' + I('shield') + '<span>Book with an advance and pay the balance before the trip, online through Razorpay (UPI, cards, net banking). Nandi Go never asks you to pay a partner or a personal account.</span></p>' +
     '   </div>' +
     '  </aside>' +
     '  <div class="bk-main">' +
@@ -58,6 +58,8 @@
     '     <div class="et-kyc-note" id="bkIdNote"></div>' +
     '     <label class="et-consent"><input type="checkbox" id="bkConsent"><span>I agree that Nandi Go may use these IDs only for hotel check-in and travel permits for this trip. They are stored privately and deleted 30 days after the trip (or after 3 days if the booking is not paid).</span></label>' +
     '     <div class="et-kyc-list" id="bkIdList"><p class="et-muted">Loading…</p></div>' +
+    '     <div class="bk-payopts" id="bkPayOpts" role="radiogroup" aria-label="How much to pay now"></div>' +
+    '     <label class="et-consent"><input type="checkbox" id="bkTerms"><span>I have read and agree to the <a href="terms" target="_blank" rel="noopener">Terms, cancellation and no-show policy</a>. The advance is not a refundable deposit.</span></label>' +
     '     <p class="bk-error" id="bkError3" role="alert" hidden></p>' +
     '     <button type="button" class="btn btn-forest bk-submit" id="bkPayNow" disabled>' + I('card') + '<span id="bkPayNowText">Pay</span></button>' +
     '     <p class="bk-fine">' + I('lock') + '<span id="bkIdsFine">Pay unlocks when every traveller has an ID. Close this any time and finish later from My trips.</span></p>' +
@@ -223,7 +225,8 @@
     $('bkPax').textContent = state.pax;
     $('bkTotal').textContent = NG.fmt(p.price * state.pax);
     $('bkTotalNote').textContent = NG.fmt(p.price) + ' × ' + state.pax + ' ' + unitWord(p.unit, state.pax);
-    $('bkAdvance').innerHTML = '<b>Full payment</b><span>UPI · cards · net banking</span>';
+    var tot = p.price * state.pax, adv = NG.advanceFor(state.trip, tot, guestCount());
+    $('bkAdvance').innerHTML = '<b>Advance ' + NG.fmt(adv) + '</b><span>' + (tot > adv ? 'Balance ' + NG.fmt(tot - adv) + ' due 3 days before the trip' : 'Paid in full now') + '</span>';
     $('bkPayText').textContent = 'Continue';
   }
 
@@ -243,7 +246,8 @@
     state.trip = t;
     state.style = styleOk(opts.style) ? opts.style : (styleOk(state.style) ? state.style : (visibleStyles()[0] || NG.STYLES[0]).id);
     state.batch = opts.batch || null; state.variant = opts.variant || null; state.month = null; state.date = ''; state.guests = []; $('bkGuests').innerHTML = '';
-    state.paidRef = null; state.T = null; state.idChoice = {}; state.idBusy = {};
+    state.paidRef = null; state.T = null; state.idChoice = {}; state.idBusy = {}; state.payKind = 'advance';
+    if ($('bkTerms')) $('bkTerms').checked = false;
     fillTrips();
     $('bkFormView').hidden = false; $('bkDoneView').hidden = true; $('bkError').hidden = true; $('bkError1').hidden = true;
     go(1);
@@ -304,7 +308,8 @@
     $('bkDoneView').classList.toggle('is-pending', kind === 'pending');
     if (kind === 'paid') {
       $('bkDoneTitle').textContent = 'Booking confirmed';
-      $('bkDoneText').textContent = 'Payment of ' + NG.fmt(extra.amount || state.payTotal) + ' received. Booking ' + ref + ' is confirmed. Your e-ticket is ready, and it is always in My trips.';
+      $('bkDoneText').textContent = (extra.kind === 'balance' ? 'Balance of ' : extra.kind === 'full' ? 'Full payment of ' : 'Advance of ') + NG.fmt(extra.amount || 0) + ' received. Booking ' + ref + ' is confirmed. ' +
+        (extra.balance > 0 ? 'Balance ' + NG.fmt(extra.balance) + ' is due 3 days before the trip: pay it any time from My trips or your e-ticket. ' : 'Fully paid. ') + 'Your e-ticket is always in My trips.';
       if (extra.ticket_key) {
         var url = 'ticket?b=' + encodeURIComponent(extra.ref || ref) + '&k=' + extra.ticket_key;
         $('bkTicket').href = url;
@@ -312,8 +317,8 @@
       }
     } else if (kind === 'pending') {
       $('bkDoneTitle').textContent = 'Payment not completed';
-      $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + 'Your booking ' + ref + ' is saved, but seats are confirmed only after payment. You can pay any time in the next 3 days from My trips.';
-      $('bkRetry').querySelector('span').textContent = 'Pay ' + NG.fmt(state.payTotal) + ' now';
+      $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + (state.payKind === 'balance' ? 'The balance for booking ' + ref + ' is not paid yet. You can pay it any time from My trips.' : 'Your booking ' + ref + ' is saved, but seats are confirmed only after the advance is paid. You can pay any time in the next 3 days from My trips.');
+      $('bkRetry').querySelector('span').textContent = state.payKind === 'balance' ? 'Pay balance now' : 'Pay now';
     } else {
       $('bkDoneTitle').textContent = 'Booking saved';
       $('bkDoneText').textContent = (extra && extra.msg ? extra.msg + ' ' : '') + 'Our team will contact you on WhatsApp shortly to complete the payment and confirm your seats.';
@@ -322,7 +327,7 @@
   function startPayment() {
     var ref = state.paidRef, btn = form.querySelector('[type=submit]');
     $('bkRetry').disabled = true;
-    Promise.all([payApi({ action: 'order', ref: ref }), loadCheckout()]).then(function (r) {
+    Promise.all([payApi({ action: 'order', ref: ref, kind: state.payKind || 'advance' }), loadCheckout()]).then(function (r) {
       var o = r[0];
       $('bkRetry').disabled = false;
       if (o.paid) return doneState('paid', {});
@@ -334,7 +339,7 @@
         prefill: o.prefill, notes: { booking_ref: ref }, theme: { color: '#1A3D2E' },
         handler: function (resp) {
           payApi({ action: 'verify', razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature })
-            .then(function (v) { v.ok ? doneState('paid', { amount: v.amount, ref: v.ref, ticket_key: v.ticket_key }) : doneState('pending', { msg: v.error || 'We could not confirm the payment.' }); },
+            .then(function (v) { v.ok ? doneState('paid', { amount: v.amount, ref: v.ref, ticket_key: v.ticket_key, balance: v.balance, kind: v.kind }) : doneState('pending', { msg: v.error || 'We could not confirm the payment.' }); },
                   function () { doneState('pending', { msg: 'We could not confirm the payment yet. If money was debited, it will be confirmed automatically.' }); });
         },
         modal: { ondismiss: function () { doneState('pending', {}); } }
@@ -438,8 +443,27 @@
   function renderIdsHead() {
     var t = state.trip, st = NG.style(state.style);
     $('bkIdsPicked').innerHTML = '<div><b>' + esc(t.title) + '</b><span>' + esc(st ? st.name : '') + ' · Booking ' + esc(state.paidRef || '') + '</span></div>';
-    $('bkPayNowText').textContent = 'Pay ' + NG.fmt(state.payTotal || 0);
     $('bkError3').hidden = true;
+    renderPayOpts();
+  }
+  function amounts() {
+    var total = state.payTotal || 0, n = (state.T && state.T.seats) || guestCount();
+    var adv = NG.advanceFor(state.trip, total, n);
+    return { total: total, adv: adv, bal: total - adv };
+  }
+  function renderPayOpts() {
+    var a = amounts(); if (a.adv >= a.total) state.payKind = 'full';
+    if (!state.payKind) state.payKind = 'advance';
+    $('bkPayOpts').innerHTML = (a.adv < a.total ? '<button type="button" role="radio" aria-checked="' + (state.payKind === 'advance') + '" data-paykind="advance"><b>Pay advance ' + NG.fmt(a.adv) + '</b><small>Balance ' + NG.fmt(a.bal) + ' due 3 days before the trip</small></button>' : '') +
+      '<button type="button" role="radio" aria-checked="' + (state.payKind === 'full') + '" data-paykind="full"><b>Pay full ' + NG.fmt(a.total) + '</b><small>Nothing more to pay later</small></button>' +
+      '<p class="bk-paytotal">Trip total <b>' + NG.fmt(a.total) + '</b>' + (state.trip && state.trip.advance_per_person ? ' · Flight trip advance ' + NG.fmt(state.trip.advance_per_person) + ' per traveller' : ' · Advance is ₹500 per traveller or 50%, whichever is higher') + '</p>';
+    $('bkPayNowText').textContent = state.payKind === 'full' ? 'Pay ' + NG.fmt(a.total) : 'Pay advance ' + NG.fmt(a.adv);
+    syncPay();
+  }
+  function syncPay() {
+    var T = state.T; if (!T) { $('bkPayNow').disabled = true; return; }
+    var done = T.guests.filter(function (_, i) { var k = kycOf(i); return k && k.status !== 'rejected'; }).length;
+    $('bkPayNow').disabled = !(done === T.guests.length && $('bkTerms').checked);
   }
   function loadIds() {
     $('bkIdList').innerHTML = '<p class="et-muted">Loading…</p>';
@@ -467,8 +491,8 @@
       '</div>';
     }).join('');
     var all = done === T.guests.length;
-    $('bkPayNow').disabled = !all;
-    $('bkIdsFine').textContent = all ? 'All IDs are in. Pay to confirm your seats.' : (T.guests.length - done) + ' of ' + T.guests.length + ' ID' + (T.guests.length > 1 ? 's' : '') + ' still needed. Pay unlocks when every traveller has an ID. You can also finish later from My trips.';
+    renderPayOpts();
+    $('bkIdsFine').textContent = all ? ($('bkTerms').checked ? 'All IDs are in. Pay to confirm your seats.' : 'All IDs are in. Tick the terms box to pay.') : (T.guests.length - done) + ' of ' + T.guests.length + ' ID' + (T.guests.length > 1 ? 's' : '') + ' still needed. Pay unlocks when every traveller has an ID. You can also finish later from My trips.';
   }
   // Phone photos are often 5–10 MB: shrink images to ~1800px JPEG before upload (PDFs go as they are)
   function prepareFile(file) {
@@ -510,12 +534,23 @@
     if (e.target.closest('[data-signout]')) { NGAuth.signOut().then(function () { renderStep2(); }); }
   });
   $('bkPayNow').addEventListener('click', function () { startPayment(); });
+  $('bkTerms').addEventListener('change', function () { if (state.T) renderIds(); });
+  $('bkPayOpts').addEventListener('click', function (e) { var b = e.target.closest('[data-paykind]'); if (b) { state.payKind = b.dataset.paykind; renderPayOpts(); } });
 
   // Continue an unpaid booking (from My trips)
   function resume(ref, tripId, total) {
     open(tripId);
-    state.paidRef = ref; state.payTotal = total || 0;
+    state.paidRef = ref; state.payTotal = total || 0; state.payKind = 'advance';
     go(3); loadIds();
+  }
+  // Pay the balance after the advance (from My trips)
+  function payBalance(ref, tripId) {
+    open(tripId);
+    state.paidRef = ref; state.ref = ref; state.payKind = 'balance';
+    $('bkFormView').hidden = true; $('bkDoneView').hidden = false; $('bkDoneView').classList.remove('is-pending');
+    $('bkDoneTitle').textContent = 'Pay balance'; $('bkDoneText').textContent = 'Opening the secure payment page…';
+    $('bkReceipt').innerHTML = ''; ['bkRetry', 'bkTicket'].forEach(function (id) { $(id).hidden = true; });
+    startPayment();
   }
 
   $('bkDownload').addEventListener('click', function () {
@@ -565,6 +600,6 @@
   document.addEventListener('ng:catalog', function () { fillTrips(); if (!bk.hidden && state.trip) { state.trip = NG.trip(state.trip.id) || NG.TRIPS[0]; go(state.step); } });
   document.addEventListener('ng:batches', function () { if (!bk.hidden && state.trip && state.step === 1) renderStep1(); });
   if (/^#book/.test(location.hash)) { var id = location.hash.split('=')[1]; setTimeout(function () { open(id); }, 300); }
-  window.NGBooking = { open: open, close: close, resume: resume };
+  window.NGBooking = { open: open, close: close, resume: resume, payBalance: payBalance };
   if (window.NGAuth && NGAuth.ready() && NGAuth.user()) resumeDraft();
 })();
