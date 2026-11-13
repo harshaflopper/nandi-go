@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#1A3D2E"/><meta name="description" content="Become a Nandi Go Business Partner. One partner per district across Karnataka's 31 districts. Commission-based, with training, marketing support and a refundable business kit."/><title>Nandi Go — Business Partners</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/><link rel="stylesheet" href="site.css?v=77"/></head>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="theme-color" content="#1A3D2E"/><meta name="description" content="Become a Nandi Go Business Partner. One partner per district across Karnataka's 31 districts. Commission-based, with training, marketing support and a refundable business kit."/><title>Nandi Go — Business Partners</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/><link rel="stylesheet" href="site.css?v=78"/></head>
 <body class="pp-page"><header class="site-header" id="siteHeader">
  <div class="container nav">
   <a href="index.html" class="brand" aria-label="Nandi Go home"><img src="logo.png" alt="Nandi Go — Premium Travel · Trusted Journeys" class="brand-logo" width="160" height="48"/></a>
@@ -228,7 +228,7 @@
      <label>Full name *<input required name="fullName" maxlength="100" autocomplete="name" placeholder="Example: Ramesh Kumar S"></label>
      <label>WhatsApp number *<input required name="phone" type="tel" inputmode="numeric" maxlength="14" placeholder="Your main 10-digit number"></label>
      <label>Your district *<select required name="district" id="ngDistrict"><option value="">Select your district</option></select></label>
-     <label><span id="ngTalukLabel">Your taluk *</span><input required name="taluk" maxlength="100" placeholder="Your taluk"></label>
+     <label><span id="ngTalukLabel">Your taluk *</span><input required name="taluk" id="ngTaluk" maxlength="100" placeholder="Your taluk"></label>
      <label>Age *<input required name="age" type="number" min="18" max="100" placeholder="18 or above"></label>
      <label>Email (optional)<input name="email" type="email" maxlength="160" autocomplete="email" placeholder="you@example.com"></label>
      <label class="ng-full">What do you do currently? *<select required name="occupation"><option value="">Choose one</option><option>Student</option><option>Work From Home / Housewife</option><option>Own Shop / Xerox / Travel Agency</option><option>Private Job</option><option>Govt Job / Retired</option><option>Others</option></select></label>
@@ -277,7 +277,7 @@
      <label>Full name (as on bank account) *<input required name="name" maxlength="100" autocomplete="name"></label>
      <label>Email (optional)<input name="email" type="email" maxlength="160" autocomplete="email"></label>
      <label>District *<select required name="district" id="pkDistrict"><option value="">Select your district</option></select></label>
-     <label>Taluk *<input required name="taluk" maxlength="100"></label>
+     <label>Taluk *<input required name="taluk" id="pkTaluk" maxlength="100"></label>
      <label>Aadhaar — last 4 digits only *<input required name="aadhaar" inputmode="numeric" maxlength="4" placeholder="1234"></label>
      <label>PAN number (optional)<input name="pan" maxlength="10" placeholder="ABCDE1234F" autocapitalize="characters"></label>
     </div>
@@ -314,11 +314,14 @@
   </div>
  </div>
 </div>
-<script src="assets/icons.js?v=40"></script>
+<script src="assets/icons.js?v=52"></script>
 <script src="assets/data.js?v=51"></script>
 <script src="assets/map-data.js?v=32"></script>
 <script src="assets/db.js?v=52"></script>
-<script src="assets/booking.js?v=45"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/auth.js?v=1"></script>
+<script src="assets/booking.js?v=46"></script>
+<script src="assets/taluks.js?v=3"></script>
 <script>
 /* ===== Settings the Nandi Go team can edit ===== */
 // Districts with a partner come from the admin page (Supabase). Names added here are also shown as taken.
@@ -334,6 +337,7 @@ function fillDistricts(){
  $id('ngDistrict').innerHTML='<option value="">Select your district</option>'+DISTRICTS.map(d=>{const t=formRole==='district'&&taken.has(d.toLowerCase());return `<option value="${d}"${t?' disabled':''}>${d}${t?' (partner appointed)':''}</option>`}).join('');
 }
 $id('pkDistrict').insertAdjacentHTML('beforeend',DISTRICTS.map(d=>`<option>${d}</option>`).join(''));
+if(window.NGTalukPicker){NGTalukPicker($id('ngTaluk'),$id('ngDistrict'));NGTalukPicker($id('pkTaluk'),$id('pkDistrict'));}
 
 /* ----- Pop-up helpers ----- */
 let pmLast=null;

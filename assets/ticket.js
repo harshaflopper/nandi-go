@@ -69,9 +69,9 @@
     $('etKycCount').textContent = done + ' of ' + t.guests.length + ' done';
     $('etKycCount').className = 'et-kyc-count' + (done === t.guests.length ? ' ok' : '');
     var ids = t.kyc_ids;
-    $('etIdNote').innerHTML = ids.length === 1 ? I('info') + 'This is an international trip: a valid <b>passport</b> is needed for every traveller.'
-      : ids.indexOf('aadhaar') < 0 ? I('info') + 'For Nepal, Indian citizens need a <b>passport or voter ID</b>.'
-      : I('info') + 'Accepted: masked Aadhaar, driving licence, voter ID or passport. For Aadhaar, please use the <b>masked Aadhaar</b> (only the last 4 digits visible) from <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noopener">myaadhaar.uidai.gov.in</a> or DigiLocker.';
+    $('etIdNote').innerHTML = I('info') + (ids.length === 1 && ids[0] === 'passport' ? 'This is an international trip: a valid <b>passport</b> is required for every traveller.'
+      : ids.length === 2 && ids.indexOf('passport') >= 0 && ids.indexOf('aadhaar') >= 0 ? 'This trip includes a flight: please upload a <b>passport</b> or <b>Aadhaar</b> for every traveller. For Aadhaar, use the <b>masked Aadhaar</b> (only the last 4 digits visible) from <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noopener">myaadhaar.uidai.gov.in</a> or DigiLocker.'
+      : 'Accepted: masked Aadhaar, driving licence, voter ID or passport. For Aadhaar, use the <b>masked Aadhaar</b> (only the last 4 digits visible) from <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noopener">myaadhaar.uidai.gov.in</a> or DigiLocker.');
     if (!paid) { $('etKycList').innerHTML = '<p class="et-muted">ID upload opens once the booking is confirmed.</p>'; return; }
     if (!t.kyc_open) { $('etKycList').innerHTML = '<p class="et-muted">This trip has ended, so ID upload is closed.</p>'; return; }
     $('etKycList').innerHTML = t.guests.map(function (g, i) {

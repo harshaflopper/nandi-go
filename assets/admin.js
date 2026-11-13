@@ -360,7 +360,7 @@
       '<div class="ad-2"><label class="ad-check"><input type="checkbox" name="advance_paid"' + (k.advance_paid ? ' checked' : '') + '/> Advance received</label>' +
       '<label>Payment reference (UPI / bank)<input name="payment_ref" maxlength="80" value="' + esc(k.payment_ref || '') + '"/></label></div>' +
       '<label>Notes<textarea name="admin_notes" rows="2">' + esc(k.admin_notes || '') + '</textarea></label>' +
-      (isNew ? '' : guestsBlock(k) + ticketBlock(k)) + (isNew ? '' : '<p class="ad-hint">Booked ' + day(k.created_at.slice(0, 10)) + (k.variant ? ' · ' + esc(k.variant) : '') + '. Confirmed seats count towards the batch; when it is full the batch closes and you get an email.</p>'),
+      (isNew ? '' : guestsBlock(k) + ticketBlock(k)) + (isNew ? '' : '<p class="ad-hint">' + (k.terms_accepted_at ? 'Terms accepted ' + new Date(k.terms_accepted_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + '. ' : '') + 'Booked ' + day(k.created_at.slice(0, 10)) + (k.variant ? ' · ' + esc(k.variant) : '') + '. Confirmed seats count towards the batch; when it is full the batch closes and you get an email.</p>'),
       function (v) {
         var t = byId(S.trips, v.trip_id) || { title: v.trip_id, unit: 'person' };
         var phone = v.phone.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '').replace(/^0(?=\d{10}$)/, '');
@@ -465,6 +465,7 @@
       '<label>Min age<input name="min_age" type="number" min="0" max="99" value="' + esc(t.min_age == null ? '' : t.min_age) + '"/></label></div>' +
       '<label>Badge on the card <small>(e.g. Bestseller, Early bird, Land only)</small><input name="badge" maxlength="30" value="' + esc(t.badge || '') + '"/></label>' +
       '<label>Advance per traveller (₹) <small>(leave empty for the standard rule: ₹500 per traveller or 50%, whichever is higher. Flight trips: 2000)</small><input name="advance_per_person" type="number" min="1" max="100000" value="' + esc(t.advance_per_person == null ? '' : t.advance_per_person) + '"/></label>' +
+      '<div class="ad-field"><span>Accepted traveller IDs <small>(tick none to accept any ID. International trips: passport only)</small></span><div class="ad-checks">' + [['passport', 'Passport'], ['aadhaar', 'Masked Aadhaar'], ['dl', 'Driving licence'], ['voter', 'Voter ID']].map(function (x) { return '<label class="ad-check"><input type="checkbox" name="id_' + x[0] + '"' + ((t.id_types || []).indexOf(x[0]) >= 0 ? ' checked' : '') + '/> ' + x[1] + '</label>'; }).join('') + '</div></div>' +
       '<div class="ad-field"><span>Facilities <small>(icons on the card and the package page)</small></span><div class="ad-checks">' + (NGTrip ? Object.keys(NGTrip.AMENITIES) : []).map(function (k) { var a = NGTrip.AMENITIES[k]; return '<label class="ad-check"><input type="checkbox" name="am_' + k + '"' + ((t.amenities || []).indexOf(k) >= 0 ? ' checked' : '') + '/> ' + a[1] + '</label>'; }).join('') + '</div></div>' +
       '<label>Highlights / places <small>(one per line)</small><textarea name="highlights" rows="4">' + esc((t.highlights || []).join('\n')) + '</textarea></label>' +
       '<div class="ad-2"><label>Inclusions <small>(one per line)</small><textarea name="inclusions" rows="4">' + esc((t.inclusions || []).join('\n')) + '</textarea></label>' +
@@ -491,7 +492,7 @@
           style_prices: prices, was: v.was === '' ? null : +v.was, note: v.note.trim() || null, image: photos[0] || null, photos: photos,
           description: v.description.trim() || null, perks: lines(v.perks), stops: lines(v.stops), variants: vars.length ? vars : null,
           place: v.place.trim() || null, days: v.days === '' ? null : +v.days, nights: v.nights === '' ? null : +v.nights, min_age: v.min_age === '' ? null : +v.min_age,
-          badge: v.badge.trim() || null, advance_per_person: v.advance_per_person === '' ? null : +v.advance_per_person, amenities: Object.keys(NGTrip.AMENITIES).filter(function (k) { return v['am_' + k]; }),
+          badge: v.badge.trim() || null, advance_per_person: v.advance_per_person === '' ? null : +v.advance_per_person, id_types: (function () { var x = ['passport', 'aadhaar', 'dl', 'voter'].filter(function (k) { return v['id_' + k]; }); return x.length ? x : null; })(), amenities: Object.keys(NGTrip.AMENITIES).filter(function (k) { return v['am_' + k]; }),
           highlights: lines(v.highlights), inclusions: lines(v.inclusions), exclusions: lines(v.exclusions), carry: lines(v.carry),
           itinerary: lines(v.itinerary).map(function (l) { var x = pair(l); return { title: x[0], text: x[1] }; }),
           pickups: lines(v.pickups).map(function (l) { var x = pair(l); return { place: x[0], time: x[1] }; }),

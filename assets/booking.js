@@ -43,6 +43,7 @@
     '     <div class="bk-field bk-wide"><span>Who is travelling</span><div class="bk-guests" id="bkGuests"></div></div>' +
     '     <div class="bk-total bk-wide"><div><span>Total amount</span><strong id="bkTotal"></strong><small id="bkTotalNote"></small></div><div class="bk-adv" id="bkAdvance"></div></div>' +
     '     <p class="bk-error bk-wide" id="bkError" role="alert" hidden></p>' +
+    '     <label class="bk-terms bk-wide" id="bkTermsBox"><input type="checkbox" id="bkTerms"><span><b>I accept the <a href="terms" target="_blank" rel="noopener">Terms &amp; Conditions</a></b> — including the advance, cancellation, no-show and ID rules. The booking is for the travellers named above and cannot be transferred.</span></label>' +
     '     <p class="bk-signed bk-wide" id="bkSigned" hidden></p>' +
     '     <button type="submit" class="btn btn-forest bk-submit bk-wide" id="bkPay"><span id="bkPayText">Continue</span>' + I('arrow') + '</button>' +
     '     <p class="bk-fine bk-wide">' + I('shield') + 'Next: sign in with Google and upload one ID per traveller, then pay securely with Razorpay.</p>' +
@@ -59,7 +60,6 @@
     '     <label class="et-consent"><input type="checkbox" id="bkConsent"><span>I agree that Nandi Go may use these IDs only for hotel check-in and travel permits for this trip. They are stored privately and deleted 30 days after the trip (or after 3 days if the booking is not paid).</span></label>' +
     '     <div class="et-kyc-list" id="bkIdList"><p class="et-muted">Loading…</p></div>' +
     '     <div class="bk-payopts" id="bkPayOpts" role="radiogroup" aria-label="How much to pay now"></div>' +
-    '     <label class="et-consent"><input type="checkbox" id="bkTerms"><span>I have read and agree to the <a href="terms" target="_blank" rel="noopener">Terms, cancellation and no-show policy</a>. The advance is not a refundable deposit.</span></label>' +
     '     <p class="bk-error" id="bkError3" role="alert" hidden></p>' +
     '     <button type="button" class="btn btn-forest bk-submit" id="bkPayNow" disabled>' + I('card') + '<span id="bkPayNowText">Pay</span></button>' +
     '     <p class="bk-fine">' + I('lock') + '<span id="bkIdsFine">Pay unlocks when every traveller has an ID. Close this any time and finish later from My trips.</span></p>' +
@@ -366,7 +366,8 @@
     else if (badAge >= 0) err = 'Please enter the age of ' + (badAge === 0 ? 'yourself' : 'traveller ' + (badAge + 1)) + '.';
     else if (!/^[6-9]\d{9}$/.test(phone)) err = 'Please enter a valid 10-digit mobile number.';
     else if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) err = 'Please check the email address.';
-    if (err) { $('bkError').textContent = err; $('bkError').hidden = false; return; }
+    else if (!$('bkTerms').checked) err = 'Please tick the box to accept the Terms & Conditions.';
+    if (err) { $('bkError').textContent = err; $('bkError').hidden = false; if (/Terms/.test(err)) { var tb = $('bkTermsBox'); tb.classList.add('shake'); setTimeout(function () { tb.classList.remove('shake'); }, 600); } return; }
     $('bkError').hidden = true;
 
     var st = NG.style(state.style), b = batchObj(), p = priceNow();
@@ -391,7 +392,8 @@
       ref: state.ref, trip_id: t.id, trip_title: t.title, style_id: state.style, variant: variant ? variant.label : null,
       batch_id: b && b.live ? b.id : null, travel_date: b ? b.start : (state.date || null),
       travellers: state.pax, unit: p.unit, estimated_total: p.price * state.pax,
-      name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refCode(), guests: guests
+      name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refCode(), guests: guests,
+      terms_accepted_at: new Date().toISOString()
     };
     if (!window.NGAuth || !NGAuth.user()) { saveDraft(guests, phone, email); go('auth'); return; }
     var submitBtn = form.querySelector('[type=submit]');
@@ -414,7 +416,7 @@
   /* ---------- Google sign-in (details are kept across the sign-in page) ---------- */
   var DRAFT = 'ng_bk_draft';
   function saveDraft(guests, phone, email) {
-    try { sessionStorage.setItem(DRAFT, JSON.stringify({ trip: state.trip.id, style: state.style, batch: state.batch, variant: state.variant, date: state.date, pax: state.pax, guests: guests, phone: phone, email: email, t: Date.now() })); } catch (e) {}
+    try { sessionStorage.setItem(DRAFT, JSON.stringify({ trip: state.trip.id, style: state.style, batch: state.batch, variant: state.variant, date: state.date, pax: state.pax, guests: guests, phone: phone, email: email, terms: $('bkTerms').checked, t: Date.now() })); } catch (e) {}
   }
   $('bkGoogle').addEventListener('click', function () {
     if (!window.NGAuth) { $('bkAuthErr').textContent = 'Sign-in could not load. Please refresh the page.'; $('bkAuthErr').hidden = false; return; }
@@ -430,7 +432,7 @@
     open(d.trip, { style: d.style, batch: d.batch, variant: d.variant });
     state.date = d.date || ''; state.pax = d.pax || 1; state.guests = d.guests || [];
     go(2);
-    $('bkPhone').value = d.phone || ''; if (d.email) $('bkEmail').value = d.email;
+    $('bkPhone').value = d.phone || ''; if (d.email) $('bkEmail').value = d.email; $('bkTerms').checked = !!d.terms;
     setTimeout(function () { form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })); }, 50);
   }
   document.addEventListener('ng:auth', function () {
@@ -463,7 +465,7 @@
   function syncPay() {
     var T = state.T; if (!T) { $('bkPayNow').disabled = true; return; }
     var done = T.guests.filter(function (_, i) { var k = kycOf(i); return k && k.status !== 'rejected'; }).length;
-    $('bkPayNow').disabled = !(done === T.guests.length && $('bkTerms').checked);
+    $('bkPayNow').disabled = done !== T.guests.length;
   }
   function loadIds() {
     $('bkIdList').innerHTML = '<p class="et-muted">Loading…</p>';
@@ -474,8 +476,8 @@
   function kycOf(i) { return ((state.T && state.T.kyc) || []).filter(function (k) { return k.guest_index === i; })[0]; }
   function renderIds() {
     var T = state.T, ids = T.kyc_ids;
-    $('bkIdNote').innerHTML = I('info') + (ids.length === 1 ? 'This is an international trip: a valid <b>passport</b> is needed for every traveller.'
-      : ids.indexOf('aadhaar') < 0 ? 'For Nepal, Indian citizens need a <b>passport or voter ID</b>.'
+    $('bkIdNote').innerHTML = I('info') + (ids.length === 1 && ids[0] === 'passport' ? 'This is an international trip: a valid <b>passport</b> is required for every traveller.'
+      : ids.length === 2 && ids.indexOf('passport') >= 0 && ids.indexOf('aadhaar') >= 0 ? 'This trip includes a flight: please upload a <b>passport</b> or <b>Aadhaar</b> for every traveller. For Aadhaar, use the <b>masked Aadhaar</b> (only the last 4 digits visible) from <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noopener">myaadhaar.uidai.gov.in</a> or DigiLocker.'
       : 'Accepted: masked Aadhaar, driving licence, voter ID or passport. For Aadhaar, use the <b>masked Aadhaar</b> (only the last 4 digits visible) from <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noopener">myaadhaar.uidai.gov.in</a> or DigiLocker.');
     var done = 0;
     $('bkIdList').innerHTML = T.guests.map(function (g, i) {
@@ -492,7 +494,7 @@
     }).join('');
     var all = done === T.guests.length;
     renderPayOpts();
-    $('bkIdsFine').textContent = all ? ($('bkTerms').checked ? 'All IDs are in. Pay to confirm your seats.' : 'All IDs are in. Tick the terms box to pay.') : (T.guests.length - done) + ' of ' + T.guests.length + ' ID' + (T.guests.length > 1 ? 's' : '') + ' still needed. Pay unlocks when every traveller has an ID. You can also finish later from My trips.';
+    $('bkIdsFine').textContent = all ? 'All IDs are in. Pay to confirm your seats.' : (T.guests.length - done) + ' of ' + T.guests.length + ' ID' + (T.guests.length > 1 ? 's' : '') + ' still needed. Pay unlocks when every traveller has an ID. You can also finish later from My trips.';
   }
   // Phone photos are often 5–10 MB: shrink images to ~1800px JPEG before upload (PDFs go as they are)
   function prepareFile(file) {
@@ -534,7 +536,7 @@
     if (e.target.closest('[data-signout]')) { NGAuth.signOut().then(function () { renderStep2(); }); }
   });
   $('bkPayNow').addEventListener('click', function () { startPayment(); });
-  $('bkTerms').addEventListener('change', function () { if (state.T) renderIds(); });
+  $('bkTerms').addEventListener('change', function () { if (this.checked) $('bkError').hidden = true; });
   $('bkPayOpts').addEventListener('click', function (e) { var b = e.target.closest('[data-paykind]'); if (b) { state.payKind = b.dataset.paykind; renderPayOpts(); } });
 
   // Continue an unpaid booking (from My trips)
