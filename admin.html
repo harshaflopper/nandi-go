@@ -6,8 +6,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=78"/>
-<link rel="stylesheet" href="assets/admin.css?v=44"/>
+<link rel="stylesheet" href="site.css?v=81"/>
+<link rel="stylesheet" href="assets/admin.css?v=45"/>
 </head>
 <body class="ad">
 
@@ -36,6 +36,7 @@
    <button role="tab" data-tab="partners">Partners</button>
    <button role="tab" data-tab="reviews">Reviews <i id="adRvCount" hidden></i></button>
    <button role="tab" data-tab="secret">Secret Box <i id="adSbCount" hidden></i></button>
+   <button role="tab" data-tab="gallery">Gallery</button>
    <button role="tab" data-tab="settings">Emails &amp; settings</button>
   </nav>
   <div class="ad-user"><span id="adEmail"></span><button type="button" class="btn btn-ghost btn-sm" id="adSignOut">Sign out</button></div>
@@ -133,6 +134,19 @@
    <div class="ad-rvlist" id="adSbList"></div>
   </section>
 
+  <!-- Gallery -->
+  <section class="ad-panel" data-panel="gallery" hidden>
+   <div class="ad-head"><div><span class="ad-label">Home page</span><h2>Gallery videos</h2></div></div>
+   <p class="ad-hint">These videos play in the "Window seat" gallery on the home page, in the order below. Paste a YouTube or YouTube Shorts link. The title shows on the flip board above the windows, so keep it short (about 30 letters).</p>
+   <form class="ad-gal-add" id="adGalForm">
+    <input name="url" placeholder="https://youtube.com/shorts/…" required/>
+    <input name="title" placeholder="Title on the flip board, e.g. Sunrise at Nandi Hills" maxlength="60" required/>
+    <input name="place" placeholder="Place (optional)" maxlength="40"/>
+    <button class="btn btn-gold btn-sm" type="submit">Add video</button>
+   </form>
+   <div class="ad-gal-list" id="adGalList"></div>
+  </section>
+
   <!-- Settings -->
   <section class="ad-panel" data-panel="settings" hidden>
    <div class="ad-head"><div><span class="ad-label">Alerts</span><h2>Emails &amp; settings</h2></div></div>
@@ -169,5 +183,5 @@
 <script src="assets/map-data.js?v=32"></script>
 <script src="assets/tripui.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="assets/admin.js?v=46"></script>
+<script src="assets/admin.js?v=47"></script>
 </body></html>

@@ -43,7 +43,13 @@
     '     <div class="bk-field bk-wide"><span>Who is travelling</span><div class="bk-guests" id="bkGuests"></div></div>' +
     '     <div class="bk-total bk-wide"><div><span>Total amount</span><strong id="bkTotal"></strong><small id="bkTotalNote"></small></div><div class="bk-adv" id="bkAdvance"></div></div>' +
     '     <p class="bk-error bk-wide" id="bkError" role="alert" hidden></p>' +
-    '     <label class="bk-terms bk-wide" id="bkTermsBox"><input type="checkbox" id="bkTerms"><span><b>I accept the <a href="terms" target="_blank" rel="noopener">Terms &amp; Conditions</a></b> — including the advance, cancellation, no-show and ID rules. The booking is for the travellers named above and cannot be transferred.</span></label>' +
+    '     <div class="bk-tc bk-wide" id="bkTc">' +
+    '      <div class="bk-tc-head"><b>' + I('scroll') + 'Terms &amp; Conditions</b><button type="button" class="bk-link" id="bkTcFull">Read full screen</button><button type="button" class="bk-tc-done" id="bkTcDone">Done</button></div>' +
+    '      <p class="bk-tc-adv" id="bkTcAdv"></p>' +
+    '      <div class="bk-tc-text" id="bkTcText" tabindex="0" aria-label="Terms and Conditions"><p class="et-muted">Loading the terms…</p></div>' +
+    '      <p class="bk-tc-hint" id="bkTcHint">' + I('arrow') + 'Scroll to the end of the terms to accept</p>' +
+    '      <label class="bk-terms" id="bkTermsBox"><input type="checkbox" id="bkTerms" disabled><span><b>I have read and accept all the Terms &amp; Conditions above</b>, including the advance, cancellation, no-show, late-arrival, non-transferable and ID rules.</span></label>' +
+    '     </div>' +
     '     <p class="bk-signed bk-wide" id="bkSigned" hidden></p>' +
     '     <button type="submit" class="btn btn-forest bk-submit bk-wide" id="bkPay"><span id="bkPayText">Continue</span>' + I('arrow') + '</button>' +
     '     <p class="bk-fine bk-wide">' + I('shield') + 'Next: sign in with Google and upload one ID per traveller, then pay securely with Razorpay.</p>' +
@@ -213,6 +219,9 @@
     $('bkPaxNote').textContent = b && b.live ? b.left + ' seat' + (b.left === 1 ? '' : 's') + ' left in this batch' : '';
     renderGuests();
     renderTotal();
+    var tt = state.trip;
+    $('bkTcAdv').innerHTML = I('info') + '<span>Advance for this trip: <b>' + (tt.advance_per_person ? NG.fmt(tt.advance_per_person) + ' per traveller</b> (flight trip)' : NG.fmt(500) + ' per traveller or 50% of the total</b>, whichever is higher') + '. Balance due 3 days before the trip.</span>';
+    loadTerms();
     var u = window.NGAuth && NGAuth.user();
     $('bkSigned').hidden = !u;
     if (u) {
@@ -247,7 +256,7 @@
     state.style = styleOk(opts.style) ? opts.style : (styleOk(state.style) ? state.style : (visibleStyles()[0] || NG.STYLES[0]).id);
     state.batch = opts.batch || null; state.variant = opts.variant || null; state.month = null; state.date = ''; state.guests = []; $('bkGuests').innerHTML = '';
     state.paidRef = null; state.T = null; state.idChoice = {}; state.idBusy = {}; state.payKind = 'advance';
-    if ($('bkTerms')) $('bkTerms').checked = false;
+    if ($('bkTerms')) { $('bkTerms').checked = false; termsRead(false); $('bkTcText').scrollTop = 0; }
     fillTrips();
     $('bkFormView').hidden = false; $('bkDoneView').hidden = true; $('bkError').hidden = true; $('bkError1').hidden = true;
     go(1);
@@ -366,8 +375,8 @@
     else if (badAge >= 0) err = 'Please enter the age of ' + (badAge === 0 ? 'yourself' : 'traveller ' + (badAge + 1)) + '.';
     else if (!/^[6-9]\d{9}$/.test(phone)) err = 'Please enter a valid 10-digit mobile number.';
     else if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) err = 'Please check the email address.';
-    else if (!$('bkTerms').checked) err = 'Please tick the box to accept the Terms & Conditions.';
-    if (err) { $('bkError').textContent = err; $('bkError').hidden = false; if (/Terms/.test(err)) { var tb = $('bkTermsBox'); tb.classList.add('shake'); setTimeout(function () { tb.classList.remove('shake'); }, 600); } return; }
+    else if (!$('bkTerms').checked) err = $('bkTerms').disabled ? 'Please read the Terms & Conditions to the end, then tick to accept.' : 'Please tick the box to accept the Terms & Conditions.';
+    if (err) { $('bkError').textContent = err; $('bkError').hidden = false; if (/Terms/.test(err)) { var tb = $('bkTc'); tb.classList.add('shake'); setTimeout(function () { tb.classList.remove('shake'); }, 600); } return; }
     $('bkError').hidden = true;
 
     var st = NG.style(state.style), b = batchObj(), p = priceNow();
@@ -413,6 +422,44 @@
   });
 
 
+
+  /* ---------- Full Terms & Conditions inside the booking (read to the end, then accept) ---------- */
+  var termsHtml = null, termsLoading = null;
+  function loadTerms() {
+    if (termsHtml) return showTerms();
+    if (termsLoading) return;
+    termsLoading = fetch('terms.html', { cache: 'no-cache' }).then(function (r) { return r.text(); }).then(function (txt) {
+      var doc = new DOMParser().parseFromString(txt, 'text/html'), art = doc.querySelector('.lg-doc');
+      if (!art) throw new Error('no terms');
+      ['.lg-k', 'h1', '.lg-upd', '.lg-contact'].forEach(function (sel) { art.querySelectorAll(sel).forEach(function (n) { n.remove(); }); });
+      art.querySelectorAll('a[href]').forEach(function (a) { a.target = '_blank'; a.rel = 'noopener'; });
+      termsHtml = art.innerHTML; showTerms();
+    }).catch(function () {
+      termsLoading = null;
+      $('bkTcText').innerHTML = '<p>The terms could not load here. Please read them on the <a href="terms" target="_blank" rel="noopener">Terms page</a>, then tick to accept.</p>';
+      termsRead(true);
+    });
+  }
+  function showTerms() {
+    var box = $('bkTcText');
+    if (!box.dataset.loaded) { box.innerHTML = termsHtml; box.dataset.loaded = '1'; }
+    if (!state.termsRead) box.scrollTop = 0;
+    checkRead();
+  }
+  function termsRead(on) {
+    state.termsRead = on;
+    $('bkTerms').disabled = !on;
+    $('bkTc').classList.toggle('read', on);
+    $('bkTcHint').innerHTML = on ? I('check') + 'You have read the terms. Tick the box to accept.' : I('arrow') + 'Scroll to the end of the terms to accept';
+  }
+  function checkRead() {
+    var b = $('bkTcText');
+    if (!state.termsRead && b.scrollTop + b.clientHeight >= b.scrollHeight - 12) termsRead(true);
+  }
+  $('bkTcText').addEventListener('scroll', checkRead, { passive: true });
+  $('bkTcFull').addEventListener('click', function () { $('bkTc').classList.add('full'); document.documentElement.classList.add('bk-tc-lock'); setTimeout(checkRead, 50); });
+  $('bkTcDone').addEventListener('click', function () { $('bkTc').classList.remove('full'); document.documentElement.classList.remove('bk-tc-lock'); });
+
   /* ---------- Google sign-in (details are kept across the sign-in page) ---------- */
   var DRAFT = 'ng_bk_draft';
   function saveDraft(guests, phone, email) {
@@ -432,7 +479,7 @@
     open(d.trip, { style: d.style, batch: d.batch, variant: d.variant });
     state.date = d.date || ''; state.pax = d.pax || 1; state.guests = d.guests || [];
     go(2);
-    $('bkPhone').value = d.phone || ''; if (d.email) $('bkEmail').value = d.email; $('bkTerms').checked = !!d.terms;
+    $('bkPhone').value = d.phone || ''; if (d.email) $('bkEmail').value = d.email; if (d.terms) { termsRead(true); $('bkTerms').checked = true; }
     setTimeout(function () { form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })); }, 50);
   }
   document.addEventListener('ng:auth', function () {

@@ -7,7 +7,7 @@
 
   var DISTRICTS = ['Bagalkote','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Chamarajanagar','Chikkaballapura','Chikkamagaluru','Chitradurga','Dakshina Kannada','Davanagere','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Kodagu','Kolar','Koppal','Mandya','Mysuru','Raichur','Ramanagara','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayanagara','Vijayapura','Yadgir'];
   var KIT_TARGET = 10; // confirmed persons before the ₹4,999 kit is refunded
-  var S = { batches: [], bookings: [], partners: [], kyc: [], reviews: [], feedback: [], tkyc: [], settings: {}, trips: [], styles: [], tab: 'overview' };
+  var S = { batches: [], bookings: [], partners: [], kyc: [], reviews: [], feedback: [], tkyc: [], gallery: [], settings: {}, trips: [], styles: [], tab: 'overview' };
 
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
@@ -87,17 +87,18 @@
       sb.from('partner_kyc').select('*').order('created_at', { ascending: false }),
       sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(500),
       sb.from('feedback').select('*').order('created_at', { ascending: false }).limit(500),
-      sb.from('traveller_kyc').select('*')
+      sb.from('traveller_kyc').select('*'),
+      sb.from('gallery_videos').select('*').order('sort').order('created_at')
     ]).then(function (r) {
       var bad = r.filter(function (x) { return x.error; })[0];
       if (bad) { toast(friendly(bad.error), true); return; }
       S.batches = r[0].data; S.bookings = r[1].data; S.partners = r[2].data;
       S.settings = {}; r[3].data.forEach(function (x) { S.settings[x.key] = x.value; });
-      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data; S.tkyc = r[9].data;
+      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data; S.tkyc = r[9].data; S.gallery = r[10].data;
       renderAll();
     });
   }
-  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); renderSecret(); }
+  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); renderSecret(); renderGallery(); }
 
   /* ---------------- Overview ---------------- */
   function renderOverview() {
@@ -861,6 +862,42 @@
     var x, done = function (msg) { return function (r) { if (r.error) toast(friendly(r.error), true); else { toast(msg); loadAll(); } }; };
     if ((x = e.target.closest('[data-sb-set]'))) sb.from('feedback').update({ status: x.dataset.sbSet }).eq('id', x.dataset.id).then(done(x.dataset.sbSet === 'done' ? 'Marked done' : 'Marked read'));
     else if ((x = e.target.closest('[data-sb-del]'))) { if (confirm('Delete this message permanently?')) sb.from('feedback').delete().eq('id', x.dataset.sbDel).then(done('Message deleted')); }
+  });
+
+  /* ---------------- Gallery (home page "Window seat") ---------------- */
+  function ytId(u) {
+    var m = /(?:youtu\.be\/|youtube\.com\/(?:shorts\/|embed\/|live\/|watch\?(?:.*&)?v=))([A-Za-z0-9_-]{6,20})/.exec(u || '');
+    return m ? m[1] : (/^[A-Za-z0-9_-]{6,20}$/.test((u || '').trim()) ? u.trim() : null);
+  }
+  function renderGallery() {
+    var L = S.gallery;
+    $('adGalList').innerHTML = L.length ? L.map(function (g, i) {
+      return '<div class="ad-gal' + (g.active ? '' : ' off') + '"><span class="ad-gal-th" style="background-image:url(\'https://i.ytimg.com/vi/' + esc(g.youtube_id) + '/hqdefault.jpg\')"></span>' +
+        '<div class="ad-gal-b"><b>' + esc(g.title) + '</b><small>' + esc(g.place || '') + (g.place ? ' · ' : '') + '<a href="https://youtube.com/shorts/' + esc(g.youtube_id) + '" target="_blank" rel="noopener">Open on YouTube</a>' + (g.active ? '' : ' · <i>Hidden</i>') + '</small></div>' +
+        '<div class="ad-row-actions"><button class="btn btn-ghost btn-sm" data-gal-move="-1" data-id="' + g.id + '"' + (i ? '' : ' disabled') + '>Up</button><button class="btn btn-ghost btn-sm" data-gal-move="1" data-id="' + g.id + '"' + (i < L.length - 1 ? '' : ' disabled') + '>Down</button>' +
+        '<button class="btn btn-ghost btn-sm" data-gal-toggle="' + g.id + '">' + (g.active ? 'Hide' : 'Show') + '</button><button class="btn btn-ghost btn-sm ad-danger" data-gal-del="' + g.id + '">Delete</button></div></div>';
+    }).join('') : '<p class="ad-empty">No videos yet. Add a YouTube link above.</p>';
+  }
+  $('adGalForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = this.elements, id = ytId(f.url.value);
+    if (!id) { toast('That does not look like a YouTube link.', true); return; }
+    var max = S.gallery.reduce(function (m, g) { return Math.max(m, g.sort || 0); }, 0);
+    sb.from('gallery_videos').insert({ youtube_id: id, title: f.title.value.trim(), place: f.place.value.trim() || null, sort: max + 1 }).then(function (r) {
+      if (r.error) return toast(friendly(r.error), true);
+      toast('Video added to the gallery'); e.target.reset(); loadAll();
+    });
+  });
+  document.addEventListener('click', function (e) {
+    var x, done = function (msg) { return function (r) { if (r && r.error) toast(friendly(r.error), true); else { toast(msg); loadAll(); } }; };
+    if ((x = e.target.closest('[data-gal-toggle]'))) { var g = byId(S.gallery, x.dataset.galToggle); sb.from('gallery_videos').update({ active: !g.active }).eq('id', g.id).then(done(g.active ? 'Video hidden' : 'Video shown')); }
+    else if ((x = e.target.closest('[data-gal-del]'))) { if (confirm('Remove this video from the gallery?')) sb.from('gallery_videos').delete().eq('id', x.dataset.galDel).then(done('Video removed')); }
+    else if ((x = e.target.closest('[data-gal-move]'))) {
+      var L = S.gallery.slice(), i = L.findIndex(function (v) { return v.id === x.dataset.id; }), j = i + (+x.dataset.galMove);
+      if (j < 0 || j >= L.length) return;
+      var t = L[i]; L[i] = L[j]; L[j] = t;
+      Promise.all(L.map(function (v, k) { return sb.from('gallery_videos').update({ sort: k + 1 }).eq('id', v.id); })).then(function (rs) { done('Order saved')(rs.filter(function (r) { return r.error; })[0] || {}); });
+    }
   });
 
   /* ---------------- Settings ---------------- */
