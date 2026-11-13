@@ -169,10 +169,10 @@
 
 <section class="pp-section pp-alt" id="contact">
  <div class="container pp-contact">
-  <div><h4>Call / WhatsApp</h4><p><a href="tel:+919513646646">+91 95136 46646</a><br><a href="tel:+919071228822">+91 90712 28822</a></p></div>
+  <div><h4>Call / WhatsApp</h4><p><a href="tel:+919513646646">+91 9513 646 646</a><br><a href="tel:+919071228822">+91 9071 22 88 22</a></p></div>
   <div><h4>Email</h4><p><a href="mailto:nandigo2026@gmail.com">nandigo2026@gmail.com</a></p></div>
   <div><h4>Corporate Office</h4><p>#72 Nagarabhavi, Vijayanagar,<br>Bengaluru 560040</p></div>
-  <div><h4>Registered Office</h4><p>GPS Arcade, Rajajinagar,<br>Bengaluru 560010</p></div>
+  <div><h4>Registered Office</h4><p>Rajajinagar,<br>Bengaluru 560010</p></div>
  </div>
 </section>
 </main>
@@ -198,8 +198,8 @@
    </div>
    <div>
     <h4>Contact</h4>
-    <a href="tel:+919513646646"><svg class="ic"><use href="#i-phone"/></svg>+91 95136 46646</a>
-    <a href="tel:+919071228822"><svg class="ic"><use href="#i-phone"/></svg>+91 90712 28822</a>
+    <a href="tel:+919513646646"><svg class="ic"><use href="#i-phone"/></svg>+91 9513 646 646</a>
+    <a href="tel:+919071228822"><svg class="ic"><use href="#i-phone"/></svg>+91 9071 22 88 22</a>
     <a href="mailto:nandigo2026@gmail.com"><svg class="ic"><use href="#i-mail"/></svg>nandigo2026@gmail.com</a>
     <p><svg class="ic"><use href="#i-building"/></svg>#72 Nagarabhavi, Vijayanagar, Bengaluru 560040</p>
    </div>
@@ -316,7 +316,7 @@
  </div>
 </div>
 <script src="assets/icons.js?v=52"></script>
-<script src="assets/data.js?v=51"></script>
+<script src="assets/data.js?v=52"></script>
 <script src="assets/map-data.js?v=32"></script>
 <script src="assets/db.js?v=52"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -392,7 +392,7 @@ $id('ngPartnerForm').addEventListener('submit',function(e){
  NG.DB.insert('partners',row).then(()=>{btn.disabled=false;this.reset();$id('pfForm').hidden=true;$id('pfDone').hidden=false;$id('pf').querySelector('.pm-card').scrollTop=0},x=>{
   btn.disabled=false;
   if(/partners_one_pending|duplicate/i.test(x.message))return showErr(err,'You have already applied for this role with this number. Our team will contact you soon.');
-  showErr(err,'Sorry, the application could not be sent. Please check your details and try again, or WhatsApp us on +91 95136 46646.');
+  showErr(err,'Sorry, the application could not be sent. Please check your details and try again, or WhatsApp us on +91 9513 646 646.');
  });
 });
 
@@ -424,7 +424,7 @@ $id('pkForm').addEventListener('submit',function(e){
    aadhaar_last4:f.get('aadhaar'),pan:pan||null,bank_holder:f.get('holder').trim(),account_no:f.get('account'),ifsc,upi:(f.get('upi')||'').trim()||null,files:Object.fromEntries(paths),confirmed:true}))
  .then(()=>{btn.disabled=false;btn.firstChild.textContent='Submit KYC';this.reset();$id('pkFormBox').hidden=true;$id('pkDone').hidden=false;$id('pk').querySelector('.pm-card').scrollTop=0},x=>{
   btn.disabled=false;btn.firstChild.textContent='Submit KYC';
-  showErr(err,x.user||'Sorry, your details could not be sent. Please try again, or WhatsApp us on +91 95136 46646.');
+  showErr(err,x.user||'Sorry, your details could not be sent. Please try again, or WhatsApp us on +91 9513 646 646.');
  });
 });
 
