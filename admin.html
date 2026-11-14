@@ -6,8 +6,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=88"/>
-<link rel="stylesheet" href="assets/admin.css?v=46"/>
+<link rel="stylesheet" href="site.css?v=91"/>
+<link rel="stylesheet" href="assets/admin.css?v=47"/>
 </head>
 <body class="ad">
 
@@ -34,6 +34,7 @@
    <button role="tab" data-tab="batches">Batches</button>
    <button role="tab" data-tab="bookings">Bookings <i id="adNewCount" hidden></i></button>
    <button role="tab" data-tab="partners">Partners</button>
+   <button role="tab" data-tab="commissions">Commissions</button>
    <button role="tab" data-tab="reviews">Reviews <i id="adRvCount" hidden></i></button>
    <button role="tab" data-tab="secret">Secret Box <i id="adSbCount" hidden></i></button>
    <button role="tab" data-tab="gallery">Gallery</button>
@@ -118,6 +119,27 @@
    </div>
   </section>
 
+  <section class="ad-panel" data-panel="commissions" hidden>
+   <div class="ad-head"><div><span class="ad-label">District &amp; Taluk partners</span><h2>Commissions</h2></div>
+    <div class="ad-actions"><button class="btn btn-ghost btn-sm" id="adCmRecalc">Recalculate</button><button class="btn btn-ghost btn-sm" id="adCmCsv">Download CSV</button><button class="btn btn-gold btn-sm" id="adCmPay">Mark ticked as paid</button></div></div>
+   <p class="ad-hint">Every booking made with a partner code creates commission lines here on its own. A Taluk Partner's booking also gives a share to the District Partner of that district. A line becomes <b>Due</b> when the booking is marked Completed and fully paid; cancelling the booking cancels it. Pay partners by UPI or bank, tick the lines, then press "Mark ticked as paid" and enter the UTR.</p>
+   <form class="ad-card ad-cmrates" id="adCmRates">
+    <h3>Rates per traveller (₹)</h3>
+    <div class="ad-3"><label>District Partner, own bookings<input name="commission_district" type="number" min="0" max="5000" inputmode="numeric"/></label>
+    <label>Taluk Partner, own bookings<input name="commission_taluk" type="number" min="0" max="5000" inputmode="numeric"/></label>
+    <label>District Partner share on Taluk bookings<input name="commission_override" type="number" min="0" max="5000" inputmode="numeric"/></label></div>
+    <p class="ad-hint">A special rate typed on one partner (Partners → open partner → Commission per person) wins over these. Saving recalculates every unpaid line; paid lines never change.</p>
+    <button class="btn btn-forest btn-sm" type="submit">Save rates</button>
+   </form>
+   <div class="ad-stats" id="adCmSum"></div>
+   <div class="ad-filter">
+    <select id="adCmStatus"><option value="">All</option><option value="due" selected>Due</option><option value="pending">Trip not done</option><option value="paid">Paid</option><option value="cancelled">Cancelled</option></select>
+    <select id="adCmPartner"><option value="">All partners</option></select>
+   </div>
+   <div class="ad-table-wrap"><table class="ad-table" id="adCmTable"><thead><tr><th></th><th>Partner</th><th>Booking</th><th>For</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+   <p class="ad-empty" id="adCmEmpty" hidden>Nothing here yet. Commission appears when someone books with a partner code.</p>
+  </section>
+
   <!-- Reviews -->
   <section class="ad-panel" data-panel="reviews" hidden>
    <div class="ad-head"><div><span class="ad-label">Traveller stories</span><h2>Reviews</h2></div><div class="ad-actions"><button class="btn btn-gold btn-sm" id="adRvAdd">Add a past traveller's review</button></div></div>
@@ -183,5 +205,5 @@
 <script src="assets/map-data.js?v=32"></script>
 <script src="assets/tripui.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="assets/admin.js?v=48"></script>
+<script src="assets/admin.js?v=49"></script>
 </body></html>

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=88"/>
+<link rel="stylesheet" href="site.css?v=91"/>
 </head>
 <body>
 
@@ -76,6 +76,7 @@
   </div>
   <div class="styles reveal" id="styleGrid" role="tablist" aria-label="Travel styles"></div>
   <div class="styles-dots" id="styleDots" aria-hidden="true"></div>
+  <div class="pw-wrap reveal"><div data-paystrip="light"></div></div>
  </div>
 </section>
 
@@ -139,7 +140,6 @@
   <div class="jr-end reveal">
    <button type="button" class="btn btn-gold" data-book><svg class="ic"><use href="#i-ticket"/></svg>Start booking</button>
    <p class="pay-note"><svg class="ic"><use href="#i-shield"/></svg>Pay only on this website through our secure payment page. Nandi Go never asks you to pay a partner or a personal account.</p>
-   <div class="paym paym-light"><p class="paym-h"><svg class="ic"><use href="#i-lock"/></svg>All payment methods accepted <span>· Secured by Razorpay</span></p><ul class="paym-list"><li>UPI</li><li>Google Pay</li><li>PhonePe</li><li>Paytm</li><li>BHIM</li><li>Visa</li><li>Mastercard</li><li>RuPay</li><li>Amex</li><li>Net banking</li><li>Wallets</li><li>EMI</li></ul></div>
   </div>
  </div>
 </section>
@@ -235,6 +235,11 @@
 
 <footer>
  <div class="container">
+  <div class="fband">
+   <a class="fcard" href="https://wa.me/919513646646" target="_blank" rel="noopener"><span class="fcard-ic"><svg class="ic"><use href="#i-phone"/></svg></span><span class="fcard-tx"><small>Call / WhatsApp</small><b class="fc-nums"><span data-tel="+919513646646">9513 646 646</span><i aria-hidden="true"></i><span data-tel="+919071228822">9071 22 88 22</span></b></span></a>
+   <a class="fcard" href="mailto:nandigo2026@gmail.com"><span class="fcard-ic"><svg class="ic"><use href="#i-mail"/></svg></span><span class="fcard-tx"><small>Email</small><b>nandigo2026@gmail.com</b></span></a>
+   <a class="fcard" href="https://maps.google.com/?q=Nagarabhavi+Main+Road+Vijayanagar+Bengaluru+560040" target="_blank" rel="noopener"><span class="fcard-ic"><svg class="ic"><use href="#i-building"/></svg></span><span class="fcard-tx"><small>Corporate office · #72</small><b>Nagarabhavi, Bengaluru 560040</b></span></a>
+  </div>
   <div class="foot-grid">
    <div>
     <img src="logo.png" alt="Nandi Go" class="footer-logo" width="200" height="62"/>
@@ -254,15 +259,11 @@
     <a href="#about">About Nandi Go</a><a href="partners.html">Business Partners</a><a href="partners.html#district">District Partners</a><a href="partners.html#taluk">Taluk Partners</a>
    </div>
    <div>
-    <h4>Contact</h4>
-    <ul class="fc">
-     <li><svg class="ic"><use href="#i-phone"/></svg><div><small>Call / WhatsApp</small><span class="fc-nums"><a href="tel:+919513646646">+91 9513 646 646</a><i aria-hidden="true"></i><a href="tel:+919071228822">+91 9071 22 88 22</a></span></div></li>
-     <li><svg class="ic"><use href="#i-mail"/></svg><div><small>Email</small><a href="mailto:nandigo2026@gmail.com">nandigo2026@gmail.com</a></div></li>
-     <li><svg class="ic"><use href="#i-building"/></svg><div><small>Corporate office</small><span>#72 Nagarabhavi, Vijayanagar, Bengaluru 560040</span></div></li>
-    </ul>
+    <h4>Help</h4>
+    <a href="#how">How to book</a><a href="my-trips">My trips and e-tickets</a><a href="terms.html">Terms, cancellation &amp; refunds</a><a href="privacy.html">Privacy policy</a>
    </div>
   </div>
-  <div class="paym paym-dark"><p class="paym-h"><svg class="ic"><use href="#i-lock"/></svg>All payment methods accepted <span>· Secured by Razorpay</span></p><ul class="paym-list"><li>UPI</li><li>Google Pay</li><li>PhonePe</li><li>Paytm</li><li>BHIM</li><li>Visa</li><li>Mastercard</li><li>RuPay</li><li>Amex</li><li>Net banking</li><li>Wallets</li><li>EMI</li></ul></div>
+  <div data-paystrip="dark"></div>
   <div class="foot-end">
    <span>© <span id="year"></span> Nandi Go. All rights reserved.</span>
    <span><a href="privacy.html">Privacy policy</a> · <a href="terms.html">Terms, cancellation &amp; refunds</a></span>
@@ -478,7 +479,7 @@
 <script src="assets/tripui.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="assets/auth.js?v=1"></script>
-<script src="assets/booking.js?v=50"></script>
+<script src="assets/booking.js?v=52"></script>
 <script src="assets/reviews.js?v=15"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="assets/gallery.js?v=8"></script>
@@ -486,5 +487,6 @@
 <script src="assets/hero.js?v=34"></script>
 <script src="assets/about.js?v=32"></script>
 <script src="assets/wa.js?v=1" defer></script>
+<script src="assets/pay.js?v=3" defer></script>
 </body>
 </html>

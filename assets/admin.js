@@ -89,17 +89,18 @@
       sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(500),
       sb.from('feedback').select('*').order('created_at', { ascending: false }).limit(500),
       sb.from('traveller_kyc').select('*'),
-      sb.from('gallery_videos').select('*').order('sort').order('created_at')
+      sb.from('gallery_videos').select('*').order('sort').order('created_at'),
+      sb.from('commissions').select('*').order('created_at', { ascending: false })
     ]).then(function (r) {
       var bad = r.filter(function (x) { return x.error; })[0];
       if (bad) { toast(friendly(bad.error), true); return; }
       S.batches = r[0].data; S.bookings = r[1].data; S.partners = r[2].data;
       S.settings = {}; r[3].data.forEach(function (x) { S.settings[x.key] = x.value; });
-      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data; S.tkyc = r[9].data; S.gallery = r[10].data;
+      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data; S.tkyc = r[9].data; S.gallery = r[10].data; S.comm = r[11].data;
       renderAll();
     });
   }
-  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); renderSecret(); renderGallery(); }
+  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); renderSecret(); renderGallery(); renderCommissions(); }
 
   /* ---------------- Overview ---------------- */
   function renderOverview() {
@@ -120,6 +121,7 @@
       stat(live.length, 'Upcoming batches', 'batches') +
       stat(waiting.length, 'Partner applications to review', 'partners') +
       stat(refunds.length, 'Kit refunds due', 'partners') +
+      stat(fmt((S.comm || []).filter(function (c) { return c.status === 'due'; }).reduce(function (t, c) { return t + c.amount; }, 0)), 'Partner commission due', 'commissions') +
       stat(S.reviews.filter(function (x) { return x.status === 'pending'; }).length, 'Reviews to approve', 'reviews') +
       stat(S.feedback.filter(function (x) { return x.status === 'new'; }).length, 'New Secret Box messages', 'secret');
     $('adOvBatches').innerHTML = live.length ? live.slice().sort(function (a, b) { return a.start_date < b.start_date ? -1 : 1; }).map(batchRow).join('') : '<p class="ad-empty">No upcoming batches. Create one in Batches.</p>';
@@ -719,13 +721,17 @@
       toast(drop.length ? 'Partner updated · ID documents deleted' : 'Partner updated'); loadAll();
     });
   }
+  // Short codes that are easy to say on a call: NG-MYS (Mysuru district), NG-MYS-HUN (Hunsur taluk in Mysuru).
+  // A taluk code starts with its district code. A replacement partner gets a number: NG-MYS2.
+  var DCODE = { 'Bagalkote': 'BGK', 'Ballari': 'BLY', 'Belagavi': 'BGM', 'Bengaluru Rural': 'BRR', 'Bengaluru Urban': 'BLR', 'Bidar': 'BDR', 'Chamarajanagar': 'CMR', 'Chikkaballapura': 'CBP', 'Chikkamagaluru': 'CKM', 'Chitradurga': 'CTA', 'Dakshina Kannada': 'DKA', 'Davanagere': 'DVG', 'Dharwad': 'DWD', 'Gadag': 'GDG', 'Hassan': 'HSN', 'Haveri': 'HVR', 'Kalaburagi': 'KLB', 'Kodagu': 'KDG', 'Kolar': 'KLR', 'Koppal': 'KPL', 'Mandya': 'MDY', 'Mysuru': 'MYS', 'Raichur': 'RCR', 'Ramanagara': 'RMN', 'Shivamogga': 'SMG', 'Tumakuru': 'TMK', 'Udupi': 'UDP', 'Uttara Kannada': 'UKA', 'Vijayanagara': 'VJN', 'Vijayapura': 'VJP', 'Yadgir': 'YDG' };
   function suggestCode(role, district, taluk) {
     var ab = function (s) { return String(s || '').replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || 'XXX'; };
-    var base = role === 'taluk' ? 'NG-TP-' + ab(district) + '-' + ab(taluk) + '-' : 'NG-DP-' + ab(district) + '-', i = 1;
+    var base = 'NG-' + (DCODE[district] || ab(district)) + (role === 'taluk' ? '-' + ab(taluk) : ''), i = 1;
     var used = S.partners.map(function (p) { return p.partner_code; });
-    while (used.indexOf(base + (i < 10 ? '0' + i : i)) >= 0) i++;
-    return base + (i < 10 ? '0' + i : i);
+    while (used.indexOf(i === 1 ? base : base + i) >= 0) i++;
+    return i === 1 ? base : base + i;
   }
+  function partnerLink(code) { return (S.settings.site_url || 'https://nandigo.co').replace(/\/$/, '') + '/?ref=' + code; }
   function editPartner(p, district) {
     var isNew = !p;
     p = p || { role: district ? 'taluk' : 'district', status: 'applied', district: district || '' };
@@ -740,9 +746,13 @@
       '<label>Partner code<input name="partner_code" maxlength="20" placeholder="Made on approval" value="' + esc(p.partner_code || '') + '"/></label></div>' +
       '<div class="ad-2"><label>Commission per person (₹)<input name="commission_per_person" type="number" min="0" max="5000" placeholder="300 – 500" value="' + esc(p.commission_per_person == null ? '' : p.commission_per_person) + '"/></label>' +
       '<label>Kit (₹4,999) paid on<input name="kit_paid_on" type="date" value="' + esc(p.kit_paid_on || '') + '"/></label></div>' +
-      '<div class="ad-2"><label>Kit refunded on<input name="kit_refunded_on" type="date" value="' + esc(p.kit_refunded_on || '') + '"/></label><span></span></div>' +
+      '<div class="ad-2"><label>Kit refunded on<input name="kit_refunded_on" type="date" value="' + esc(p.kit_refunded_on || '') + '"/></label>' +
+      '<label>Reports to (Taluk Partners)<select name="parent_id"><option value="">Automatic: district partner of the district</option>' +
+        S.partners.filter(function (d) { return d.role === 'district' && d.id !== p.id && ['approved', 'active', 'paused'].indexOf(d.status) >= 0; })
+          .map(function (d) { return '<option value="' + d.id + '"' + (d.id === p.parent_id ? ' selected' : '') + '>' + esc(d.name + ' · ' + d.district + (d.partner_code ? ' · ' + d.partner_code : '')) + '</option>'; }).join('') +
+      '</select></label></div>' +
       '<label>Notes (KYC checked, agreement signed, etc.)<textarea name="notes" rows="3">' + esc(p.notes || '') + '</textarea></label>' +
-      (isNew ? '' : '<p class="ad-hint">' + personsFor(p.partner_code) + ' confirmed persons booked with this code.' + (p.partner_code ? ' Partner link: ' + esc((S.settings.site_url || location.origin) + '/?ref=' + p.partner_code) : '') + '</p>' + applicationBlock(p) + kycBlock(p)),
+      (isNew ? '' : '<p class="ad-hint">' + personsFor(p.partner_code) + ' confirmed persons booked with this code.' + (p.partner_code ? ' Partner link: ' + esc(partnerLink(p.partner_code)) : '') + '</p>' + earnedLine(p) + applicationBlock(p) + kycBlock(p)),
       function (v) {
         var phone = v.phone.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '').replace(/^0(?=\d{10}$)/, '');
         if (!v.name.trim() || !v.district) throw new Error('Please enter the name and district.');
@@ -752,7 +762,8 @@
           role: v.role, status: v.status, name: v.name.trim(), phone: phone || null, email: v.email.trim() || null,
           district: v.district, taluk: v.taluk.trim() || null, partner_code: v.partner_code.trim().toUpperCase() || null,
           commission_per_person: v.commission_per_person === '' ? null : +v.commission_per_person,
-          kit_paid_on: v.kit_paid_on || null, kit_refunded_on: v.kit_refunded_on || null, notes: v.notes.trim() || null
+          kit_paid_on: v.kit_paid_on || null, kit_refunded_on: v.kit_refunded_on || null, notes: v.notes.trim() || null,
+          parent_id: v.role === 'taluk' ? (v.parent_id || null) : null
         };
         if (!row.partner_code && (row.status === 'approved' || row.status === 'active')) row.partner_code = suggestCode(row.role, row.district, row.taluk);
         return isNew ? sb.from('partners').insert(row) : sb.from('partners').update(row).eq('id', p.id);
@@ -762,6 +773,77 @@
         return sb.from('partners').delete().eq('id', p.id);
       });
   }
+
+  /* ---------------- Commissions ---------------- */
+  var CM_LABEL = { pending: 'Trip not done', due: 'Due', paid: 'Paid', cancelled: 'Cancelled' };
+  function earnedLine(p) {
+    var mine = (S.comm || []).filter(function (c) { return c.partner_id === p.id; });
+    if (!mine.length) return '';
+    var sum = function (st) { return mine.filter(function (c) { return c.status === st; }).reduce(function (t, c) { return t + c.amount; }, 0); };
+    var kids = S.partners.filter(function (t) { return t.parent_id === p.id; }).map(function (t) { return t.name + (t.partner_code ? ' (' + t.partner_code + ')' : ''); });
+    return '<p class="ad-hint">Commission: ' + fmt(sum('due')) + ' due · ' + fmt(sum('pending')) + ' after trips · ' + fmt(sum('paid')) + ' paid.' + (kids.length ? ' Taluk partners under them: ' + esc(kids.join(', ')) + '.' : '') + '</p>';
+  }
+  function renderCommissions() {
+    var box = $('adCmTable'); if (!box) return;
+    var rates = $('adCmRates');
+    if (rates && !rates.dataset.filled) {
+      ['commission_district', 'commission_taluk', 'commission_override'].forEach(function (k) { rates.elements[k].value = S.settings[k] || ''; });
+      rates.dataset.filled = '1';
+    }
+    var who = $('adCmPartner'), keep = who.value;
+    var ids = {}; (S.comm || []).forEach(function (c) { ids[c.partner_id] = 1; });
+    who.innerHTML = '<option value="">All partners</option>' + S.partners.filter(function (p) { return ids[p.id]; })
+      .map(function (p) { return '<option value="' + p.id + '">' + esc(p.name + (p.partner_code ? ' · ' + p.partner_code : '')) + '</option>'; }).join('');
+    who.value = keep;
+    var st = $('adCmStatus').value, pid = who.value;
+    var bk = {}; S.bookings.forEach(function (k) { bk[k.id] = k; });
+    var rows = (S.comm || []).filter(function (c) { return (!st || c.status === st) && (!pid || c.partner_id === pid); });
+    var tot = function (s) { return (S.comm || []).filter(function (c) { return c.status === s; }).reduce(function (t, c) { return t + c.amount; }, 0); };
+    var cmStat = function (n, l) { return '<div class="ad-stat"><b>' + n + '</b><span>' + l + '</span></div>'; };
+    $('adCmSum').innerHTML = cmStat(fmt(tot('due')), 'Due to pay now') + cmStat(fmt(tot('pending')), 'Due after trips finish') + cmStat(fmt(tot('paid')), 'Paid so far');
+    box.querySelector('tbody').innerHTML = rows.map(function (c) {
+      var p = byId(S.partners, c.partner_id) || {}, k = bk[c.booking_id] || {};
+      return '<tr><td data-l=""><input type="checkbox" data-cm-pick="' + c.id + '"' + (c.status === 'due' ? '' : ' disabled') + ' aria-label="Select"/></td>' +
+        '<td data-l="Partner"><b>' + esc(p.name || '—') + '</b><small>' + esc(p.partner_code || '') + ' · ' + (p.role === 'taluk' ? 'Taluk' : 'District') + '</small></td>' +
+        '<td data-l="Booking">' + esc(k.ref || '') + '<small>' + esc(k.trip_title || '') + (k.travel_date ? ' · ' + day(k.travel_date) : '') + '</small></td>' +
+        '<td data-l="For">' + (c.kind === 'override' ? 'Taluk booking (district share)' : 'Own code') + '</td>' +
+        '<td data-l="Amount"><b>' + fmt(c.amount) + '</b><small>' + c.persons + ' × ' + fmt(c.rate) + '</small></td>' +
+        '<td data-l="Status"><span class="ad-pill s-' + (c.status === 'paid' ? 'active' : c.status === 'due' ? 'new' : c.status === 'cancelled' ? 'rejected' : 'paused') + '">' + CM_LABEL[c.status] + '</span>' +
+          (c.status === 'paid' ? '<small>' + (c.paid_on ? day(c.paid_on) : '') + (c.paid_ref ? ' · ' + esc(c.paid_ref) : '') + '</small>' : '') + '</td></tr>';
+    }).join('');
+    $('adCmEmpty').hidden = rows.length > 0;
+  }
+  ['adCmStatus', 'adCmPartner'].forEach(function (id) { var el = $(id); if (el) el.addEventListener('change', renderCommissions); });
+  if ($('adCmRates')) $('adCmRates').addEventListener('submit', function (e) {
+    e.preventDefault(); var f = this;
+    var rows = ['commission_district', 'commission_taluk', 'commission_override'].map(function (k) { return { key: k, value: String(Math.max(0, parseInt(f.elements[k].value, 10) || 0)) }; });
+    sb.from('app_settings').upsert(rows).then(function (r) {
+      if (r.error) return toast(friendly(r.error), true);
+      return sb.rpc('recalc_commissions').then(function (x) { if (x.error) toast(friendly(x.error), true); else { toast('Rates saved · unpaid commissions recalculated'); f.dataset.filled = ''; loadAll(); } });
+    });
+  });
+  if ($('adCmPay')) $('adCmPay').addEventListener('click', function () {
+    var ids = [].map.call(document.querySelectorAll('[data-cm-pick]:checked'), function (x) { return x.dataset.cmPick; });
+    if (!ids.length) return toast('Tick the due lines you have paid', true);
+    var total = (S.comm || []).filter(function (c) { return ids.indexOf(c.id) >= 0; }).reduce(function (t, c) { return t + c.amount; }, 0);
+    var ref = prompt('Mark ' + ids.length + ' line(s), ' + fmt(total) + ', as paid.\nUPI / bank reference (UTR):');
+    if (ref === null) return;
+    sb.from('commissions').update({ status: 'paid', paid_on: today(), paid_ref: ref.trim() || null, updated_at: new Date().toISOString() }).in('id', ids).eq('status', 'due')
+      .then(function (r) { if (r.error) toast(friendly(r.error), true); else { toast('Marked paid'); loadAll(); } });
+  });
+  if ($('adCmCsv')) $('adCmCsv').addEventListener('click', function () {
+    var bk = {}; S.bookings.forEach(function (k) { bk[k.id] = k; });
+    var q = function (v) { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var lines = [['partner', 'code', 'role', 'booking', 'trip', 'travel_date', 'for', 'persons', 'rate', 'amount', 'status', 'paid_on', 'paid_ref'].join(',')];
+    (S.comm || []).forEach(function (c) {
+      var p = byId(S.partners, c.partner_id) || {}, k = bk[c.booking_id] || {};
+      lines.push([p.name, p.partner_code, p.role, k.ref, k.trip_title, k.travel_date, c.kind, c.persons, c.rate, c.amount, c.status, c.paid_on, c.paid_ref].map(q).join(','));
+    });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = 'nandi-go-commissions-' + today() + '.csv'; a.click();
+  });
+  if ($('adCmRecalc')) $('adCmRecalc').addEventListener('click', function () {
+    sb.rpc('recalc_commissions').then(function (x) { if (x.error) toast(friendly(x.error), true); else { toast('Recalculated ' + x.data + ' bookings'); loadAll(); } });
+  });
 
   /* ---------------- Reviews ---------------- */
   var RV_PHOTO = SB_URL + '/storage/v1/object/public/review-photos/';

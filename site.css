@@ -2461,3 +2461,71 @@ body:has(.book-fab:not(.away)) .wa-fab{bottom:22px}
 .bk .bk-ferr,.bk-field .bk-ferr,small.bk-ferr{color:#B03A2E!important;font-size:12.5px!important;font-weight:500}
 .pm small.pf-ferr,.ng-form-grid .pf-ferr{color:#B03A2E!important}
 html.sp-lock .wa-fab{opacity:0;pointer-events:none}
+
+/* ===== Footer v2: contact band + even link columns ===== */
+.fband{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 48px}
+.fcard{display:flex;align-items:center;gap:14px;min-height:84px;padding:16px 20px;border-radius:18px;background:#ffffff08;border:1px solid #ffffff17;color:#E8ECE7;transition:border-color .25s,background .25s,transform .25s}
+.fcard:hover{border-color:#D4AF3780;background:#ffffff0d;transform:translateY(-2px)}
+.fcard-ic{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#E9CD72,#C9A13B);color:#12261E;box-shadow:0 8px 18px -10px #D4AF37}
+.fcard-ic .ic{width:20px;height:20px;color:#12261E!important}
+.fcard-tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fcard-tx small{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#93A098}
+.fcard-tx b{font-size:15.5px;font-weight:600;color:#F3F5F2;line-height:1.35;overflow-wrap:anywhere}
+.fcard .fc-nums{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px;overflow:hidden;font-variant-numeric:tabular-nums}
+.fcard .fc-nums span{white-space:nowrap;position:relative}
+.fcard .fc-nums i{display:none}
+.fcard .fc-nums span+i+span::before{content:"";position:absolute;left:-11px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--gold2)}
+.foot-grid{grid-template-columns:1.4fr 1fr 1fr 1fr!important;align-items:start}
+.foot-grid>div>a{display:block!important;margin:0 0 11px!important}
+@media(max-width:1000px){.fband{grid-template-columns:1fr;gap:10px}.foot-grid{grid-template-columns:1fr 1fr!important}}
+@media(max-width:560px){.foot-grid{grid-template-columns:1fr 1fr!important;gap:28px 18px}.foot-grid>div:first-child{grid-column:1/-1}.fcard{min-height:72px;padding:12px 14px}}
+
+/* ===== Pay your way strip (boarding-pass stub + real payment marks) ===== */
+.pw-wrap{display:flex;justify-content:center;margin-top:34px}
+.pw{display:flex;align-items:stretch;max-width:1200px;width:100%;border-radius:16px;overflow:hidden;position:relative}
+.pw-stub{display:flex;align-items:center;gap:10px;padding:12px 18px;flex:0 0 auto;position:relative}
+.pw-stub::after{content:"";position:absolute;right:0;top:10px;bottom:10px;border-right:2px dashed currentColor;opacity:.22}
+.pw-stub>.ic{width:20px;height:20px}
+.pw-stub div{display:flex;flex-direction:column;line-height:1.2}
+.pw-stub b{font:600 16px var(--serif);white-space:nowrap}
+.pw-stub small{display:inline-flex;align-items:center;gap:4px;font-size:11px;opacity:.75;white-space:nowrap;margin-top:3px}
+.pw-stub small svg{width:11px;height:11px}
+.pw-rail{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;padding:10px 0 10px 14px;-webkit-mask:linear-gradient(90deg,#000 92%,transparent);mask:linear-gradient(90deg,#000 92%,transparent)}
+.pw-list{list-style:none;margin:0;padding:0 8px 0 0;display:flex;gap:8px;flex:0 0 auto}
+.pw-dup{display:none}
+.pw-chip{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:10px;font-size:12.5px;font-weight:600;white-space:nowrap;background:#fff;color:#22302A;border:1px solid #E6DFCC}
+.pw-chip svg{width:18px;height:18px}
+.pw-chip .ic{width:16px;height:16px;color:#2F6B4F}
+.pw-upi{font:800 italic 15px/1 var(--sans);color:#3E3E3E;letter-spacing:-.02em}
+.pw-bhim{font:800 14px/1 var(--sans);color:#0B6B3A;letter-spacing:.04em}
+.pw-rupay{font:800 italic 15px/1 var(--sans);color:#1B3C82}.pw-rupay em{color:#F18F1E;font-style:italic}
+.pw-mc{display:inline-flex;width:28px;height:18px;position:relative}
+.pw-mc em{position:absolute;top:0;width:18px;height:18px;border-radius:50%}
+.pw-mc em:first-child{left:0;background:#EB001B}.pw-mc em:last-child{right:0;background:#F79E1B;mix-blend-mode:multiply;opacity:.95}
+.pw-light{background:#FFFDF7;border:1.5px dashed #D9C994;box-shadow:0 18px 36px -30px #1A3D2E}
+.pw-light .pw-stub{background:var(--forest);color:#F6E7B4}
+.pw-light .pw-stub::after{opacity:0}
+.pw-light .pw-stub small svg path{fill:#F6E7B4}
+.pw-dark{margin-top:44px;background:#ffffff06;border:1px dashed #ffffff26}
+.pw-dark .pw-stub{color:#F3F5F2}.pw-dark .pw-stub>.ic{color:var(--gold2)}
+.pw-dark .pw-stub small svg path{fill:#C9D3CC}
+.pw-dark .pw-chip{border-color:transparent}
+.pw-dark+.foot-end{margin-top:26px}
+.pw-compact{margin-top:6px;border:1px solid var(--line);background:#FBF9F3;border-radius:12px}
+.pw-compact .pw-stub{padding:8px 12px}.pw-compact .pw-stub b{font-size:13.5px}.pw-compact .pw-stub>.ic{width:16px;height:16px;color:var(--moss)}
+.pw-compact .pw-rail{padding:7px 0 7px 10px}.pw-compact .pw-chip{height:30px;padding:0 9px;font-size:11.5px}.pw-compact .pw-chip svg{width:15px;height:15px}
+/* gentle drift on narrow screens where the marks don't fit */
+.pw-moving .pw-dup{display:flex}
+.pw-moving .pw-rail .pw-list{animation:pw-drift 30s linear infinite}
+.pw-moving .pw-rail:hover .pw-list{animation-play-state:paused}
+@media(max-width:700px){.pw-stub small{display:none}}
+@keyframes pw-drift{to{transform:translateX(-100%)}}
+@media(max-width:560px){.pw-stub{padding:10px 12px}.pw-stub b{font-size:14px}.pw-stub>.ic{display:none}}
+@media(prefers-reduced-motion:reduce){.pw-rail .pw-list{animation:none}.pw-dup{display:none!important}.pw-rail{overflow-x:auto}}
+.pw-dark{margin-left:auto;margin-right:auto}
+/* Booking: partner code */
+.bk-ref-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.bk-ref-row input{flex:0 1 220px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.bk-ref-row em{font-style:normal;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.bk-ref-row em .ic{width:15px;height:15px}
+.bk-ref-row em.ok{color:#1F6B45}.bk-ref-row em.bad{color:#B03A2E}.bk-ref-row em.wait{color:#7A867E}

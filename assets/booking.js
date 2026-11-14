@@ -41,6 +41,7 @@
     '     <label class="bk-field"><span>WhatsApp number</span><input id="bkPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="10-digit mobile"></label>' +
     '     <label class="bk-field bk-wide"><span>Email <small>(for your booking confirmation)</small></span><input id="bkEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>' +
     '     <div class="bk-field bk-wide"><span>Who is travelling</span><div class="bk-guests" id="bkGuests"></div></div>' +
+    '     <label class="bk-field bk-wide bk-ref"><span>Partner code <small>(optional, if a Nandi Go partner helped you)</small></span><span class="bk-ref-row"><input id="bkRef" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="Example: NG-MYS"><em id="bkRefOk" aria-live="polite"></em></span></label>' +
     '     <div class="bk-total bk-wide"><div><span>Total amount</span><strong id="bkTotal"></strong><small id="bkTotalNote"></small></div><div class="bk-adv" id="bkAdvance"></div></div>' +
     '     <p class="bk-error bk-wide" id="bkError" role="alert" hidden></p>' +
     '     <div class="bk-tc bk-wide" id="bkTc">' +
@@ -69,7 +70,7 @@
     '     <p class="bk-error" id="bkError3" role="alert" hidden></p>' +
     '     <button type="button" class="btn btn-forest bk-submit" id="bkPayNow" disabled>' + I('card') + '<span id="bkPayNowText">Pay</span></button>' +
     '     <p class="bk-fine">' + I('lock') + '<span id="bkIdsFine">Pay unlocks when every traveller has an ID. Close this any time and finish later from My trips.</span></p>' +
-    '     <div class="paym paym-light paym-compact"><p class="paym-h"><svg class="ic"><use href="#i-lock"/></svg>All payment methods accepted <span>· Secured by Razorpay</span></p><ul class="paym-list"><li>UPI</li><li>Google Pay</li><li>PhonePe</li><li>Paytm</li><li>BHIM</li><li>Visa</li><li>Mastercard</li><li>RuPay</li><li>Amex</li><li>Net banking</li><li>Wallets</li><li>EMI</li></ul></div>' +
+    '     <div data-paystrip="compact"></div>' +
     '    </div>' +
     '   </div>' +
     '   <div id="bkDoneView" class="bk-done" hidden>' +
@@ -211,6 +212,7 @@
     box.innerHTML = html;
   }
   function renderStep2() {
+    if ($('bkRef') && !$('bkRef').value && refCode()) { $('bkRef').value = refCode(); checkRef(); }
     var t = state.trip, st = NG.style(state.style), b = batchObj(), p = priceNow();
     state.pax = Math.min(state.pax, maxPax());
     $('bkPicked').innerHTML = '<div><b>' + esc(t.title) + '</b><span>' + esc(st ? st.name : '') + (state.variant ? ' · ' + esc(t.variants.filter(function (v) { return v.id === state.variant; })[0].label) : '') + '</span>' +
@@ -242,6 +244,7 @@
 
   function go(step) {
     state.step = step;
+    if (step === 3 && window.NGPayStrip) NGPayStrip.render();
     $('bkStep1').hidden = step !== 1; form.hidden = step !== 2; $('bkIds').hidden = step !== 3; $('bkAuth').hidden = step !== 'auth';
     $('bkS1').classList.toggle('on', step === 1); $('bkS2').classList.toggle('on', step === 2 || step === 'auth'); $('bkS3').classList.toggle('on', step === 3);
     $('bkTitle').textContent = step === 1 ? 'Choose your dates' : step === 3 ? 'Traveller IDs' : step === 'auth' ? 'Almost there' : 'Your details';
@@ -276,7 +279,7 @@
 
   function cleanPhone(v) { var d = v.replace(/[^\d]/g, ''); if (d.length === 12 && d.indexOf('91') === 0) d = d.slice(2); if (d.length === 11 && d[0] === '0') d = d.slice(1); return d; }
 
-  /* Partner referral: links like ?ref=NG-DP-MYS-01 are remembered for 30 days on this device */
+  /* Partner referral: links like ?ref=NG-MYS or ?ref=NG-MYS-HUN are remembered for 30 days on this device */
   var REF_RE = /^NG-[A-Z0-9-]{2,20}$/;
   (function () {
     var m = /[?&]ref=([^&#]+)/i.exec(location.search), c = m ? decodeURIComponent(m[1]).trim().toUpperCase() : '';
@@ -285,6 +288,25 @@
   function refCode() {
     try { var r = JSON.parse(localStorage.getItem('ng_ref') || 'null'); if (r && REF_RE.test(r.c) && Date.now() - r.t < 30 * 864e5) return r.c; } catch (e) {}
     return null;
+  }
+  // The code box: filled from the partner's link, or typed by the customer; checked against approved partners
+  var refState = { code: null, checking: null };
+  function normRef(v) { v = String(v || '').toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, ''); if (v && v.indexOf('NG') === 0 && v[2] !== '-') v = 'NG-' + v.slice(2); return v; }
+  function checkRef() {
+    var el = $('bkRef'), out = $('bkRefOk'), v = normRef(el.value);
+    el.value = v; refState.code = null; out.className = ''; out.textContent = '';
+    if (!v) return Promise.resolve(null);
+    if (!REF_RE.test(v)) { out.className = 'bad'; out.textContent = 'Codes look like NG-MYS or NG-MYS-HUN'; return Promise.resolve(null); }
+    out.className = 'wait'; out.textContent = 'Checking…';
+    var p = NG.DB.rpc('partner_lookup', { p_code: v }).then(function (list) {
+      var x = list && list[0]; if (normRef(el.value) !== v) return refState.code;
+      if (!x) { out.className = 'bad'; out.textContent = 'This code is not active. You can leave it empty.'; return null; }
+      refState.code = x.code; out.className = 'ok';
+      out.innerHTML = I('check') + 'Referred by ' + esc(x.first_name) + ' · ' + esc(x.area) + (x.role === 'taluk' ? ' taluk' : '') + ' partner';
+      try { localStorage.setItem('ng_ref', JSON.stringify({ c: x.code, t: Date.now() })); } catch (e) {}
+      return x.code;
+    }, function () { out.className = ''; out.textContent = ''; refState.code = v; return v; });
+    refState.checking = p; return p;
   }
 
   $('bkNext').addEventListener('click', function () {
@@ -404,6 +426,12 @@
       if (at === $('bkTc')) { at.classList.add('shake'); setTimeout(function () { at.classList.remove('shake'); }, 600); }
       return;
     }
+    var rv = normRef($('bkRef').value);
+    if (rv && refState.code !== rv) {
+      if ($('bkRefOk').className === 'bad') { var why = $('bkRefOk').textContent; $('bkRefOk').textContent = ''; fieldErr($('bkRef'), why || 'Check the partner code, or leave it empty.'); return; }
+      checkRef().then(function (c) { if (c) form.requestSubmit(); else fieldErr($('bkRef'), 'Check the partner code, or leave it empty.'); });
+      return;
+    }
     $('bkError').hidden = true;
 
     var st = NG.style(state.style), b = batchObj(), p = priceNow();
@@ -428,7 +456,7 @@
       ref: state.ref, trip_id: t.id, trip_title: t.title, style_id: state.style, variant: variant ? variant.label : null,
       batch_id: b && b.live ? b.id : null, travel_date: b ? b.start : (state.date || null),
       travellers: state.pax, unit: p.unit, estimated_total: p.price * state.pax,
-      name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refCode(), guests: guests,
+      name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refState.code, guests: guests,
       terms_accepted_at: new Date().toISOString()
     };
     if (!window.NGAuth || !NGAuth.user()) { saveDraft(guests, phone, email); go('auth'); return; }
@@ -621,6 +649,8 @@
     startPayment();
   });
   $('bkTerms').addEventListener('change', function () { if (this.checked) $('bkError').hidden = true; });
+  $('bkRef').addEventListener('change', checkRef);
+  $('bkRef').addEventListener('input', function () { $('bkRefOk').textContent = ''; $('bkRefOk').className = ''; refState.code = null; });
   $('bkPayOpts').addEventListener('click', function (e) { var b = e.target.closest('[data-paykind]'); if (b) { state.payKind = b.dataset.paykind; renderPayOpts(); } });
 
   // Continue an unpaid booking (from My trips)

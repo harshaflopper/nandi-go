@@ -273,3 +273,9 @@ body.ad{background:var(--cream);min-height:100vh}
 
 .ad-box .ad-sub{margin:16px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8C6D1F}
 .ad-box .ad-muted{margin:12px 0 0;font-size:12.5px;color:#7A867E}
+.ad-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 12px;align-items:end}
+@media(max-width:760px){.ad-3{grid-template-columns:minmax(0,1fr)}}
+.ad-cmrates{margin-bottom:18px}.ad-cmrates h3{margin:0 0 10px;font-size:15px}
+.ad-cmrates label{display:block;font-size:12.5px;font-weight:600;margin-bottom:10px}
+.ad-cmrates input{display:block;width:100%;margin-top:6px}
+#adCmTable td small{display:block;color:#7A867E;font-size:12px;margin-top:2px}
