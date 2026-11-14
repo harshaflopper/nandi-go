@@ -12,7 +12,15 @@
   var SIZES = ['12 – 20 people', '21 – 40 people', '41 – 80 people', '80+ people'];
   var IDEAS = ['Coorg', 'Chikkamagaluru', 'Nandi Hills', 'Ooty', 'Goa', 'Kerala', 'Not sure yet'];
 
-  var TILES = [['bus', 'AC luxury bus', 'with experienced driver'], ['users', 'Team building', 'games, award night'], ['flame', 'Gala and DJ night', 'bonfire, candle-light dinner'], ['lotus', 'Wellness', 'yoga, meditation, massage']];
+  // Tile icons: Tabler Icons (MIT, tabler.io/icons), drawn inline so they can be bolder than the site's line icons
+  var TI = {
+    bus: '<path d="M6 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M18 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M4 17h-2v-11a1 1 0 0 1 1 -1h14a5 7 0 0 1 5 7v5h-2m-4 0h-8"/><path d="M16 5l1.5 7l4.5 0"/><path d="M2 10l15 0"/><path d="M7 5l0 5"/><path d="M12 5l0 5"/>',
+    team: '<path d="M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1"/><path d="M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M17 10h2a2 2 0 0 1 2 2v1"/><path d="M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M3 13v-1a2 2 0 0 1 2 -2h2"/>',
+    gala: '<path d="M9 21h6"/><path d="M12 16v5"/><path d="M12 5m-4 0a4 2 0 1 0 8 0a4 2 0 1 0 -8 0"/><path d="M8 5c0 6.075 1.79 11 4 11s4 -4.925 4 -11"/><path d="M19 3v2M18 4h2M4.5 9.5v2M3.5 10.5h2"/>',
+    yoga: '<path d="M12 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M4 20h4l1.5 -3"/><path d="M17 20l-1 -5h-5l1 -7"/><path d="M4 10l4 -1l4 -1l4 1.5l4 1.5"/>'
+  };
+  var TIc = function (k) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + TI[k] + '</svg>'; };
+  var TILES = [['bus', 'AC luxury bus', 'with experienced driver'], ['team', 'Team building', 'games, award night'], ['gala', 'Gala and DJ night', 'bonfire, candle-light dinner'], ['yoga', 'Wellness', 'yoga, meditation, massage']];
   mount.innerHTML =
     '<article class="cg">' +
       '<button type="button" class="cg-poster" data-corp-open aria-label="Corporate Getaway: see what is included">' +
@@ -22,7 +30,7 @@
       '<div class="cg-txt">' +
         '<span class="cg-k">' + I('building') + 'Corporate special package · 12+ members</span>' +
         '<h3>Corporate <em>Getaway</em></h3>' +
-        '<ul class="cg-tiles">' + TILES.map(function (t) { return '<li><span class="cg-ti">' + I(t[0]) + '</span><span><b>' + t[1] + '</b><small>' + t[2] + '</small></span></li>'; }).join('') + '</ul>' +
+        '<ul class="cg-tiles">' + TILES.map(function (t) { return '<li><span class="cg-ti">' + TIc(t[0]) + '</span><span><b>' + t[1] + '</b><small>' + t[2] + '</small></span></li>'; }).join('') + '</ul>' +
         '<div class="cg-cta"><button type="button" class="btn btn-gold cg-go" data-corp-open><span>Plan a team trip</span>' + I('arrow') + '</button>' +
         '<small>' + I('chat') + 'Plan and price on WhatsApp within a day</small></div>' +
       '</div>' +

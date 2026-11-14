@@ -2621,3 +2621,10 @@ html.sp-lock .wa-fab{opacity:0;pointer-events:none}
 @media(max-width:560px){.cp-cal{width:100%}}
 .pw-moving .pw-rail .pw-list{animation-duration:34s}
 @media(max-width:760px){.cg-poster{aspect-ratio:3/2}.cg-rib{display:none}.cg-ti{display:none}.cg-tiles li{padding:9px 11px}}
+/* Corporate tiles: gold medallion icons */
+.cg-ti{width:46px;height:46px;flex:0 0 46px;background:linear-gradient(145deg,#F3DA86,#C99B2E);color:#12261E;box-shadow:0 8px 18px -10px #D4AF37,inset 0 0 0 1px #ffffff55}
+.cg-ti svg{width:24px;height:24px}
+.cg-tiles li{gap:12px;padding:12px 14px}
+.cg-tiles li:hover .cg-ti{transform:rotate(-6deg) scale(1.05)}
+.cg-ti{transition:transform .25s}
+@media(max-width:760px){.cg-ti{display:grid!important;width:34px;height:34px;flex-basis:34px}.cg-ti svg{width:18px;height:18px}.cg-tiles li{gap:9px;padding:9px 10px}}
