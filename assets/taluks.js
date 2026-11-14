@@ -41,7 +41,8 @@
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var uid = 0;
 
-  window.NGTalukPicker = function (input, dSelect) {
+  window.NGTalukPicker = function (input, dSelect, opts) {
+    opts = opts || {};
     if (!input || input.dataset.picker) return;
     input.dataset.picker = '1';
     input.setAttribute('autocomplete', 'off');
@@ -57,7 +58,7 @@
     function placeholder() { input.placeholder = dSelect && dSelect.value ? 'Type or pick a taluk in ' + dSelect.value : 'Type your taluk (e.g. Gokak)'; }
     function options() {
       var d = dSelect && dSelect.value, out = [];
-      Object.keys(T).forEach(function (k) { if (!d || k === d) T[k].forEach(function (t) { out.push({ t: t, d: k }); }); });
+      Object.keys(T).forEach(function (k) { if (!d || k === d) T[k].forEach(function (t) { if (!(opts.hide && opts.hide(k, t))) out.push({ t: t, d: k }); }); });
       return out;
     }
     function render() {

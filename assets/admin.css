@@ -270,3 +270,6 @@ body.ad{background:var(--cream);min-height:100vh}
 .ad-gal-th{width:54px;height:96px;border-radius:10px;background:#ddd center/cover;flex:none}
 .ad-gal-b{flex:1;min-width:180px}.ad-gal-b b{display:block;font-size:15px}.ad-gal-b small{color:var(--muted)}
 @media(max-width:760px){.ad-gal-add{grid-template-columns:1fr}}
+
+.ad-box .ad-sub{margin:16px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8C6D1F}
+.ad-box .ad-muted{margin:12px 0 0;font-size:12.5px;color:#7A867E}

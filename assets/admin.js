@@ -28,6 +28,7 @@
   }
   function friendly(e) {
     var m = (e && (e.message || e.error_description)) || String(e);
+    if (/partners_one_per_taluk/.test(m)) return 'This taluk already has an approved Taluk Partner. Pause or end that partner first.';
     if (/partners_one_per_district/.test(m)) return 'This district already has an approved District Partner. Pause or end that partner first.';
     if (/partner_code/.test(m) && /duplicate|unique/i.test(m)) return 'That partner code is already used.';
     if (/bookings_phone_check|partners_phone_check/.test(m)) return 'Phone must be a 10-digit Indian mobile number.';
@@ -669,8 +670,12 @@
     var row = function (l, v) { return v ? '<div><dt>' + l + '</dt><dd>' + esc(v) + '</dd></div>' : ''; };
     return '<div class="ad-box"><h4>Application</h4><dl class="ad-dl">' + row('Applied', day(p.created_at.slice(0, 10))) + row('Age', p.age) + row('Current work', p.occupation) +
       row('Experience', p.experience) + row('Bookings per month', p.expected_bookings) + row('Instagram / Facebook', p.social) + row('Why select me', p.motivation) +
-      row('Agreed to terms', p.agreed ? 'Yes' : '') + '</dl></div>';
+      row('Agreed to terms', p.agreed ? 'Yes' : '') + '</dl>' +
+      (p.files && Object.keys(p.files).length ? '<h4 class="ad-sub">ID documents</h4><div class="ad-docs">' + APP_DOCS.map(function (d) { return p.files[d[0]] ? '<button type="button" class="btn btn-ghost btn-sm" data-kyc-file="' + esc(p.files[d[0]]) + '">' + d[1] + '</button>' : ''; }).join('') + '</div>'
+        : (p.source === 'website' && p.status === 'rejected' ? '<p class="ad-muted">ID documents were deleted when the application was rejected.</p>' : '')) +
+      '</div>';
   }
+  var APP_DOCS = [['photo', 'Passport-size photo'], ['aadhaar_front', 'Aadhaar front'], ['aadhaar_back', 'Aadhaar back'], ['other_id', 'Other ID']];
   var DOCS = [['passport', 'Passport photo'], ['full', 'Full-length photo'], ['selfie', 'Selfie with ID'], ['kyc', 'KYC document'], ['bank', 'Cheque / passbook']];
   function kycBlock(p) {
     var k = kycOf(p); if (!k) return '';
@@ -705,8 +710,13 @@
   function setPartner(id, patch) {
     var p = byId(S.partners, id);
     if ((patch.status === 'approved' || patch.status === 'active') && !p.partner_code) patch.partner_code = suggestCode(p.role, p.district, p.taluk);
+    // Rejected applicants: their ID documents are deleted, they are not kept
+    var drop = patch.status === 'rejected' && p.files ? Object.keys(p.files).map(function (k) { return p.files[k]; }) : [];
+    if (drop.length) patch.files = null;
     sb.from('partners').update(patch).eq('id', id).then(function (r) {
-      if (r.error) toast(friendly(r.error), true); else { toast('Partner updated'); loadAll(); }
+      if (r.error) { toast(friendly(r.error), true); return; }
+      if (drop.length) sb.storage.from('partner-kyc').remove(drop).then(function (x) { if (x.error) console.warn('Nandi Go: could not delete ID files', x.error); });
+      toast(drop.length ? 'Partner updated · ID documents deleted' : 'Partner updated'); loadAll();
     });
   }
   function suggestCode(role, district, taluk) {

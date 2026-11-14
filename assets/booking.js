@@ -69,6 +69,7 @@
     '     <p class="bk-error" id="bkError3" role="alert" hidden></p>' +
     '     <button type="button" class="btn btn-forest bk-submit" id="bkPayNow" disabled>' + I('card') + '<span id="bkPayNowText">Pay</span></button>' +
     '     <p class="bk-fine">' + I('lock') + '<span id="bkIdsFine">Pay unlocks when every traveller has an ID. Close this any time and finish later from My trips.</span></p>' +
+    '     <div class="paym paym-light paym-compact"><p class="paym-h"><svg class="ic"><use href="#i-lock"/></svg>All payment methods accepted <span>· Secured by Razorpay</span></p><ul class="paym-list"><li>UPI</li><li>Google Pay</li><li>PhonePe</li><li>Paytm</li><li>BHIM</li><li>Visa</li><li>Mastercard</li><li>RuPay</li><li>Amex</li><li>Net banking</li><li>Wallets</li><li>EMI</li></ul></div>' +
     '    </div>' +
     '   </div>' +
     '   <div id="bkDoneView" class="bk-done" hidden>' +
@@ -288,7 +289,7 @@
 
   $('bkNext').addEventListener('click', function () {
     var b = batchObj(), list = NG.batchesFor(state.trip.id, state.style).filter(function (x) { return x.status !== 'full'; });
-    if (list.length && !b) { $('bkError1').textContent = 'Please choose a batch date.'; $('bkError1').hidden = false; return; }
+    if (list.length && !b) { $('bkError1').textContent = 'Please choose a batch date.'; $('bkError1').hidden = false; fieldErr($('bkBatches'), 'Pick one of these dates.'); return; }
     $('bkError1').hidden = true;
     go(2);
     setTimeout(function () { $('bkName').focus({ preventScroll: true }); }, 30);
@@ -346,6 +347,7 @@
         key: o.key_id, order_id: o.order_id, amount: o.amount, currency: o.currency,
         name: 'Nandi Go', description: o.description, image: location.origin + '/logo.png',
         prefill: o.prefill, notes: { booking_ref: ref }, theme: { color: '#1A3D2E' },
+        config: { display: { blocks: { upi: { name: 'Pay using UPI (GPay, PhonePe, Paytm)', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: true } } },
         handler: function (resp) {
           payApi({ action: 'verify', razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature })
             .then(function (v) { v.ok ? doneState('paid', { amount: v.amount, ref: v.ref, ticket_key: v.ticket_key, balance: v.balance, kind: v.kind }) : doneState('pending', { msg: v.error || 'We could not confirm the payment.' }); },
@@ -362,6 +364,24 @@
   }
   $('bkRetry').addEventListener('click', startPayment);
 
+  // Point the customer at the exact field that needs fixing: red outline, message under it, scroll and focus.
+  function clearFieldErrs() {
+    bk.querySelectorAll('.bk-bad').forEach(function (n) { n.classList.remove('bk-bad'); n.removeAttribute('aria-invalid'); });
+    bk.querySelectorAll('.bk-ferr').forEach(function (n) { n.remove(); });
+  }
+  function fieldErr(el, msg) {
+    if (!el) return;
+    clearFieldErrs();
+    el.classList.add('bk-bad'); el.setAttribute('aria-invalid', 'true');
+    var m = document.createElement('small'); m.className = 'bk-ferr'; m.setAttribute('role', 'alert'); m.textContent = msg;
+    var host = el.closest('.bk-guest') || el;
+    host.insertAdjacentElement('afterend', m);
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    if (el.matches('input,select,textarea')) setTimeout(function () { el.focus({ preventScroll: true }); }, reduce ? 0 : 350);
+    var off = function () { clearFieldErrs(); el.removeEventListener('input', off); el.removeEventListener('change', off); };
+    el.addEventListener('input', off); el.addEventListener('change', off);
+  }
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var t = state.trip, phone = cleanPhone($('bkPhone').value), email = $('bkEmail').value.trim();
@@ -369,14 +389,21 @@
       return { name: row.querySelector('[data-g=name]').value.trim().slice(0, 80), age: row.querySelector('[data-g=age]').value === '' ? null : +row.querySelector('[data-g=age]').value };
     });
     var name = guests[0] ? guests[0].name : '';
-    var err = '';
-    var missing = guests.findIndex(function (g) { return !g.name; }), badAge = guests.findIndex(function (g) { return g.age === null || !(g.age >= 0 && g.age <= 110); });
-    if (missing >= 0) err = missing === 0 ? 'Please enter your full name.' : 'Please enter the name of traveller ' + (missing + 1) + '.';
-    else if (badAge >= 0) err = 'Please enter the age of ' + (badAge === 0 ? 'yourself' : 'traveller ' + (badAge + 1)) + '.';
-    else if (!/^[6-9]\d{9}$/.test(phone)) err = 'Please enter a valid 10-digit mobile number.';
-    else if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) err = 'Please check the email address.';
-    else if (!$('bkTerms').checked) err = $('bkTerms').disabled ? 'Please read the Terms & Conditions to the end, then tick to accept.' : 'Please tick the box to accept the Terms & Conditions.';
-    if (err) { $('bkError').textContent = err; $('bkError').hidden = false; if (/Terms/.test(err)) { var tb = $('bkTc'); tb.classList.add('shake'); setTimeout(function () { tb.classList.remove('shake'); }, 600); } return; }
+    clearFieldErrs();
+    var err = '', at = null, rows = $('bkGuests').querySelectorAll('.bk-guest');
+    var nameOk = function (n) { return n.replace(/[^A-Za-zಀ-೿ऀ-ॿ]/g, '').length >= 2; };
+    var missing = guests.findIndex(function (g) { return !nameOk(g.name); }), badAge = guests.findIndex(function (g) { return g.age === null || !(g.age >= 0 && g.age <= 110); });
+    if (missing >= 0) { err = guests[missing].name ? 'Please enter a proper name, as on the ID.' : (missing === 0 ? 'Please enter your full name.' : 'Please enter the name of traveller ' + (missing + 1) + '.'); at = rows[missing].querySelector('[data-g=name]'); }
+    else if (badAge >= 0) { err = 'Please enter the age of ' + (badAge === 0 ? 'yourself' : 'traveller ' + (badAge + 1)) + '.'; at = rows[badAge].querySelector('[data-g=age]'); }
+    else if (!/^[6-9]\d{9}$/.test(phone)) { err = 'Please enter a valid 10-digit mobile number.'; at = $('bkPhone'); }
+    else if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err = 'Please check the email address.'; at = $('bkEmail'); }
+    else if (!$('bkTerms').checked) { err = $('bkTerms').disabled ? 'Please read the Terms & Conditions to the end, then tick to accept.' : 'Please tick the box to accept the Terms & Conditions.'; at = $('bkTc'); }
+    if (err) {
+      $('bkError').textContent = err; $('bkError').hidden = false;
+      fieldErr(at, err);
+      if (at === $('bkTc')) { at.classList.add('shake'); setTimeout(function () { at.classList.remove('shake'); }, 600); }
+      return;
+    }
     $('bkError').hidden = true;
 
     var st = NG.style(state.style), b = batchObj(), p = priceNow();
@@ -512,7 +539,8 @@
   function syncPay() {
     var T = state.T; if (!T) { $('bkPayNow').disabled = true; return; }
     var done = T.guests.filter(function (_, i) { var k = kycOf(i); return k && k.status !== 'rejected'; }).length;
-    $('bkPayNow').disabled = done !== T.guests.length;
+    var locked = done !== T.guests.length;
+    $('bkPayNow').disabled = false; $('bkPayNow').classList.toggle('is-locked', locked); $('bkPayNow').setAttribute('aria-disabled', locked ? 'true' : 'false');
   }
   function loadIds() {
     $('bkIdList').innerHTML = '<p class="et-muted">Loading…</p>';
@@ -577,12 +605,21 @@
   bk.addEventListener('click', function (e) {
     if (e.target.closest('.et-file') && !$('bkConsent').checked) {
       e.preventDefault(); var c = $('bkConsent').closest('.et-consent'); c.classList.add('shake'); setTimeout(function () { c.classList.remove('shake'); }, 600);
-      $('bkError3').textContent = 'Please tick the consent box first.'; $('bkError3').hidden = false; return;
+      $('bkError3').textContent = 'Please tick the consent box first.'; $('bkError3').hidden = false; fieldErr(c, 'Please tick this box first.'); return;
     }
     if (e.target.closest('[data-auth-back]')) { go(2); return; }
     if (e.target.closest('[data-signout]')) { NGAuth.signOut().then(function () { renderStep2(); }); }
   });
-  $('bkPayNow').addEventListener('click', function () { startPayment(); });
+  $('bkPayNow').addEventListener('click', function () {
+    if (this.classList.contains('is-locked')) {
+      var row = bk.querySelector('#bkIdList .et-kp.todo, #bkIdList .et-kp.bad');
+      var who = row ? row.querySelector('.et-kp-who b').textContent : '';
+      $('bkError3').textContent = 'Please upload an ID for every traveller' + (who ? ', starting with ' + who : '') + '.'; $('bkError3').hidden = false;
+      if (row) fieldErr(row, 'Upload an ID for ' + who + ' to unlock payment.');
+      return;
+    }
+    startPayment();
+  });
   $('bkTerms').addEventListener('change', function () { if (this.checked) $('bkError').hidden = true; });
   $('bkPayOpts').addEventListener('click', function (e) { var b = e.target.closest('[data-paykind]'); if (b) { state.payKind = b.dataset.paykind; renderPayOpts(); } });
 

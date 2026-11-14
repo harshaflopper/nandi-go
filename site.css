@@ -2375,3 +2375,89 @@ html.bk-tc-lock{overflow:hidden}
  .cn-line.l2{font-size:34px}}
 @media(prefers-reduced-motion:reduce){.cn-grain{animation:none}}
 @media(max-width:900px){.cn-wrap{padding-top:96px}}
+
+/* Footer contact: label + value rows, icons pinned to the first line, both numbers on one line */
+.foot-grid .fc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.foot-grid .fc li{display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:12px;align-items:start}
+.foot-grid .fc li>.ic{width:18px;height:18px;margin-top:20px}
+.foot-grid .fc small{display:block;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#8C978F;margin-bottom:3px}
+.foot-grid .fc a,.foot-grid .fc span{display:inline;margin:0;font-size:14.5px;line-height:1.5;color:#E1E7E2}
+.foot-grid .fc a:hover{color:var(--gold2)}
+.fc-nums{display:flex!important;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:2px}
+.fc-nums a{white-space:nowrap;font-variant-numeric:tabular-nums}
+.fc-nums i{width:4px;height:4px;border-radius:50%;background:var(--gold2);opacity:.8}
+/* Booking: point at the field that needs fixing */
+.bk-bad{border-color:#C0392B!important;box-shadow:0 0 0 3px #C0392B26!important;border-radius:10px}
+.et-kp.bk-bad,.et-consent.bk-bad,.bk-tc.bk-bad{outline:2px solid #C0392B;outline-offset:3px}
+.bk-ferr{display:block;margin:6px 0 0;color:#B03A2E;font-size:12.5px;font-weight:500;line-height:1.4}
+.bk-ferr::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin:0 7px 1px 0}
+.bk-submit.is-locked{opacity:.55;cursor:not-allowed}
+/* How it works: stop-by-stop drive (JS adds .jr-js; without JS the old one-shot animation stays) */
+.jr.jr-js .jr-fill{width:var(--p,0%);transition:width 1s cubic-bezier(.45,.05,.2,1)}
+.jr.jr-js .jr-bus{left:var(--p,0%);transition:left 1s cubic-bezier(.45,.05,.2,1)}
+.jr.jr-js .jr-pin,.jr.jr-js.visible .jr-pin{background:#fff;color:var(--forest);transition:background .4s,color .4s,transform .4s,box-shadow .4s;transition-delay:.55s}
+.jr.jr-js .jr-stop.is-done .jr-pin{background:var(--forest);color:var(--gold2)}
+.jr.jr-js .jr-stop.is-now .jr-pin{background:var(--forest);color:var(--gold2);transform:scale(1.12);box-shadow:0 0 0 6px var(--white),0 0 0 10px #D4AF3755,0 16px 30px -14px #1A3D2E}
+.jr.jr-js .jr-stop.last.is-now .jr-pin{background:var(--gold);color:var(--forest)}
+.jr.jr-js .jr-stop{cursor:pointer}
+.jr.jr-js .jr-card{transition:transform .45s,box-shadow .45s,border-color .45s,background .45s,opacity .45s;transition-delay:.45s}
+.jr.jr-js .jr-stop:not(.is-now):not(.is-done) .jr-card{opacity:.6}
+.jr.jr-js .jr-stop.is-now .jr-card{opacity:1;transform:translateY(-6px);background:#fff;border-color:var(--gold);box-shadow:0 22px 40px -26px #1A3D2E}
+.jr.jr-js .jr-stop.is-now .jr-k{color:var(--forest)}
+.jr.jr-js.jr-arrived .jr-stop .jr-card{opacity:1}
+@media(max-width:700px){
+ .jr.jr-js .jr-fill{height:var(--py,0px);transition:height 1s cubic-bezier(.45,.05,.2,1)}
+ .jr.jr-js .jr-bus{left:50%!important;top:var(--py,0px);transition:top 1s cubic-bezier(.45,.05,.2,1)}
+ .jr.jr-js .jr-stop.is-now .jr-card{transform:translateX(4px)}}
+/* Floating WhatsApp button (sits above the Book button when that is showing) */
+.wa-fab{position:fixed;right:22px;bottom:22px;z-index:46;display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 20px 0 8px;border-radius:999px;background:#1FAF57;color:#fff;font:600 14.5px var(--sans);box-shadow:0 14px 30px -12px #0B3D2299,0 0 0 1px #ffffff26 inset;transition:transform .25s,box-shadow .25s,bottom .3s}
+.wa-fab:hover{transform:translateY(-2px);box-shadow:0 18px 34px -12px #0B3D22aa}
+.wa-fab-ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#ffffff26}
+.wa-fab-ic svg{width:22px;height:22px}
+body:has(.book-fab:not(.away)) .wa-fab{bottom:92px}
+html.bk-lock .wa-fab{opacity:0;pointer-events:none}
+@media(max-width:700px){.wa-fab{right:14px;bottom:14px;height:52px;padding:0 7px}.wa-fab-t{display:none}.wa-fab-ic{width:38px;height:38px;background:none}.wa-fab-ic svg{width:28px;height:28px}body:has(.book-fab:not(.away)) .wa-fab{bottom:80px}}
+@media print{.wa-fab{display:none}}
+/* Payment methods strip */
+.paym{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.paym-h{display:inline-flex;align-items:center;gap:8px;margin:0;font-size:13px;font-weight:600;letter-spacing:.02em}
+.paym-h .ic{width:15px;height:15px}
+.paym-h span{font-weight:500;opacity:.75}
+.paym-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:760px}
+.paym-list li{font-size:12.5px;font-weight:600;line-height:1;padding:8px 12px;border-radius:8px;white-space:nowrap}
+.paym-light .paym-h{color:var(--forest)}.paym-light .paym-h .ic{color:var(--moss)}
+.paym-light .paym-list li{background:#fff;color:#2B3A33;border:1px solid var(--line);box-shadow:0 4px 10px -8px #1A3D2E66}
+.paym-dark{border-top:1px solid #ffffff17;margin-top:40px;padding-top:28px}
+.paym-dark .paym-h{color:#E1E7E2}.paym-dark .paym-h .ic{color:var(--gold2)}
+.paym-dark .paym-list li{background:#ffffff0d;color:#D5DDD7;border:1px solid #ffffff1f}
+.paym-dark+.foot-end{margin-top:26px}
+.paym-compact{gap:8px;margin-top:4px}.paym-compact .paym-h{font-size:12px}.paym-compact .paym-list{gap:6px}.paym-compact .paym-list li{font-size:11.5px;padding:6px 9px}
+/* Partner application: ID uploads */
+.pf-id-why{margin:-4px 0 14px;font-size:12.5px;line-height:1.6;color:#5E6B63}
+.pf-id-why a{color:#2F6B4F;text-decoration:underline}
+.pf-file{position:relative}
+.pf-file small{display:block;font-weight:500;color:#7A867E;margin-top:2px}
+.pf-file input[type=file]{position:absolute;inset:auto 0 0 0;width:100%;height:52px;opacity:0;cursor:pointer;margin:0;padding:0;min-height:0;z-index:1}
+.pf-file-ui{display:flex;align-items:center;gap:10px;margin-top:7px;min-height:52px;padding:0 14px;border:1.5px dashed #CDBF97;border-radius:10px;background:#FBF9F3;color:#3E5247;font-weight:600;font-size:13px;transition:.2s}
+.pf-file-ui .ic{width:18px;height:18px;color:#8C6D1F;flex:0 0 auto}
+.pf-file-ui em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pf-file:hover .pf-file-ui,.pf-file input:focus-visible+.pf-file-ui{border-color:#2F6B4F;background:#F2F7F3}
+.pf-file.has .pf-file-ui{border-style:solid;border-color:#2F6B4F;background:#E6F1EC;color:#1A3D2E}
+.pf-bad input:not([type=checkbox]):not([type=file]),.pf-bad select,.pf-bad textarea,.pf-bad .pf-file-ui{border-color:#C0392B!important;box-shadow:0 0 0 3px #C0392B26}
+.ng-check.pf-bad{outline:2px solid #C0392B;outline-offset:4px;border-radius:6px}
+.pf-ferr{display:block;margin-top:6px;color:#B03A2E;font-size:12px;font-weight:600}
+.fc-nums{overflow:hidden;column-gap:18px!important}
+.fc-nums i{display:none}
+.fc-nums a+i+a{position:relative}
+.fc-nums a+i+a::before{content:"";position:absolute;left:-11px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--gold2)}
+.pp-contact .fc-nums a+i+a::before{background:#8C6D1F}
+@media(min-width:1101px){.foot-grid{grid-template-columns:1.2fr .85fr .85fr 1.45fr}}
+/* bus parks just before the stop it has reached, so the stop icon stays visible */
+.jr.jr-js .jr-bus{left:calc(var(--p,0%) - 46px)}
+body:has(.book-fab:not(.away)) .wa-fab{bottom:22px}
+@media(max-width:700px){
+ .jr.jr-js .jr-bus{left:50%!important;top:calc(var(--py,0px) - 46px)}
+ body:has(.book-fab:not(.away)) .wa-fab{bottom:14px}}
+.bk .bk-ferr,.bk-field .bk-ferr,small.bk-ferr{color:#B03A2E!important;font-size:12.5px!important;font-weight:500}
+.pm small.pf-ferr,.ng-form-grid .pf-ferr{color:#B03A2E!important}
+html.sp-lock .wa-fab{opacity:0;pointer-events:none}

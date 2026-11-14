@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/><link rel="apple-touch-icon" href="logo.png"/>
-<link rel="stylesheet" href="site.css?v=87"/>
+<link rel="stylesheet" href="site.css?v=88"/>
 </head>
 <body class="pk-page">
 
@@ -98,12 +98,14 @@
    </div>
    <div>
     <h4>Contact</h4>
-    <a href="tel:+919513646646"><svg class="ic"><use href="#i-phone"/></svg>+91 9513 646 646</a>
-    <a href="tel:+919071228822"><svg class="ic"><use href="#i-phone"/></svg>+91 9071 22 88 22</a>
-    <a href="mailto:nandigo2026@gmail.com"><svg class="ic"><use href="#i-mail"/></svg>nandigo2026@gmail.com</a>
-    <p><svg class="ic"><use href="#i-building"/></svg>#72 Nagarabhavi, Vijayanagar, Bengaluru 560040</p>
+    <ul class="fc">
+     <li><svg class="ic"><use href="#i-phone"/></svg><div><small>Call / WhatsApp</small><span class="fc-nums"><a href="tel:+919513646646">+91 9513 646 646</a><i aria-hidden="true"></i><a href="tel:+919071228822">+91 9071 22 88 22</a></span></div></li>
+     <li><svg class="ic"><use href="#i-mail"/></svg><div><small>Email</small><a href="mailto:nandigo2026@gmail.com">nandigo2026@gmail.com</a></div></li>
+     <li><svg class="ic"><use href="#i-building"/></svg><div><small>Corporate office</small><span>#72 Nagarabhavi, Vijayanagar, Bengaluru 560040</span></div></li>
+    </ul>
    </div>
   </div>
+  <div class="paym paym-dark"><p class="paym-h"><svg class="ic"><use href="#i-lock"/></svg>All payment methods accepted <span>· Secured by Razorpay</span></p><ul class="paym-list"><li>UPI</li><li>Google Pay</li><li>PhonePe</li><li>Paytm</li><li>BHIM</li><li>Visa</li><li>Mastercard</li><li>RuPay</li><li>Amex</li><li>Net banking</li><li>Wallets</li><li>EMI</li></ul></div>
   <div class="foot-end">
    <span>© <span id="year"></span> Nandi Go. All rights reserved.</span>
    <span><a href="privacy.html">Privacy policy</a> · <a href="terms.html">Terms, cancellation &amp; refunds</a></span>
@@ -118,12 +120,13 @@
 <script src="assets/tripui.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="assets/auth.js?v=1"></script>
-<script src="assets/booking.js?v=49"></script>
+<script src="assets/booking.js?v=50"></script>
 <script src="assets/trip.js?v=2"></script>
 <script src="assets/reviews.js?v=15"></script>
 <script>
 document.getElementById('menuBtn').addEventListener('click',function(){var o=document.getElementById('navlinks').classList.toggle('open');this.setAttribute('aria-expanded',o)});
 var y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();
 </script>
+<script src="assets/wa.js?v=1" defer></script>
 </body>
 </html>
