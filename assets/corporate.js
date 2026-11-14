@@ -14,15 +14,13 @@
 
   mount.innerHTML =
     '<article class="cg">' +
-      '<button type="button" class="cg-photo" data-corp-open aria-label="Corporate Getaway: see what is included"><img src="assets/styles/style-corporate.webp?v=1" srcset="assets/styles/style-corporate-sm.webp?v=1 720w, assets/styles/style-corporate.webp?v=1 1280w" sizes="(max-width: 900px) 100vw, 55vw" alt="Corporate Getaway — Your team, your tour" loading="lazy" width="1280" height="853"></button>' +
+      '<button type="button" class="cg-thumb" data-corp-open aria-label="Corporate Getaway: see what is included"><img src="assets/styles/style-corporate-sm.webp?v=1" alt="" loading="lazy" width="720" height="480"></button>' +
       '<div class="cg-txt">' +
-        '<span class="cg-k">' + I('building') + 'For companies · minimum 12 members</span>' +
+        '<span class="cg-k">' + I('building') + 'For companies · 12+ members</span>' +
         '<h3>Corporate <em>Getaway</em></h3>' +
-        '<p>Team outings, offsites and award nights, planned end to end. You tell us the team size and dates; we handle the bus, stay, food, activities and evenings.</p>' +
-        '<ul class="cg-tags">' + ['AC luxury bus', 'Team building', 'Gala and DJ night', 'Yoga and wellness', 'Photography'].map(function (t) { return '<li>' + I('check') + t + '</li>'; }).join('') + '</ul>' +
-        '<div class="cg-cta"><button type="button" class="btn btn-gold" data-corp-open>' + I('sparkle') + 'Plan a team trip</button>' +
-        '<a class="cg-call" href="tel:+919513646646">' + I('phone') + '9513 646 646</a></div>' +
+        '<p>Team outings and offsites, planned end to end: bus, stay, team building, gala and DJ night, wellness, photography.</p>' +
       '</div>' +
+      '<button type="button" class="btn btn-gold cg-go" data-corp-open>Plan a team trip' + I('arrow') + '</button>' +
     '</article>';
 
   var box = document.createElement('div');
@@ -30,11 +28,12 @@
   box.innerHTML =
     '<div class="cp-card" role="dialog" aria-modal="true" aria-labelledby="cpTitle">' +
       '<button type="button" class="sp-close cp-x" data-corp-close aria-label="Close">' + I('close') + '</button>' +
-      '<div class="cp-hero"><img src="assets/styles/style-corporate.webp?v=1" alt="" width="1280" height="853"></div>' +
+      '<div class="cp-head">' +
+        '<img src="assets/styles/style-corporate-sm.webp?v=1" alt="" width="720" height="480">' +
+        '<div><span class="cg-k">' + I('building') + 'Corporate Getaway · 12+ members</span><h3 id="cpTitle">Your company, <em>your tour</em></h3></div>' +
+      '</div>' +
       '<div class="cp-body">' +
-        '<span class="cg-k">' + I('building') + 'Corporate special package</span>' +
-        '<h3 id="cpTitle">Your company, your tour</h3>' +
-        '<p class="cp-lead">Every corporate trip is built for your team: pick a place, the days and the add-ons below, and we send a plan and a per-person price on WhatsApp. Minimum 12 members.</p>' +
+        '<p class="cp-lead">Pick a place, the days and the add-ons you want. We send a plan and a per-person price on WhatsApp.</p>' +
         '<div class="cp-groups">' + GROUPS.map(function (g) {
           return '<section class="cp-g"><h4>' + I(g[0]) + g[1] + '</h4><ul>' + g[2].map(function (x) { return '<li>' + I('check') + x + '</li>'; }).join('') + '</ul></section>';
         }).join('') + '</div>' +
@@ -45,7 +44,7 @@
             '<label>Your name<input name="name" maxlength="60" autocomplete="name" placeholder="Full name"></label>' +
             '<label>Team size<select name="size"><option value="">Choose</option>' + SIZES.map(function (s) { return '<option>' + s + '</option>'; }).join('') + '</select></label>' +
             '<label>Preferred month<input name="month" type="month"></label>' +
-            '<label class="cp-wide">Where would you like to go?<select name="place"><option value="">Choose</option>' + IDEAS.map(function (s) { return '<option>' + s + '</option>'; }).join('') + '</select></label>' +
+            '<label class="cp-two">Where would you like to go?<select name="place"><option value="">Choose</option>' + IDEAS.map(function (s) { return '<option>' + s + '</option>'; }).join('') + '</select></label>' +
             '<label class="cp-wide">Anything else? <small>(optional)</small><textarea name="note" rows="2" maxlength="400" placeholder="Days, budget per person, award night, conference hall…"></textarea></label>' +
           '</div>' +
           '<p class="cp-err" id="cpErr" role="alert" hidden></p>' +
