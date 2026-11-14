@@ -24,11 +24,13 @@
     el.innerHTML = '<div class="pw-stub"><svg class="ic"><use href="#i-lock"/></svg><div><b>Pay your way</b><small>' + I('rzp') + 'Secured by Razorpay</small></div></div>' +
       '<div class="pw-rail"><ul class="pw-list">' + chips() + '</ul><ul class="pw-list pw-dup" aria-hidden="true">' + chips() + '</ul></div>';
   }
-  // Drift slowly only when the marks don't all fit on one line
+  // Always drift slowly. Add copies of the marks until the rail is full twice over, so the loop has no gap.
   function fit(el) {
-    var rail = el.querySelector('.pw-rail'), list = el.querySelector('.pw-list'); if (!rail || !list) return;
-    el.classList.remove('pw-moving');
-    if (list.scrollWidth > rail.clientWidth + 2) el.classList.add('pw-moving');
+    var rail = el.querySelector('.pw-rail'), first = el.querySelector('.pw-list'); if (!rail || !first) return;
+    rail.querySelectorAll('.pw-dup').forEach(function (d) { d.remove(); });
+    var w = first.scrollWidth || 1, n = Math.max(1, Math.ceil((rail.clientWidth * 2) / w));
+    for (var i = 0; i < n; i++) { var d = first.cloneNode(true); d.classList.add('pw-dup'); d.setAttribute('aria-hidden', 'true'); rail.appendChild(d); }
+    el.classList.add('pw-moving');
   }
   function all() {
     document.querySelectorAll('[data-paystrip]').forEach(function (el) { if (!el.classList.contains('pw')) render(el); fit(el); });
