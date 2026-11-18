@@ -2639,3 +2639,39 @@ html.sp-lock .wa-fab{opacity:0;pointer-events:none}
 .pk-offer{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-bottom:8px;padding:6px 12px;border-radius:99px;font:800 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(90deg,#B3261E,#E0452B)}
 .pk-offer[hidden]{display:none}
 .pk-offer .ic{width:14px;height:14px}
+
+/* ===== Registered and verified: passport stamps above the footer ===== */
+.tv{position:relative;padding:clamp(56px,7vw,88px) 0;background:#F6F0E1;overflow:hidden}
+.tv::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;background:
+ repeating-radial-gradient(circle at 12% 120%,transparent 0 22px,#D9CBA4 22px 23px),
+ repeating-radial-gradient(circle at 92% -20%,transparent 0 26px,#E2D6B6 26px 27px)}
+.tv::after{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:repeating-linear-gradient(90deg,#1A3D2E 0 18px,transparent 18px 26px);opacity:.12}
+.tv-in{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:clamp(28px,4vw,60px);align-items:center}
+.tv-k{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8C6D1F}
+.tv-k .ic{width:16px;height:16px}
+.tv-copy h2{margin:10px 0 12px;font:600 clamp(28px,3.2vw,42px)/1.12 var(--serif);color:var(--forest)}
+.tv-copy h2 em{font-style:italic;color:#B08A2E}
+.tv-copy p{margin:0 0 18px;color:#4A5B52;font-size:15px;line-height:1.7;max-width:46ch}
+.tv-points{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.tv-points li{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--forest);background:#fff;border:1px solid #E3D8BC;border-radius:99px;padding:7px 12px}
+.tv-points .ic{width:14px;height:14px;color:#1F6B45}
+/* the passport page */
+.tv-page{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 26px;padding:28px;border-radius:20px;background:#FFFDF6;border:1px solid #E6DCC2;box-shadow:0 30px 60px -40px #3B2F12,inset 0 0 0 6px #FFFDF6,inset 0 0 0 7px #EADFC4}
+.tv-page::before{content:"PASSPORT · NANDI GO";position:absolute;top:10px;right:18px;font:700 10px/1 'Courier New',monospace;letter-spacing:.3em;color:#C9B98F}
+.tv-stamp{position:relative;margin:0;display:flex;justify-content:center;transform:rotate(var(--tilt));transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.tv-stamp:hover{transform:rotate(0) scale(1.04)}
+.tv-ring{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:260px;padding:14px 16px 12px;border:2.5px solid var(--ink);border-radius:16px;background:#fff;box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 5.5px color-mix(in srgb,var(--ink) 55%,transparent)}
+.tv-top,.tv-bot{font:700 10.5px/1.2 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-align:center}
+.tv-bot{font-weight:600;letter-spacing:.08em;font-size:10px;opacity:.85}
+.tv-ring img{display:block;width:auto;max-width:100%;height:58px;object-fit:contain}
+.tv-stamp.is-round .tv-ring img{height:78px;border-radius:50%}
+.tv-ok{position:absolute;right:-6px;bottom:-10px;display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:2px solid #1F6B45;border-radius:6px;background:#F4FBF6;color:#1F6B45;font:800 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;transform:rotate(-8deg);box-shadow:0 6px 12px -8px #1F6B45}
+.tv-ok .ic{width:12px;height:12px}
+.tv-fine{grid-column:1/-1;margin:6px 0 0;font-size:11.5px;color:#8A8F86;text-align:center}
+/* press-in animation */
+.tv-wait .tv-stamp{opacity:0;transform:rotate(var(--tilt)) scale(1.6)}
+.tv-go .tv-stamp{animation:tv-press .55s cubic-bezier(.3,1.4,.5,1) var(--d) both}
+@keyframes tv-press{0%{opacity:0;transform:rotate(calc(var(--tilt) * 2)) scale(1.6)}60%{opacity:1;transform:rotate(var(--tilt)) scale(.94)}100%{opacity:1;transform:rotate(var(--tilt)) scale(1)}}
+@media(max-width:900px){.tv-in{grid-template-columns:minmax(0,1fr)}.tv-copy{text-align:center}.tv-copy p{margin-left:auto;margin-right:auto}.tv-points{justify-content:center}}
+@media(max-width:560px){.tv-page{gap:18px 12px;padding:22px 12px 26px}.tv-ring{padding:10px 8px 9px;gap:6px}.tv-ring img{height:40px}.tv-stamp.is-round .tv-ring img{height:60px}.tv-top,.tv-bot{font-size:9px;letter-spacing:.08em}.tv-ok{font-size:9px;padding:3px 6px}}
+footer{margin-top:0}
