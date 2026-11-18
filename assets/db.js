@@ -52,6 +52,7 @@
         style_prices: t.style_prices || {}, note: t.note, group: t.id === 'chikka-retreat' ? 'retreat' : (old.group || 'tour'),
         from: t.variants && t.variants.length ? Math.min.apply(null, t.variants.map(function (v) { return v.price; })) : t.price,
         place: t.place || '', photos: t.photos || [], amenities: t.amenities || [], days: t.days, nights: t.nights, badge: t.badge, min_age: t.min_age, advance_per_person: t.advance_per_person || null,
+        offer_on: !!t.offer_on, offer_text: t.offer_text || '', gst_percent: Number(t.gst_percent) || 0, start_point: t.start_point || 'Bengaluru',
         highlights: t.highlights || [], inclusions: t.inclusions || [], exclusions: t.exclusions || [], itinerary: t.itinerary || [], pickups: t.pickups || [], carry: t.carry || []
       };
     });

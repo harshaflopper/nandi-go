@@ -144,6 +144,15 @@
     var a = t && t.advance_per_person ? t.advance_per_person * persons : Math.max(500 * persons, Math.ceil(total / 2));
     return Math.min(total, a);
   };
+  /* GST: a trip can add GST on top of its price (e.g. 5%). Rounded per traveller, same as the payment server. */
+  var withGst = function (t, unitPrice) { var g = t && t.gst_percent ? Number(t.gst_percent) : 0; return g ? Math.round(unitPrice * (100 + g) / 100) : unitPrice; };
+  /* Offer ribbon: the trip's own text, or "N% OFF" worked out from the crossed-out price */
+  var offerLabel = function (t) {
+    if (!t || !t.offer_on) return '';
+    if (t.offer_text) return t.offer_text;
+    if (t.was && t.price && t.was > t.price) return Math.round((t.was - t.price) * 100 / t.was) + '% OFF';
+    return 'Special offer';
+  };
   var BATCHES = []; /* filled from the database by db.js */
   var batchesFor = function (tripId, styleId) {
     var t = todayISO();
@@ -152,7 +161,7 @@
   };
 
   window.NG = { TRIPS: TRIPS, STYLES: STYLES, BATCHES: BATCHES, DESTINATIONS: DESTINATIONS, ORIGIN: ORIGIN, POSTCARDS: POSTCARDS,
-    style: style, priceFor: priceFor, advanceFor: advanceFor, batchesFor: batchesFor,
+    style: style, priceFor: priceFor, advanceFor: advanceFor, withGst: withGst, offerLabel: offerLabel, batchesFor: batchesFor,
     trip: function (id) { return TRIPS.filter(function (t) { return t.id === id; })[0]; },
     dest: function (id) { return DESTINATIONS.filter(function (d) { return d.id === id; })[0]; },
     fmt: fmt, todayISO: todayISO,

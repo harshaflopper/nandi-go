@@ -2628,3 +2628,14 @@ html.sp-lock .wa-fab{opacity:0;pointer-events:none}
 .cg-tiles li:hover .cg-ti{transform:rotate(-6deg) scale(1.05)}
 .cg-ti{transition:transform .25s}
 @media(max-width:760px){.cg-ti{display:grid!important;width:34px;height:34px;flex-basis:34px}.cg-ti svg{width:18px;height:18px}.cg-tiles li{gap:9px;padding:9px 10px}}
+
+/* ===== Offer ribbon (admin: Trips → Offer ribbon) ===== */
+.tc-ph{position:relative;overflow:hidden}
+.tc-offer{position:absolute;top:0;right:0;width:120px;height:120px;overflow:hidden;pointer-events:none;z-index:2}
+.tc-offer span{position:absolute;top:24px;right:-38px;width:170px;transform:rotate(45deg);text-align:center;padding:7px 0;font:800 12px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(90deg,#B3261E,#E0452B 50%,#B3261E);box-shadow:0 6px 14px -6px #0009;border-top:1px solid #ffffff40;border-bottom:1px solid #00000030;text-shadow:0 1px 0 #0004}
+.tc-offer span::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff55 50%,transparent 70%);background-size:250% 100%;animation:tc-offer-shine 3.6s ease-in-out infinite}
+@keyframes tc-offer-shine{0%,60%{background-position:150% 0}100%{background-position:-50% 0}}
+@media(prefers-reduced-motion:reduce){.tc-offer span::after{animation:none}}
+.pk-offer{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-bottom:8px;padding:6px 12px;border-radius:99px;font:800 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(90deg,#B3261E,#E0452B)}
+.pk-offer[hidden]{display:none}
+.pk-offer .ic{width:14px;height:14px}

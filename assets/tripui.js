@@ -37,13 +37,14 @@
     return '<article class="tc" tabindex="0" role="link" aria-label="' + esc(t.title) + '" data-trip-open="' + esc(t.id) + '" data-style="' + esc(styleId || '') + '">' +
       '<div class="tc-ph" style="background-image:url(\'' + esc(ph) + '\')">' +
         (t.badge ? '<span class="tc-ribbon">' + esc(t.badge) + '</span>' : '') +
-        '<div class="tc-tags"><span class="tc-ex">Ex-Bengaluru</span>' + (durationLabel(t) ? '<span class="tc-dur">' + esc(durationLabel(t)) + '</span>' : '') + '</div>' +
+        (NG.offerLabel(t) ? '<span class="tc-offer"><span>' + esc(NG.offerLabel(t)) + '</span></span>' : '') +
+        '<div class="tc-tags"><span class="tc-ex">Ex-' + esc(t.start_point || 'Bengaluru') + '</span>' + (durationLabel(t) ? '<span class="tc-dur">' + esc(durationLabel(t)) + '</span>' : '') + '</div>' +
       '</div>' +
       '<div class="tc-body">' +
         (am.length ? '<div class="tc-icons">' + am.map(function (a) { return '<span title="' + a.label + '">' + I(a.icon) + '<small>' + a.label + '</small></span>'; }).join('') + '</div>' : '') +
         '<h3>' + esc(t.title) + '</h3>' +
         '<p class="tc-place">' + I('pin') + esc(place(t)) + '</p>' +
-        '<div class="tc-price"><b>' + NG.fmt(pr.price) + '</b>' + (was ? '<del>' + NG.fmt(was) + '</del><span class="tc-save">Save ' + NG.fmt(was - pr.price) + '</span>' : '') + '<small>per ' + pr.unit + '</small></div>' +
+        '<div class="tc-price"><b>' + NG.fmt(pr.price) + '</b>' + (was ? '<del>' + NG.fmt(was) + '</del><span class="tc-save">Save ' + NG.fmt(was - pr.price) + '</span>' : '') + '<small>per ' + pr.unit + (t.gst_percent ? ' + ' + t.gst_percent + '% GST · ' + NG.fmt(NG.withGst(t, pr.price)) + ' with GST' : '') + '</small></div>' +
         '<div class="tc-dates">' + (dates.length ? dates.slice(0, 3).map(function (b) { return '<span>' + dShort(b.start) + '</span>'; }).join('') + (dates.length > 3 ? '<em>+' + (dates.length - 3) + ' more</em>' : '') : '<em class="tc-req">Dates on request</em>') + '</div>' +
         '<div class="tc-acts"><a class="tc-ic" href="' + waLink(t) + '" target="_blank" rel="noopener" aria-label="Ask on WhatsApp">' + I('chat') + '</a>' +
           '<button type="button" class="tc-ic" data-trip-share="' + esc(t.id) + '" aria-label="Share">' + I('send') + '</button>' +

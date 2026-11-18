@@ -32,7 +32,7 @@
     $('pkTitle').textContent = trip.title;
     var chips = [];
     if (T.durationLabel(trip)) chips.push(['clock', T.durationLabel(trip)]);
-    chips.push(['bus', 'Ex-Bengaluru']);
+    chips.push(['bus', 'Ex-' + (trip.start_point || 'Bengaluru')]);
     if (trip.min_age != null) chips.push(['users', 'Min age ' + trip.min_age + '+']);
     chips.push(['shield', 'No hidden charges']);
     if (trip.badge) chips.push(['sparkle', trip.badge]);
@@ -80,7 +80,9 @@
     $('pkPrice').textContent = NG.fmt(pr.price); $('pkBarPrice').textContent = NG.fmt(pr.price);
     $('pkWas').textContent = was ? NG.fmt(was) : ''; $('pkSave').textContent = was ? 'Save ' + NG.fmt(was - pr.price) : '';
     $('pkSave').hidden = !was;
-    $('pkUnit').textContent = 'per ' + pr.unit + (trip.variants ? ' · from' : ''); $('pkBarUnit').textContent = ' / ' + pr.unit;
+    $('pkUnit').textContent = 'per ' + pr.unit + (trip.variants ? ' · from' : '') + (trip.gst_percent ? ' + ' + trip.gst_percent + '% GST (' + NG.fmt(NG.withGst(trip, pr.price)) + ' with GST)' : '');
+    var off = NG.offerLabel(trip), ob = document.getElementById('pkOffer');
+    if (ob) { ob.hidden = !off; ob.innerHTML = off ? I('sparkle') + esc(off) : ''; } $('pkBarUnit').textContent = ' / ' + pr.unit;
     $('pkStyles').innerHTML = '<span class="pk-lab">Travel style</span>' + visibleStyles().map(function (s) {
       return '<button type="button" aria-pressed="' + (s.id === style) + '" data-pkstyle="' + s.id + '">' + esc(s.name) + '</button>';
     }).join('');

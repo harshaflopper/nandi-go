@@ -420,7 +420,8 @@
       var sp = t.style_prices || {};
       return '<tr' + (t.active ? '' : ' class="ad-off"') + '>' +
         '<td data-l="Trip"><div class="ad-trip"><span style="background-image:url(\'' + esc(tripImg(t.image)) + '\')"></span><div><b>' + esc(t.title) + '</b><small>' + esc((NG.dest(t.dest) || {}).name || t.dest || '') + ' · ' + esc(t.duration || '') + '</small></div></div></td>' +
-        '<td data-l="Price">' + fmt(t.price) + '<small>per ' + t.unit + '</small>' + Object.keys(sp).map(function (k) { return '<small>' + esc(styleName(k)) + ': ' + fmt(sp[k]) + '</small>'; }).join('') + '</td>' +
+        '<td data-l="Price">' + fmt(t.price) + (t.was ? ' <del>' + fmt(t.was) + '</del>' : '') + '<small>per ' + t.unit + (Number(t.gst_percent) ? ' + ' + t.gst_percent + '% GST' : '') + '</small>' + Object.keys(sp).map(function (k) { return '<small>' + esc(styleName(k)) + ': ' + fmt(sp[k]) + '</small>'; }).join('') + '</td>' +
+        '<td data-l="Offer ribbon"><button type="button" class="ad-offer-tg' + (t.offer_on ? ' on' : '') + '" data-trip-offer="' + esc(t.id) + '" aria-pressed="' + !!t.offer_on + '" title="Turn the offer ribbon on or off">' + (t.offer_on ? esc(NG.offerLabel(t) || 'On') : 'Off') + '</button></td>' +
         '<td data-l="Batches">' + n + ' upcoming</td>' +
         '<td data-l="On website">' + (t.active ? pill('active') : '<span class="ad-pill s-closed">Hidden</span>') + '</td>' +
         '<td class="ad-td-act"><button class="btn btn-ghost btn-sm" data-trip-batches="' + esc(t.id) + '">Batches</button>' +
@@ -437,6 +438,9 @@
       var row = byId(S.styles, x.dataset.styleToggle) || {}, hide = !row.hidden;
       if (hide && !confirm('Hide "' + styleName(x.dataset.styleToggle) + '" from the website? Its batches stay saved.')) return;
       sb.from('styles').update({ hidden: hide }).eq('id', x.dataset.styleToggle).then(function (r) { if (r.error) toast(friendly(r.error), true); else { toast(hide ? 'Style hidden' : 'Style shown'); loadAll(); } });
+    } else if ((x = e.target.closest('[data-trip-offer]'))) {
+      var to = byId(S.trips, x.dataset.tripOffer);
+      sb.from('trips').update({ offer_on: !to.offer_on }).eq('id', to.id).then(function (r) { if (r.error) toast(friendly(r.error), true); else { toast(to.offer_on ? 'Offer ribbon removed from ' + to.title : 'Offer ribbon added to ' + to.title); loadAll(); } });
     } else if ((x = e.target.closest('[data-trip-toggle]'))) {
       var t = byId(S.trips, x.dataset.tripToggle);
       sb.from('trips').update({ active: !t.active }).eq('id', t.id).then(function (r) { if (r.error) toast(friendly(r.error), true); else { toast(t.active ? 'Trip hidden' : 'Trip shown'); loadAll(); } });
@@ -460,6 +464,10 @@
         NG.STYLES.map(function (x) { return '<label>' + esc(x.name) + '<input name="sp_' + x.id + '" type="number" min="0" value="' + esc(sp[x.id] == null ? '' : sp[x.id]) + '"/></label>'; }).join('') + '</div></div>' +
       '<div class="ad-2"><label>Old price, shown crossed out (₹)<input name="was" type="number" min="0" value="' + esc(t.was == null ? '' : t.was) + '"/></label>' +
       '<label>Offer note<input name="note" maxlength="80" placeholder="Save Rs 500 with early bird" value="' + esc(t.note || '') + '"/></label></div>' +
+      '<div class="ad-offerbox"><label class="ad-check"><input type="checkbox" name="offer_on"' + (t.offer_on ? ' checked' : '') + '/> <b>Show the red offer ribbon</b> on its card and trip page</label>' +
+      '<div class="ad-2"><label>Ribbon text <small>(leave empty for automatic, e.g. "29% OFF" from the crossed-out price)</small><input name="offer_text" maxlength="22" placeholder="29% OFF · Diwali offer · Save ₹4,500" value="' + esc(t.offer_text || '') + '"/></label>' +
+      '<label>GST added on top (%) <small>(0 = price already final. Puri: 5)</small><input name="gst_percent" type="number" min="0" max="28" step="0.5" value="' + esc(t.gst_percent == null ? 0 : t.gst_percent) + '"/></label></div>' +
+      '<label>Trip starts from <small>(shown as "Ex-…" on the card)</small><input name="start_point" maxlength="40" placeholder="Bengaluru" value="' + esc(t.start_point || 'Bengaluru') + '"/></label></div>' +
       '<div class="ad-field"><span>Photos <small>(one link per line; the first is the main photo on cards — posters work well)</small></span><div class="ad-photo"><span id="mPhotoPrev" style="background-image:url(\'' + esc(tripImg((t.photos || [])[0] || t.image)) + '\')"></span>' +
         '<div><textarea name="photos" id="mPhotos" rows="3" placeholder="assets/trips/poster-goa.webp">' + esc(((t.photos && t.photos.length) ? t.photos : (t.image ? [t.image] : [])).join('\n')) + '</textarea><label class="btn btn-ghost btn-sm ad-upload">Upload photos<input type="file" id="mUpload" accept="image/jpeg,image/png,image/webp" multiple hidden/></label><small id="mUpMsg">JPG, PNG or WebP, up to 5 MB each.</small></div></div></div>' +
       '<label>Description<textarea name="description" rows="3">' + esc(t.description || '') + '</textarea></label>' +
@@ -493,7 +501,8 @@
         });
         var photos = lines(v.photos), pair = function (l) { var k = l.indexOf('|'); return k < 0 ? [l.trim(), ''] : [l.slice(0, k).trim(), l.slice(k + 1).trim()]; };
         var row = { title: v.title.trim(), dest: v.dest || null, duration: v.duration.trim() || null, price: +v.price || 0, unit: v.unit,
-          style_prices: prices, was: v.was === '' ? null : +v.was, note: v.note.trim() || null, image: photos[0] || null, photos: photos,
+          style_prices: prices, was: v.was === '' ? null : +v.was, note: v.note.trim() || null,
+          offer_on: !!v.offer_on, offer_text: v.offer_text.trim() || null, gst_percent: Math.max(0, Math.min(28, +v.gst_percent || 0)), start_point: v.start_point.trim() || 'Bengaluru', image: photos[0] || null, photos: photos,
           description: v.description.trim() || null, perks: lines(v.perks), stops: lines(v.stops), variants: vars.length ? vars : null,
           place: v.place.trim() || null, days: v.days === '' ? null : +v.days, nights: v.nights === '' ? null : +v.nights, min_age: v.min_age === '' ? null : +v.min_age,
           badge: v.badge.trim() || null, advance_per_person: v.advance_per_person === '' ? null : +v.advance_per_person, id_types: (function () { var x = ['passport', 'aadhaar', 'dl', 'voter'].filter(function (k) { return v['id_' + k]; }); return x.length ? x : null; })(), amenities: Object.keys(NGTrip.AMENITIES).filter(function (k) { return v['am_' + k]; }),

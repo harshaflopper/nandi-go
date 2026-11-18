@@ -235,9 +235,10 @@
   function renderTotal() {
     var p = priceNow();
     $('bkPax').textContent = state.pax;
-    $('bkTotal').textContent = NG.fmt(p.price * state.pax);
-    $('bkTotalNote').textContent = NG.fmt(p.price) + ' × ' + state.pax + ' ' + unitWord(p.unit, state.pax);
-    var tot = p.price * state.pax, adv = NG.advanceFor(state.trip, tot, guestCount());
+    var unitP = NG.withGst(state.trip, p.price), g = state.trip.gst_percent;
+    $('bkTotal').textContent = NG.fmt(unitP * state.pax);
+    $('bkTotalNote').textContent = (g ? NG.fmt(p.price) + ' + ' + g + '% GST = ' + NG.fmt(unitP) : NG.fmt(p.price)) + ' × ' + state.pax + ' ' + unitWord(p.unit, state.pax);
+    var tot = unitP * state.pax, adv = NG.advanceFor(state.trip, tot, guestCount());
     $('bkAdvance').innerHTML = '<b>Advance ' + NG.fmt(adv) + '</b><span>' + (tot > adv ? 'Balance ' + NG.fmt(tot - adv) + ' due 3 days before the trip' : 'Paid in full now') + '</span>';
     $('bkPayText').textContent = 'Continue';
   }
@@ -441,7 +442,7 @@
     var rows = [
       ['Reference', state.ref], ['Trip', t.title + (variant ? ' — ' + variant.label : '')], ['Travel style', st ? st.name : ''], ['Date', when],
       ['Travellers', state.pax + ' ' + unitWord(p.unit, state.pax) + ': ' + guests.map(function (g) { return g.name + ' (' + g.age + ')'; }).join(', ')],
-      ['Total', NG.fmt(p.price * state.pax)], ['Booked by', name], ['WhatsApp', phone]
+      ['Total', NG.fmt(NG.withGst(t, p.price) * state.pax) + (t.gst_percent ? ' incl. ' + t.gst_percent + '% GST' : '')], ['Booked by', name], ['WhatsApp', phone]
     ];
     if (email) rows.push(['Email', email]);
     if (refCode()) rows.push(['Partner code', refCode()]);
@@ -455,14 +456,14 @@
     var row = {
       ref: state.ref, trip_id: t.id, trip_title: t.title, style_id: state.style, variant: variant ? variant.label : null,
       batch_id: b && b.live ? b.id : null, travel_date: b ? b.start : (state.date || null),
-      travellers: state.pax, unit: p.unit, estimated_total: p.price * state.pax,
+      travellers: state.pax, unit: p.unit, estimated_total: NG.withGst(t, p.price) * state.pax,
       name: name.slice(0, 80), phone: phone, email: email || null, partner_code: refState.code, guests: guests,
       terms_accepted_at: new Date().toISOString()
     };
     if (!window.NGAuth || !NGAuth.user()) { saveDraft(guests, phone, email); go('auth'); return; }
     var submitBtn = form.querySelector('[type=submit]');
     if (submitBtn) submitBtn.disabled = true;
-    state.paidRef = state.ref; state.payTotal = p.price * state.pax;
+    state.paidRef = state.ref; state.payTotal = NG.withGst(t, p.price) * state.pax;
     var save = NGAuth.client.from('bookings').insert(row).then(function (r) { if (r.error) throw new Error(r.error.message); });
     save.then(function () { if (submitBtn) submitBtn.disabled = false; go(3); loadIds(); }, function (e) {
       console.warn('Nandi Go: booking not saved', e);
