@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png"/>
 <link rel="stylesheet" href="site.css?v=97"/>
-<link rel="stylesheet" href="assets/admin.css?v=48"/>
+<link rel="stylesheet" href="assets/admin.css?v=49"/>
 </head>
 <body class="ad">
 
@@ -67,8 +67,25 @@
   <section class="ad-panel" data-panel="trips" hidden>
    <div class="ad-head"><div><span class="ad-label">Catalogue</span><h2>Trips &amp; styles</h2></div>
     <button class="btn btn-gold btn-sm" id="adNewTrip">Add trip</button></div>
+   <h3 class="ad-sub">Home page boarding pass</h3>
+   <p class="ad-hint">The big "boarding pass" section on the home page (menu link: Coffee Retreat). Pick which trip it shows and edit its texts. Price, crossed-out price, offer note, inclusions and batches come from that trip and its Batches. Wrap a word in *stars* to make it gold italic.</p>
+   <form class="ad-card ad-bp ad-form" id="adBpForm">
+    <div class="ad-2"><label>Trip shown on the boarding pass<select name="trip_id" id="adBpTrip"></select></label>
+     <label>Menu link text <small>(top menu, with the gold dot)</small><input name="nav_label" maxlength="24" placeholder="Coffee Retreat"/></label></div>
+    <div class="ad-2"><label>Small line above the heading<input name="kicker" maxlength="40" placeholder="First batch launch"/></label>
+     <label>Section heading<input name="heading" maxlength="80" placeholder="Your boarding pass to the *coffee hills*"/></label></div>
+    <label>Intro line under the heading<textarea name="intro" rows="2" maxlength="260"></textarea></label>
+    <div class="ad-offerbox"><label class="ad-check"><input type="checkbox" name="banner_on"/> <b>Show the gold banner</b> at the top of the pass</label>
+     <label>Banner text<input name="banner" maxlength="60" placeholder="Early bird: ₹500 off the first 10 bookings"/></label></div>
+    <div class="ad-4"><label>From code<input name="from_code" maxlength="4" placeholder="BLR"/></label><label>From city<input name="from_name" maxlength="24" placeholder="Bengaluru"/></label>
+     <label>To code<input name="to_code" maxlength="4" placeholder="CKM"/></label><label>To city<input name="to_name" maxlength="24" placeholder="Chikkamagaluru"/></label></div>
+    <div class="ad-2"><label>Title on the pass <small>(empty = the trip name)</small><input name="title" maxlength="70" placeholder="Chikkamagalur *Coffee Estate Retreat*"/></label>
+     <label>Seats per batch <small>(Group box; empty hides it)</small><input name="seats" type="number" min="1" max="200"/></label></div>
+    <p class="ad-hint">Duration comes from the trip's days and nights. The line under the batches shows that trip's advance amount automatically.</p>
+    <div class="ad-actions"><button class="btn btn-forest btn-sm" type="submit">Save boarding pass</button><a class="btn btn-ghost btn-sm" href="index.html#retreat" target="_blank" rel="noopener">View on website</a></div>
+   </form>
    <h3 class="ad-sub">Travel styles</h3>
-   <p class="ad-hint">The four ways to travel shown on the home page. Hide one to take it off the website; its batches stay saved.</p>
+   <p class="ad-hint">The four ways to travel shown on the home page. "Edit text" changes the line shown under the price on the boarding pass. Hide one to take it off the website; its batches stay saved.</p>
    <div class="ad-styles" id="adStyles"></div>
    <h3 class="ad-sub">Trips</h3>
    <p class="ad-hint">Every trip can run batches in any style. Hide a trip to take it off the website without deleting it.</p>
@@ -123,7 +140,7 @@
    <div class="ad-head"><div><span class="ad-label">District &amp; Taluk partners</span><h2>Commissions</h2></div>
     <div class="ad-actions"><button class="btn btn-ghost btn-sm" id="adCmRecalc">Recalculate</button><button class="btn btn-ghost btn-sm" id="adCmCsv">Download CSV</button><button class="btn btn-gold btn-sm" id="adCmPay">Mark ticked as paid</button></div></div>
    <p class="ad-hint">Every booking made with a partner code creates commission lines here on its own. A Taluk Partner's booking also gives a share to the District Partner of that district. A line becomes <b>Due</b> when the booking is marked Completed and fully paid; cancelling the booking cancels it. Pay partners by UPI or bank, tick the lines, then press "Mark ticked as paid" and enter the UTR.</p>
-   <form class="ad-card ad-cmrates" id="adCmRates">
+   <form class="ad-card ad-cmrates ad-form" id="adCmRates">
     <h3>Rates per traveller (₹)</h3>
     <div class="ad-3"><label>District Partner, own bookings<input name="commission_district" type="number" min="0" max="5000" inputmode="numeric"/></label>
     <label>Taluk Partner, own bookings<input name="commission_taluk" type="number" min="0" max="5000" inputmode="numeric"/></label>
@@ -205,5 +222,5 @@
 <script src="assets/map-data.js?v=32"></script>
 <script src="assets/tripui.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="assets/admin.js?v=50"></script>
+<script src="assets/admin.js?v=51"></script>
 </body></html>

@@ -90,17 +90,18 @@
       sb.from('feedback').select('*').order('created_at', { ascending: false }).limit(500),
       sb.from('traveller_kyc').select('*'),
       sb.from('gallery_videos').select('*').order('sort').order('created_at'),
-      sb.from('commissions').select('*').order('created_at', { ascending: false })
+      sb.from('commissions').select('*').order('created_at', { ascending: false }),
+      sb.from('site_settings').select('key,value')
     ]).then(function (r) {
       var bad = r.filter(function (x) { return x.error; })[0];
       if (bad) { toast(friendly(bad.error), true); return; }
       S.batches = r[0].data; S.bookings = r[1].data; S.partners = r[2].data;
       S.settings = {}; r[3].data.forEach(function (x) { S.settings[x.key] = x.value; });
-      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data; S.tkyc = r[9].data; S.gallery = r[10].data; S.comm = r[11].data;
+      S.trips = r[4].data; S.styles = r[5].data; S.kyc = r[6].data; S.reviews = r[7].data; S.feedback = r[8].data; S.tkyc = r[9].data; S.gallery = r[10].data; S.comm = r[11].data; S.site = {}; (r[12].data || []).forEach(function (x) { S.site[x.key] = x.value || {}; });
       renderAll();
     });
   }
-  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); renderSecret(); renderGallery(); renderCommissions(); }
+  function renderAll() { renderOverview(); fillBatchFilters(); renderBatches(); fillBookingFilters(); renderBookings(); renderPartners(); renderSettings(); renderCatalog(); renderReviews(); renderSecret(); renderGallery(); renderCommissions(); renderPass(); }
 
   /* ---------------- Overview ---------------- */
   function renderOverview() {
@@ -411,6 +412,7 @@
       var n = S.batches.filter(function (b) { return b.style_id === x.id && b.status !== 'completed' && b.end_date >= today(); }).length;
       return '<div class="ad-stylebox' + (hidden ? ' off' : '') + '"><span class="ad-style-ph" style="background-image:url(\'' + esc(x.photo.replace('w=1000', 'w=300')) + '\')"></span>' +
         '<div><b>' + esc(x.name) + '</b><small>' + esc(x.line) + '</small><small>' + n + ' upcoming batch' + (n === 1 ? '' : 'es') + '</small></div>' +
+        '<button class="btn btn-ghost btn-sm" data-style-text="' + x.id + '">Edit text</button>' +
         '<button class="btn btn-' + (hidden ? 'gold' : 'ghost') + ' btn-sm" data-style-toggle="' + x.id + '">' + (hidden ? 'Show on website' : 'Hide') + '</button></div>';
     }).join('');
     var q = $('adTrSearch').value.trim().toLowerCase();
@@ -434,7 +436,12 @@
   $('adNewTrip').addEventListener('click', function () { editTrip(null); });
   document.addEventListener('click', function (e) {
     var x;
-    if ((x = e.target.closest('[data-style-toggle]'))) {
+    if ((x = e.target.closest('[data-style-text]'))) {
+      var sid = x.dataset.styleText, srow = byId(S.styles, sid) || {}, sdef = NG.style(sid) || {};
+      modal('Text for ' + styleName(sid),
+        '<label>Shown under the price on the home page boarding pass<textarea name="blurb" rows="3" maxlength="220">' + esc(srow.blurb || sdef.blurb || '') + '</textarea></label>',
+        function (v) { return sb.from('styles').update({ blurb: v.blurb.trim() || null }).eq('id', sid); });
+    } else if ((x = e.target.closest('[data-style-toggle]'))) {
       var row = byId(S.styles, x.dataset.styleToggle) || {}, hide = !row.hidden;
       if (hide && !confirm('Hide "' + styleName(x.dataset.styleToggle) + '" from the website? Its batches stay saved.')) return;
       sb.from('styles').update({ hidden: hide }).eq('id', x.dataset.styleToggle).then(function (r) { if (r.error) toast(friendly(r.error), true); else { toast(hide ? 'Style hidden' : 'Style shown'); loadAll(); } });
@@ -781,6 +788,31 @@
         if (!confirm('Delete ' + p.name + ' permanently? Usually "Terminated" or "Rejected" is better.')) return null;
         return sb.from('partners').delete().eq('id', p.id);
       });
+  }
+
+  /* ---------------- Home page boarding pass ---------------- */
+  var BP_KEYS = ['trip_id', 'nav_label', 'kicker', 'heading', 'intro', 'banner', 'from_code', 'from_name', 'to_code', 'to_name', 'title', 'seats'];
+  function renderPass() {
+    var f = $('adBpForm'); if (!f || f.dataset.dirty) return;
+    var C = (S.site && S.site.boarding_pass) || {};
+    $('adBpTrip').innerHTML = S.trips.map(function (t) { return '<option value="' + esc(t.id) + '">' + esc(t.title) + (t.active ? '' : ' (hidden)') + '</option>'; }).join('');
+    BP_KEYS.forEach(function (k) { if (f.elements[k]) f.elements[k].value = C[k] == null ? '' : C[k]; });
+    if (!C.trip_id) f.elements.trip_id.value = 'chikka-retreat';
+    f.elements.banner_on.checked = C.banner_on !== false;
+  }
+  if ($('adBpForm')) {
+    $('adBpForm').addEventListener('input', function () { this.dataset.dirty = '1'; });
+    $('adBpForm').addEventListener('submit', function (e) {
+      e.preventDefault(); var f = this, v = {};
+      BP_KEYS.forEach(function (k) { v[k] = String(f.elements[k].value || '').trim(); });
+      v.seats = v.seats ? Math.max(1, Math.min(200, parseInt(v.seats, 10) || 0)) : null;
+      v.from_code = v.from_code.toUpperCase(); v.to_code = v.to_code.toUpperCase();
+      v.banner_on = f.elements.banner_on.checked;
+      sb.from('site_settings').upsert({ key: 'boarding_pass', value: v, updated_at: new Date().toISOString() }).then(function (r) {
+        if (r.error) return toast(friendly(r.error), true);
+        delete f.dataset.dirty; toast('Boarding pass saved · live on the website'); loadAll();
+      });
+    });
   }
 
   /* ---------------- Commissions ---------------- */

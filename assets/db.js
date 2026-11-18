@@ -40,9 +40,11 @@
 
   NG.catalogReady = Promise.all([
     get('trips?select=*&active=eq.true&order=sort.asc,title.asc'),
-    get('styles?select=id,hidden,sort&order=sort.asc'),
-    NG.refreshBatches()
+    get('styles?select=id,hidden,sort,blurb&order=sort.asc'),
+    NG.refreshBatches(),
+    get('site_settings?select=key,value').catch(function () { return []; })
   ]).then(function (r) {
+    NG.SITE = {}; (r[3] || []).forEach(function (x) { NG.SITE[x.key] = x.value || {}; });
     var trips = r[0].map(function (t) {
       var old = NG.trip && NG.trip(t.id) || {};
       return {
@@ -57,7 +59,7 @@
       };
     });
     if (trips.length) replace(NG.TRIPS, trips);
-    r[1].forEach(function (s) { var st = NG.style(s.id); if (st) { st.hidden = s.hidden; st.sort = s.sort; } });
+    r[1].forEach(function (s) { var st = NG.style(s.id); if (st) { st.hidden = s.hidden; st.sort = s.sort; if (s.blurb) st.blurb = s.blurb; } });
     NG.STYLES.sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
     fire('ng:catalog');
   }).catch(function (e) { console.warn('Nandi Go: using the offline trip list', e); fire('ng:catalog'); });

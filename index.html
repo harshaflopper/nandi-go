@@ -19,7 +19,7 @@
   <nav id="navlinks" class="navlinks" aria-label="Main">
    <a href="#home">Destinations</a>
    <a href="#trips">Trips</a>
-   <a href="#retreat" class="nav-new"><span class="dot" aria-hidden="true"></span>Coffee Retreat</a>
+   <a href="#retreat" class="nav-new"><span class="dot" aria-hidden="true"></span><span id="bpNav">Coffee Retreat</span></a>
    <a href="#how">How it works</a>
    <a href="#reviews">Reviews</a>
    <a href="#gallery">Gallery</a>
@@ -85,22 +85,22 @@
 <section class="section retreat" id="retreat">
  <div class="container">
   <div class="section-head reveal">
-   <span class="kicker"><svg class="ic"><use href="#i-sparkle"/></svg>First batch launch</span>
-   <h2>Your boarding pass to the <em>coffee hills</em></h2>
-   <p>One night and two days inside a Chikkamagalur coffee estate — waterfalls, bonfire, sunrise yoga and Malnad food. Choose your travel style and batch.</p>
+   <span class="kicker"><svg class="ic"><use href="#i-sparkle"/></svg><span id="bpKicker">First batch launch</span></span>
+   <h2 id="bpHeading">Your boarding pass to the <em>coffee hills</em></h2>
+   <p id="bpIntro">One night and two days inside a Chikkamagalur coffee estate — waterfalls, bonfire, sunrise yoga and Malnad food. Choose your travel style and batch.</p>
   </div>
   <div class="ticket reveal" id="ticket">
    <div class="tk-main">
-    <div class="tk-top"><span>Nandi Go · Boarding pass</span><span class="tk-new"><svg class="ic"><use href="#i-sparkle"/></svg>Early bird: ₹500 off the first 10 bookings</span></div>
+    <div class="tk-top"><span>Nandi Go · Boarding pass</span><span class="tk-new" id="bpBanner"><svg class="ic"><use href="#i-sparkle"/></svg><span>Early bird: ₹500 off the first 10 bookings</span></span></div>
     <div class="tk-route">
-     <div class="tk-city"><b>BLR</b><span>Bengaluru</span></div>
+     <div class="tk-city"><b id="bpFromCode">BLR</b><span id="bpFromName">Bengaluru</span></div>
      <div class="tk-line" aria-hidden="true"><svg class="ic"><use href="#i-bus"/></svg></div>
-     <div class="tk-city to"><b>CKM</b><span>Chikkamagaluru</span></div>
+     <div class="tk-city to"><b id="bpToCode">CKM</b><span id="bpToName">Chikkamagaluru</span></div>
     </div>
-    <h3 class="tk-title">Chikkamagalur <em>Coffee Estate Retreat</em></h3>
+    <h3 class="tk-title" id="bpTitle">Chikkamagalur <em>Coffee Estate Retreat</em></h3>
     <div class="tk-meta">
-     <div><span>Duration</span><b>1 Night · 2 Days</b></div>
-     <div><span>Group</span><b>20 seats per batch</b></div>
+     <div><span>Duration</span><b id="bpDur">1 Night · 2 Days</b></div>
+     <div><span>Group</span><b id="bpSeats">20 seats per batch</b></div>
      <div><span>Payment</span><b>Advance online</b></div>
      <div><span>Pay with</span><b>UPI · Card · Net banking</b></div>
     </div>
@@ -302,10 +302,11 @@
 <script src="assets/icons.js?v=52"></script>
 <script src="assets/data.js?v=53"></script>
 <script src="assets/map-data.js?v=32"></script>
-<script src="assets/db.js?v=53"></script>
+<script src="assets/db.js?v=54"></script>
 <script>
 (function () {
   var NG = window.NG, I = window.NGIcon, $ = function (id) { return document.getElementById(id); };
+  var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
 
   /* Header + menu */
   var header = $('siteHeader');
@@ -341,7 +342,9 @@
   var tkStyle = null;
   function shortRange(b) { var o = { day: 'numeric', month: 'short' }; var s = new Date(b.start + 'T00:00:00'), e = new Date(b.end + 'T00:00:00'); return s.toLocaleDateString('en-IN', o) + ' – ' + e.toLocaleDateString('en-IN', o) + ' ' + e.getFullYear(); }
   function renderTicket() {
-    var t = NG.trip('chikka-retreat'); if (!t) return;
+    var C = (NG.SITE && NG.SITE.boarding_pass) || {};
+    var t = NG.trip(C.trip_id || 'chikka-retreat') || NG.trip('chikka-retreat'); if (!t) return;
+    applyPass(C, t);
     var styles = NG.STYLES.filter(function (x) { return !x.hidden; });
     if (!styles.some(function (x) { return x.id === tkStyle; })) tkStyle = (styles.filter(function (x) { return NG.batchesFor(t.id, x.id).length; })[0] || styles[0] || {}).id;
     var st = NG.style(tkStyle) || {}, pr = NG.priceFor(t, tkStyle);
@@ -357,7 +360,29 @@
         (full ? '<button type="button" class="btn btn-ghost light btn-sm" disabled>Batch full</button>'
               : '<button type="button" class="btn btn-gold btn-sm" data-book="' + t.id + '" data-style="' + tkStyle + '" data-batch="' + b.id + '">' + I('ticket') + 'Book this batch</button>') + '</div>';
     }).join('') + (list.length ? '' : '<p class="tk-stub-foot">No ' + (st.name || '') + ' dates yet. <button type="button" class="tk-ask" data-book="' + t.id + '" data-style="' + tkStyle + '">Request a date</button></p>') +
-      '<p class="tk-stub-foot">Pay in full online. Your seats are confirmed on payment.</p><div class="tk-barcode" aria-hidden="true"></div>';
+      '<p class="tk-stub-foot">' + payLine(t) + '</p><div class="tk-barcode" aria-hidden="true"></div>';
+  }
+  /* Boarding pass texts come from Admin → Trips & styles → Home page boarding pass. *word* = gold italic. */
+  function rich(x) { return esc(x || '').replace(/\*([^*]+)\*/g, '<em>$1</em>'); }
+  function setTxt(id, v) { var el = $(id); if (el && v != null && v !== '') el.textContent = v; }
+  function setRich(id, v) { var el = $(id); if (el && v) el.innerHTML = rich(v); }
+  function payLine(t) {
+    var a = t.advance_per_person ? NG.fmt(t.advance_per_person) + ' per traveller' : '₹500 per traveller or 50%, whichever is higher';
+    return 'Pay an advance of ' + a + ' online to confirm your seats, or pay in full. Balance is due 3 days before the trip.';
+  }
+  function applyPass(C, t) {
+    setTxt('bpNav', C.nav_label); setTxt('bpKicker', C.kicker); setRich('bpHeading', C.heading); setTxt('bpIntro', C.intro);
+    var bn = $('bpBanner'); if (bn) { bn.hidden = C.banner_on === false || !C.banner; if (C.banner) bn.querySelector('span').textContent = C.banner; }
+    setTxt('bpFromCode', C.from_code); setTxt('bpFromName', C.from_name); setTxt('bpToCode', C.to_code); setTxt('bpToName', C.to_name);
+    setRich('bpTitle', C.title || t.title);
+    var dur = window.NGTrip && NGTrip.durationLabel ? NGTrip.durationLabel(t) : t.duration; setTxt('bpDur', dur || t.duration);
+    var sb = $('bpSeats'); if (sb) { sb.parentNode.hidden = !C.seats; if (C.seats) sb.textContent = C.seats + ' seats per batch'; }
+    var tr = $('trail');
+    if (tr && t.id !== 'chikka-retreat') {
+      var ics = ['bus', 'temple', 'sunrise', 'camera', 'boat', 'mountain'];
+      tr.hidden = !(t.itinerary && t.itinerary.length);
+      tr.innerHTML = (t.itinerary || []).map(function (d, i) { return '<li><div class="tr-ic">' + I(ics[i % ics.length]) + '</div><div><b>Day ' + (i + 1) + ' · ' + esc(d.title) + '</b><span>' + esc(d.text || '') + '</span></div></li>'; }).join('');
+    }
   }
   $('tkTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tkstyle]'); if (b) { tkStyle = b.dataset.tkstyle; renderTicket(); } });
   renderTicket();
@@ -366,7 +391,8 @@
   var trail = [['bus', 'Day 1 · Morning', 'Scenic bus ride into the misty hills and estate check-in.'], ['jeep', 'Day 1 · Afternoon', 'Malnad lunch, then a 4x4 jeep safari to Jhari Falls.'],
     ['flame', 'Day 1 · Evening', 'Wellness massage, bonfire and acoustic music under the stars.'], ['sunrise', 'Day 2 · Morning', 'Sunrise yoga among the coffee, estate trail and breakfast.'],
     ['coffee', 'Day 2 · Afternoon', 'Fresh coffee tasting, local sights and the ride back.']];
-  $('trail').innerHTML = trail.map(function (t) { return '<li><div class="tr-ic">' + I(t[0]) + '</div><div><b>' + t[1] + '</b><span>' + t[2] + '</span></div></li>'; }).join('');
+  var bpTrip = ((NG.SITE && NG.SITE.boarding_pass) || {}).trip_id;
+  if (!bpTrip || bpTrip === 'chikka-retreat') $('trail').innerHTML = trail.map(function (t) { return '<li><div class="tr-ic">' + I(t[0]) + '</div><div><b>' + t[1] + '</b><span>' + t[2] + '</span></div></li>'; }).join('');
 
   /* Travel styles -> trips of that style */
   var activeStyle = null;
