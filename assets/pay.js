@@ -17,8 +17,16 @@
     ['emi', '<svg class="ic"><use href="#i-card"/></svg><span>EMI</span>', 'EMI']
   ];
   function chips() { return items.map(function (x) { return '<li class="pw-chip pw-k-' + x[0] + '" title="' + x[2] + '">' + x[1] + '</li>'; }).join(''); }
+  // Footer: one quiet, single-colour row. No stub, no motion.
+  function renderFooter(el) {
+    el.className = 'pw-foot';
+    el.setAttribute('aria-label', 'Payment methods accepted: ' + items.map(function (x) { return x[2]; }).join(', '));
+    el.innerHTML = '<span class="pwf-k"><svg class="ic"><use href="#i-lock"/></svg>Secure payments by Razorpay</span><ul class="pwf-list">' +
+      items.map(function (x) { return '<li class="pw-k-' + x[0] + '" title="' + x[2] + '">' + x[1].replace(/fill="#[0-9A-Fa-f]{6}"/g, 'fill="currentColor"') + '</li>'; }).join('') + '</ul>';
+  }
   function render(el) {
     var mode = el.getAttribute('data-paystrip') || 'light';
+    if (mode === 'footer') return renderFooter(el);
     el.classList.add('pw', 'pw-' + mode);
     el.setAttribute('aria-label', 'Payment methods accepted: ' + items.map(function (x) { return x[2]; }).join(', '));
     el.innerHTML = '<div class="pw-stub"><svg class="ic"><use href="#i-lock"/></svg><div><b>Pay your way</b><small>' + I('rzp') + 'Secured by Razorpay</small></div></div>' +
@@ -33,7 +41,7 @@
     el.classList.add('pw-moving');
   }
   function all() {
-    document.querySelectorAll('[data-paystrip]').forEach(function (el) { if (!el.classList.contains('pw')) render(el); fit(el); });
+    document.querySelectorAll('[data-paystrip]').forEach(function (el) { if (el.classList.contains('pw-foot')) return; if (!el.classList.contains('pw')) render(el); if (el.classList.contains('pw')) fit(el); });
   }
   var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { document.querySelectorAll('.pw').forEach(fit); }, 150); });
   window.NGPayStrip = { html: function (mode) { return '<div data-paystrip="' + (mode || 'light') + '"></div>'; }, render: all };
